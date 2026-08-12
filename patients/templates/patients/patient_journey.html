@@ -1,66 +1,369 @@
-{% extends 'base.html' %} <!-- Adjust this if your base template has a different name -->
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+
+<style>
+:root {
+    --deep-teal: #0f302b;
+    --deep-teal-hover: #16403a;
+    --accent-teal: #14b8a6;
+    --bg-card: #ffffff;
+    --border-color: #e5ebe9;
+    --text-primary: #0f172a;
+    --text-muted: #7a8584;
+    --error-bg: #fff8f7;
+    --error-border: #f0c9c5;
+    --error-text: #b42318;
+    --success-bg: #e8f3ee;
+    --success-text: #1b5e3b;
+}
+
+.journey-page {
+    max-width: 1000px;
+    margin: 20px auto 60px;
+    padding: 0 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: var(--text-primary);
+}
+
+/* ==========================================
+   HEADER & BANNER
+========================================== */
+.modern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    margin-bottom: 24px;
+}
+
+.journey-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f4;
+}
+
+.journey-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin: 0 0 6px 0;
+}
+
+.access-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.access-normal {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.access-emergency {
+    background: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
+}
+
+.patient-meta p {
+    margin: 0 0 5px 0;
+    font-size: 1.05rem;
+}
+
+.patient-meta .oph-id {
+    font-family: monospace;
+    background: #f8faf9;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    color: var(--deep-teal);
+    font-weight: 700;
+}
+
+/* ==========================================
+   STATISTICS GRID
+========================================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+}
+
+.stat-card {
+    background: #f8faf9;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.04);
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--deep-teal);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================
+   TIMELINE STYLES
+========================================== */
+.timeline-container {
+    position: relative;
+    padding-left: 40px;
+    margin-top: 20px;
+}
+
+.timeline-container::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent-teal), #dfe9e6);
+    border-radius: 10px;
+}
+
+.timeline-event {
+    position: relative;
+    padding: 0 0 32px 10px;
+}
+
+.timeline-event:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-node {
+    position: absolute;
+    left: -33px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--deep-teal);
+    border: 4px solid white;
+    box-shadow: 0 0 0 2px var(--deep-teal);
+    z-index: 2;
+}
+
+.event-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px 24px;
+    transition: all 0.2s ease;
+}
+
+.event-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 24px rgba(15, 48, 43, 0.06);
+    border-color: #cbd5e1;
+}
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.event-type {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+}
+
+.event-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #f1f5f4;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.event-body p {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+.event-body strong {
+    color: var(--deep-teal);
+    font-weight: 600;
+}
+
+.event-notes {
+    background: #f8faf9;
+    border-left: 3px solid var(--accent-teal);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0 0 0 !important;
+    font-size: 0.9rem !important;
+    color: #475569 !important;
+}
+
+.event-status {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #f1f5f4;
+    color: var(--deep-teal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.empty-timeline {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    background: #f8faf9;
+    border-radius: 14px;
+    border: 1px dashed #cbd5e1;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .journey-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .event-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+</style>
+
+<div class="journey-page">
     
-    <!-- Patient Header -->
-    <div class="patient-header" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e9ecef;">
-        <h2 style="margin-top: 0;">Patient Journey / Horizontal Tracking</h2>
-        <p style="font-size: 1.2em; margin-bottom: 5px;">
-            <strong>OPH-ID:</strong> {{ patient.oph_id }}
-        </p>
-        <p style="margin: 0; color: #6c757d;">
-            {{ patient.first_name }} {{ patient.last_name }}
-        </p>
+    <!-- HEADER & ACCESS BANNER -->
+    <div class="modern-card">
+        <div class="journey-header">
+            <div>
+                <h2>Patient Journey</h2>
+                <p style="color: var(--text-muted); margin: 0;">Longitudinal health record tracking</p>
+            </div>
+            
+            {% if is_emergency_override %}
+                <span class="access-badge access-emergency">
+                    ⚠️ {{ access_mode }}
+                </span>
+            {% else %}
+                <span class="access-badge access-normal">
+                    ● {{ access_mode }}
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="patient-meta">
+            <p><strong>OPH-ID:</strong> <span class="oph-id">{{ patient.oph_id }}</span></p>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                {{ patient.first_name }} {{ patient.last_name }} &nbsp;|&nbsp; National ID: {{ patient.national_id }}
+            </p>
+        </div>
     </div>
 
-    <!-- Timeline Wrapper -->
-    <div class="timeline" style="border-left: 3px solid #0d6efd; padding-left: 30px; margin-left: 20px;">
+    <!-- JOURNEY STATISTICS -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-bottom: 3px solid var(--accent-teal);">
+            <div class="stat-value">{{ journey_statistics.total_events }}</div>
+            <div class="stat-label">Total Events</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ journey_statistics.total_visits }}</div>
+            <div class="stat-label">Visits</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ journey_statistics.total_referrals }}</div>
+            <div class="stat-label">Referrals</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ journey_statistics.total_external_identifiers }}</div>
+            <div class="stat-label">External IDs</div>
+        </div>
+    </div>
+
+    <!-- TIMELINE CONTAINER -->
+    <div class="modern-card" style="padding-top: 40px; padding-bottom: 40px;">
+        <h3 style="margin-top: 0; margin-bottom: 24px; color: var(--deep-teal); font-size: 1.2rem;">Timeline of Care</h3>
         
-        {% for event in timeline_events %}
-        <!-- Individual Timeline Event -->
-        <div class="timeline-event" style="position: relative; margin-bottom: 30px;">
-            
-            <!-- Timeline Node (The dot on the line) -->
-            <div class="timeline-node" style="position: absolute; width: 16px; height: 16px; background: #0d6efd; border-radius: 50%; left: -39.5px; top: 4px; border: 3px solid #fff;"></div>
-            
-            <!-- Event Content Box -->
-            <div class="event-card" style="background: #fff; padding: 15px 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e9ecef;">
+        <div class="timeline-container">
+            {% for event in timeline_events %}
+            <div class="timeline-event">
                 
-                <div class="event-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span style="font-weight: bold; color: #495057; font-size: 1.1em;">
-                        {{ event.event_type }}
-                    </span>
-                    <span style="color: #6c757d; font-size: 0.9em; font-weight: bold;">
-                        {{ event.date|date:"d M Y" }}
-                    </span>
-                </div>
+                <div class="timeline-node"></div>
                 
-                <div class="event-body" style="color: #495057;">
-                    <p style="margin: 0 0 5px 0;">
-                        <strong>Facility:</strong> {{ event.facility }}
-                    </p>
-                    <p style="margin: 0 0 5px 0;">
-                        <strong>Description:</strong> {{ event.description }}
-                    </p>
-                    {% if event.status %}
-                    <p style="margin: 0;">
-                        <strong>Status:</strong> 
-                        <span style="background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 0.85em;">
-                            {{ event.status }}
-                        </span>
-                    </p>
-                    {% endif %}
+                <div class="event-card">
+                    <div class="event-header">
+                        <span class="event-type">{{ event.event_type }}</span>
+                        <span class="event-date">{{ event.date|date:"d M Y, H:i" }}</span>
+                    </div>
+                    
+                    <div class="event-body">
+                        <p><strong>📍 Facility:</strong> {{ event.facility }}</p>
+                        <p><strong>📝 Description:</strong> {{ event.description }}</p>
+                        
+                        {% if event.provider %}
+                            <p><strong>👨‍⚕️ Provider:</strong> {{ event.provider }}</p>
+                        {% endif %}
+                        
+                        {% if event.notes %}
+                            <p class="event-notes"><strong>Notes:</strong> {{ event.notes }}</p>
+                        {% endif %}
+
+                        {% if event.clinical_notes %}
+                            <p class="event-notes"><strong>Clinical Notes:</strong> {{ event.clinical_notes }}</p>
+                        {% endif %}
+                        
+                        {% if event.status %}
+                            <div class="event-status">{{ event.status }}</div>
+                        {% endif %}
+                    </div>
                 </div>
                 
             </div>
+            {% empty %}
+            <div class="empty-timeline">
+                <span style="font-size: 2rem; display: block; margin-bottom: 10px;">🧭</span>
+                No journey events recorded for this patient yet.
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div style="color: #6c757d; font-style: italic;">
-            No journey events recorded for this patient yet.
-        </div>
-        {% endfor %}
-        
     </div>
+
 </div>
 {% endblock %}

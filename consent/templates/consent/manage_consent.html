@@ -3,70 +3,124 @@
 {% block content %}
 
 <style>
+:root {
+    --deep-teal: #0f302b;
+    --deep-teal-hover: #16403a;
+    --accent-teal: #14b8a6;
+    --teal-glow: rgba(20, 184, 166, 0.15);
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --error-bg: #fef2f2;
+    --error-border: #fecaca;
+    --error-text: #991b1b;
+}
+
 .consent-form-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 10px 0 40px;
+    max-width: 840px;
+    margin: 20px auto 60px;
+    padding: 0 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: var(--text-primary);
 }
 
 .page-header {
-    margin-bottom: 28px;
+    margin-bottom: 32px;
+    position: relative;
+    padding-left: 16px;
+    border-left: 4px solid var(--deep-teal);
 }
 
 .page-header h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 2.1rem;
+    font-weight: 800;
     color: var(--deep-teal);
-    margin-bottom: 5px;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.02em;
 }
 
 .page-header p {
-    color: #7a8584;
+    color: var(--text-muted);
+    font-size: 0.975rem;
     margin: 0;
+    font-weight: 400;
 }
 
 .modern-card {
-    background: white;
-    border: 1px solid #e5ebe9;
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: 0 10px 25px -5px rgba(15, 48, 43, 0.05), 0 8px 10px -6px rgba(15, 48, 43, 0.03);
+    transition: box-shadow 0.3s ease;
+}
+
+.modern-card:hover {
+    box-shadow: 0 20px 30px -10px rgba(15, 48, 43, 0.08), 0 10px 12px -8px rgba(15, 48, 43, 0.04);
 }
 
 .patient-summary-box {
-    background: #f8faf9;
-    border: 1px solid #e5ebe9;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
+    background: linear-gradient(135deg, #f8faf9 0%, #f1f5f4 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.patient-summary-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--deep-teal);
 }
 
 .patient-summary-name {
     font-weight: 700;
     color: var(--deep-teal);
-    font-size: 1.05rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
 }
 
 .patient-summary-id {
     font-size: 0.85rem;
-    color: #7a8584;
-    font-family: monospace;
+    color: var(--text-muted);
+    font-family: 'ui-monospace', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.2px;
+}
+
+.patient-summary-badge {
+    background: #ffffff;
+    color: var(--deep-teal);
+    border: 1px solid #dce4e2;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: inline-block;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 22px;
+    margin-bottom: 24px;
 }
 
 .form-group label {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #87918f;
+    letter-spacing: 0.8px;
+    color: #64748b;
     font-weight: 700;
     margin-bottom: 8px;
 }
@@ -75,86 +129,151 @@
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #dce4e2;
+    padding: 13px 16px;
+    border: 1.5px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 0.925rem;
-    color: #293633;
-    background: #fcfcfc;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: #fdfdfd;
     box-sizing: border-box;
     outline: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     border-color: var(--deep-teal);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(15, 48, 43, 0.08);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(15, 48, 43, 0.1);
 }
 
+/* Custom Checkbox Container Card Style */
 .checkbox-group {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.checkbox-group input {
-    width: auto;
-    accent-color: var(--deep-teal);
+    gap: 12px;
+    background: #f8faf9;
+    border: 1.5px solid #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
+.checkbox-group:hover {
+    background: #f1f5f4;
+    border-color: #cbd5e1;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--deep-teal);
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0;
+}
+
 .error-message {
-    color: #b42318;
-    font-size: 0.8rem;
-    margin-top: 5px;
+    color: var(--error-text);
+    background-color: var(--error-bg);
+    border: 1px solid var(--error-border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 500;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.error-message::before {
+    content: "⚠️";
+    font-size: 0.85rem;
 }
 
 .form-actions {
-    margin-top: 30px;
+    margin-top: 36px;
     display: flex;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 1px solid #eef1f0;
+    align-items: center;
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid #f1f5f9;
 }
 
 .btn-modern {
-    border-radius: 10px;
-    padding: 12px 22px;
-    font-size: 0.9rem;
+    border-radius: 12px;
+    padding: 13px 26px;
+    font-size: 0.925rem;
     font-weight: 600;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     cursor: pointer;
+    letter-spacing: 0.2px;
 }
 
 .btn-modern-primary {
     background: var(--deep-teal);
     color: white;
     border: none;
+    box-shadow: 0 4px 12px rgba(15, 48, 43, 0.2);
 }
 
 .btn-modern-primary:hover {
-    background: #163b36;
-    transform: translateY(-1px);
+    background: var(--deep-teal-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 48, 43, 0.3);
+}
+
+.btn-modern-primary:active {
+    transform: translateY(0);
 }
 
 .btn-modern-outline {
-    border: 1px solid #dce4e2;
-    color: #44504e;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
     background: white;
 }
 
 .btn-modern-outline:hover {
-    background: #f5f8f7;
+    background: #f8fafc;
+    border-color: #94a3b8;
     color: var(--deep-teal);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .modern-card {
+        padding: 20px;
+    }
+    
+    .patient-summary-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    
+    .btn-modern {
+        width: 100%;
+    }
 }
 </style>
 
@@ -173,27 +292,72 @@
                 <div class="patient-summary-id">National ID: {{ patient.national_id }}</div>
             </div>
             <div>
-                <span class="patient-summary-id" style="background: #eef1f0; padding: 4px 10px; border-radius: 6px;">{{ patient.oph_id }}</span>
+                <span class="patient-summary-id patient-summary-badge">{{ patient.oph_id }}</span>
             </div>
         </div>
 
         <form method="POST">
             {% csrf_token %}
 
+            {% if form.errors %}
+                <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                    <h4 style="color: #b91c1c; margin-top: 0; margin-bottom: 8px; font-size: 1rem;">
+                        ⚠️ Could not save consent record
+                    </h4>
+                    <ul style="color: #991b1b; margin-bottom: 0; font-size: 0.85rem; padding-left: 20px;">
+                        {% for field, errors in form.errors.items %}
+                            <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             {% if form.non_field_errors %}
-                <div class="error-message" style="margin-bottom: 16px;">
+                <div class="error-message" style="margin-bottom: 20px;">
                     {{ form.non_field_errors }}
                 </div>
             {% endif %}
 
             <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Consent Status</label>
+                {{ form.status }}
+                {% for error in form.status.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.consent_type.id_for_label }}">Consent Type</label>
+                {{ form.consent_type }}
+                {% for error in form.consent_type.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.granted_by.id_for_label }}">Granted By</label>
+                {{ form.granted_by }}
+                {% for error in form.granted_by.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.expiry_date.id_for_label }}">Expiry Date</label>
+                {{ form.expiry_date }}
+                {% for error in form.expiry_date.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
                 <div class="checkbox-group">
-                    {{ form.is_granted }}
-                    <label for="{{ form.is_granted.id_for_label }}" style="margin: 0; text-transform: none; font-weight: 600; color: #293633; cursor: pointer; font-size: 0.95rem;">
-                        Patient grants consent for inter-facility data sharing and HIE access
+                    {{ form.emergency_override }}
+                    <label for="{{ form.emergency_override.id_for_label }}" style="margin: 0; text-transform: none; font-weight: 600; color: #1e293b; cursor: pointer; font-size: 0.95rem;">
+                        Allow Emergency Override
                     </label>
                 </div>
-                {% for error in form.is_granted.errors %}
+                {% for error in form.emergency_override.errors %}
                     <div class="error-message">{{ error }}</div>
                 {% endfor %}
             </div>

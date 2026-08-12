@@ -125,6 +125,14 @@ def manage_consent(
                 oph_id=patient.oph_id
 
             )
+            
+        else:
+            
+            # DEBUGGING: Print hidden form errors to terminal
+            print("\n====================================")
+            print("❌ CONSENT FORM VALIDATION FAILED ❌")
+            print(form.errors)
+            print("====================================\n")
 
     else:
 

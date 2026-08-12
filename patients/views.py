@@ -7,13 +7,10 @@ from django.shortcuts import (
 )
 
 from django.contrib.auth.decorators import login_required
-
 from django.db.models import Q
-
 from django.contrib import messages
 
 from audit.utils import create_audit_log
-
 from consent.models import PatientConsent
 
 from .forms import (
@@ -24,9 +21,9 @@ from .forms import (
 from .models import Patient
 
 
-# ==========================================
+# ============================================================
 # OPH-ID GENERATION
-# ==========================================
+# ============================================================
 
 def calculate_luhn_checksum(number_str):
 
@@ -44,7 +41,6 @@ def calculate_luhn_checksum(number_str):
             digit *= 2
 
             if digit > 9:
-
                 digit -= 9
 
         total += digit
@@ -76,7 +72,6 @@ def generate_oph_id(country_code):
         )
 
         part1 = base_number[:4]
-
         part2 = base_number[4:]
 
         oph_id = (
@@ -93,9 +88,9 @@ def generate_oph_id(country_code):
             return oph_id
 
 
-# ==========================================
+# ============================================================
 # REGISTER PATIENT
-# ==========================================
+# ============================================================
 
 @login_required
 def register_patient(request):
@@ -112,32 +107,39 @@ def register_patient(request):
                 commit=False
             )
 
+            # --------------------------------------------
             # Get country code from user profile
+            # --------------------------------------------
+
             try:
 
                 country_code = (
-
                     request.user.profile.country_code
-
                     or "ZW"
-
                 )
 
             except AttributeError:
 
                 country_code = "ZW"
 
+            # --------------------------------------------
             # Generate OPH-ID
+            # --------------------------------------------
+
             patient.oph_id = generate_oph_id(
-
                 country_code
-
             )
 
+            # --------------------------------------------
             # Save patient
+            # --------------------------------------------
+
             patient.save()
 
+            # --------------------------------------------
             # Audit patient registration
+            # --------------------------------------------
+
             create_audit_log(
 
                 request=request,
@@ -147,24 +149,21 @@ def register_patient(request):
                 module="Patients",
 
                 description=(
-
                     f"Registered patient "
-
                     f"{patient.oph_id}"
-
                 ),
 
                 object_id=patient.oph_id
 
             )
 
+            # --------------------------------------------
             # Redirect to patient profile
+            # --------------------------------------------
+
             return redirect(
-
                 "patient_profile",
-
                 oph_id=patient.oph_id
-
             )
 
     else:
@@ -178,27 +177,22 @@ def register_patient(request):
         "patients/register_patient.html",
 
         {
-
             "form": form
-
         }
 
     )
 
 
-# ==========================================
+# ============================================================
 # PATIENT DIRECTORY
-# ==========================================
+# ============================================================
 
 @login_required
 def patient_records(request):
 
     query = request.GET.get(
-
         "q",
-
         ""
-
     )
 
     patients = (
@@ -206,9 +200,7 @@ def patient_records(request):
         Patient.objects.all()
 
         .order_by(
-
             "-created_at"
-
         )
 
     )
@@ -218,33 +210,25 @@ def patient_records(request):
         patients = patients.filter(
 
             Q(
-
                 oph_id__icontains=query
-
             )
 
             |
 
             Q(
-
                 national_id__icontains=query
-
             )
 
             |
 
             Q(
-
                 first_name__icontains=query
-
             )
 
             |
 
             Q(
-
                 last_name__icontains=query
-
             )
 
         )
@@ -256,86 +240,103 @@ def patient_records(request):
         "patients/patient_records.html",
 
         {
-
             "patients": patients,
-
             "query": query
-
         }
 
     )
 
 
-# ==========================================
+# ============================================================
 # PATIENT PROFILE
-# ==========================================
+# ============================================================
 
 @login_required
-def patient_profile(
-
-    request,
-
-    oph_id
-
-):
+def patient_profile(request, oph_id):
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
+    
+    # --------------------------------------------
+    # Fetch Patient Consent
+    # --------------------------------------------
+    
+    consent = PatientConsent.objects.filter(
+        patient=patient
+    ).first()
 
-    # ======================================
-    # EXISTING PATIENT RECORDS
-    # ======================================
+    # --------------------------------------------
+    # Existing patient visits
+    # --------------------------------------------
 
     visits = (
 
-        patient.visits.all()
+        patient.visits
+
+        .select_related(
+            "facility"
+        )
+
+        .all()
 
         .order_by(
-
             "-visit_date"
-
         )
 
     )
+
+    # --------------------------------------------
+    # Existing patient referrals
+    # --------------------------------------------
 
     referrals = (
 
-        patient.referrals.all()
+        patient.referrals
+
+        .select_related(
+            "referring_facility",
+            "receiving_facility"
+        )
+
+        .all()
 
         .order_by(
-
             "-created_at"
-
         )
 
     )
+
+    # --------------------------------------------
+    # External identifiers
+    # --------------------------------------------
 
     external_identifiers = (
 
-        patient.external_identifiers.all()
+        patient.external_identifiers
+
+        .select_related(
+            "facility"
+        )
+
+        .all()
 
         .order_by(
-
             "-created_at"
-
         )
 
     )
 
-    # ======================================
-    # PATIENT JOURNEY TIMELINE
-    # ======================================
+    # ========================================================
+    # PATIENT TIMELINE
+    # ========================================================
 
     timeline_events = []
 
-    # --------------------------------------
+    # --------------------------------------------------------
     # 1. PATIENT REGISTRATION
-    # --------------------------------------
+    # --------------------------------------------------------
 
     timeline_events.append({
 
@@ -348,11 +349,8 @@ def patient_profile(
         "facility": "OnePatient Hub",
 
         "description": (
-
             "Patient identity created in "
-
             "the OnePatient Hub identity registry."
-
         ),
 
         "status": "Completed",
@@ -361,11 +359,21 @@ def patient_profile(
 
     })
 
-    # --------------------------------------
+    # --------------------------------------------------------
     # 2. HEALTHCARE VISITS
-    # --------------------------------------
+    # --------------------------------------------------------
 
     for visit in visits:
+
+        if visit.facility:
+
+            facility_name = (
+                visit.facility.facility_name
+            )
+
+        else:
+
+            facility_name = "Unknown Facility"
 
         timeline_events.append({
 
@@ -375,15 +383,18 @@ def patient_profile(
 
             "date": visit.visit_date,
 
-            "facility": visit.facility_name,
+            "facility": facility_name,
 
             "description": (
-
                 f"{visit.visit_type}: "
-
                 f"{visit.reason}"
-
             ),
+
+            "provider": (
+                visit.healthcare_provider
+            ),
+
+            "notes": visit.notes,
 
             "status": "Completed",
 
@@ -391,11 +402,39 @@ def patient_profile(
 
         })
 
-    # --------------------------------------
+    # --------------------------------------------------------
     # 3. REFERRALS
-    # --------------------------------------
+    # --------------------------------------------------------
 
     for referral in referrals:
+
+        if referral.referring_facility:
+
+            referring_facility = (
+                referral
+                .referring_facility
+                .facility_name
+            )
+
+        else:
+
+            referring_facility = (
+                "Unknown Facility"
+            )
+
+        if referral.receiving_facility:
+
+            receiving_facility = (
+                referral
+                .receiving_facility
+                .facility_name
+            )
+
+        else:
+
+            receiving_facility = (
+                "Unknown Facility"
+            )
 
         timeline_events.append({
 
@@ -406,16 +445,16 @@ def patient_profile(
             "date": referral.referral_date,
 
             "facility": (
-
-                f"{referral.referring_facility} "
-
+                f"{referring_facility} "
                 f"→ "
-
-                f"{referral.receiving_facility}"
-
+                f"{receiving_facility}"
             ),
 
             "description": referral.reason,
+
+            "clinical_notes": (
+                referral.clinical_notes
+            ),
 
             "status": referral.status,
 
@@ -423,34 +462,44 @@ def patient_profile(
 
         })
 
-    # --------------------------------------
+    # --------------------------------------------------------
     # 4. EXTERNAL IDENTIFIERS
-    # --------------------------------------
+    # --------------------------------------------------------
 
     for identifier in external_identifiers:
+
+        if identifier.facility:
+            facility_name = identifier.facility.facility_name
+        else:
+            facility_name = getattr(
+                identifier,
+                "facility_name",
+                None
+            )
+
+        if not facility_name:
+
+            facility_name = (
+                "External System"
+            )
 
         timeline_events.append({
 
             "event_type": (
-
                 "External Identifier Linked"
-
             ),
 
             "event_category": "identity",
 
             "date": identifier.created_at,
 
-            "facility": identifier.facility_name,
+            "facility": facility_name,
 
             "description": (
 
                 f"System: "
-
-                f"{identifier.system_name} "
-
-                f"| Identifier: "
-
+                f"{identifier.system_name}"
+                f" | Identifier: "
                 f"{identifier.identifier}"
 
             ),
@@ -461,9 +510,9 @@ def patient_profile(
 
         })
 
-    # ======================================
-    # SORT TIMELINE
-    # ======================================
+    # --------------------------------------------------------
+    # Sort timeline
+    # --------------------------------------------------------
 
     timeline_events.sort(
 
@@ -473,9 +522,9 @@ def patient_profile(
 
     )
 
-    # ======================================
-    # AUDIT PATIENT PROFILE ACCESS
-    # ======================================
+    # --------------------------------------------------------
+    # Audit patient profile access
+    # --------------------------------------------------------
 
     create_audit_log(
 
@@ -486,20 +535,17 @@ def patient_profile(
         module="Patients",
 
         description=(
-
             f"Viewed patient profile "
-
             f"{patient.oph_id}"
-
         ),
 
         object_id=patient.oph_id
 
     )
 
-    # ======================================
-    # RENDER PATIENT PROFILE
-    # ======================================
+    # --------------------------------------------------------
+    # Render
+    # --------------------------------------------------------
 
     return render(
 
@@ -516,68 +562,56 @@ def patient_profile(
             "referrals": referrals,
 
             "external_identifiers":
-
                 external_identifiers,
 
             "timeline_events":
-
-                timeline_events
+                timeline_events,
+                
+            "consent": consent
 
         }
 
     )
 
 
-# ==========================================
+# ============================================================
 # ADD EXTERNAL IDENTIFIER
-# ==========================================
+# ============================================================
 
 @login_required
-def add_external_identifier(
-
-    request,
-
-    oph_id
-
-):
+def add_external_identifier(request, oph_id):
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
 
     if request.method == "POST":
 
         form = (
-
             ExternalPatientIdentifierForm(
-
                 request.POST
-
             )
-
         )
 
         if form.is_valid():
 
-            external_identifier = form.save(
-
-                commit=False
-
+            external_identifier = (
+                form.save(
+                    commit=False
+                )
             )
 
             external_identifier.patient = (
-
                 patient
-
             )
 
             external_identifier.save()
 
-            # Audit external identifier creation
+            # --------------------------------------------
+            # Audit
+            # --------------------------------------------
+
             create_audit_log(
 
                 request=request,
@@ -589,15 +623,10 @@ def add_external_identifier(
                 description=(
 
                     f"Added external identifier "
-
                     f"{external_identifier.identifier} "
-
                     f"from "
-
                     f"{external_identifier.system_name} "
-
                     f"to patient "
-
                     f"{patient.oph_id}"
 
                 ),
@@ -617,9 +646,7 @@ def add_external_identifier(
     else:
 
         form = (
-
             ExternalPatientIdentifierForm()
-
         )
 
     return render(
@@ -639,25 +666,16 @@ def add_external_identifier(
     )
 
 
-# ==========================================
+# ============================================================
 # EDIT PATIENT
-# ==========================================
+# ============================================================
 
 @login_required
-def edit_patient(
-
-    request,
-
-    oph_id
-
-):
+def edit_patient(request, oph_id):
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
 
     if request.method == "POST":
@@ -674,7 +692,10 @@ def edit_patient(
 
             form.save()
 
+            # --------------------------------------------
             # Audit patient update
+            # --------------------------------------------
+
             create_audit_log(
 
                 request=request,
@@ -686,7 +707,6 @@ def edit_patient(
                 description=(
 
                     f"Updated patient "
-
                     f"{patient.oph_id}"
 
                 ),
@@ -706,9 +726,7 @@ def edit_patient(
     else:
 
         form = PatientForm(
-
             instance=patient
-
         )
 
     return render(
@@ -728,32 +746,28 @@ def edit_patient(
     )
 
 
-# ==========================================
+# ============================================================
 # DELETE PATIENT
-# ==========================================
+# ============================================================
 
 @login_required
-def delete_patient(
-
-    request,
-
-    oph_id
-
-):
+def delete_patient(request, oph_id):
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
 
     if request.method == "POST":
 
-        patient_oph_id = patient.oph_id
+        patient_oph_id = (
+            patient.oph_id
+        )
 
-        # Audit deletion BEFORE deleting patient
+        # --------------------------------------------
+        # Audit before deletion
+        # --------------------------------------------
+
         create_audit_log(
 
             request=request,
@@ -765,7 +779,6 @@ def delete_patient(
             description=(
 
                 f"Deleted patient "
-
                 f"{patient_oph_id}"
 
             ),
@@ -777,9 +790,7 @@ def delete_patient(
         patient.delete()
 
         return redirect(
-
             "patient_directory"
-
         )
 
     return render(
@@ -789,26 +800,22 @@ def delete_patient(
         "patients/delete_patient.html",
 
         {
-
             "patient": patient
-
         }
 
     )
 
 
-# ==========================================
+# ============================================================
 # PATIENT JOURNEY / HORIZONTAL TRACKING
-# ==========================================
+# ============================================================
 
 @login_required
-def patient_journey(
+def patient_journey(request, oph_id):
 
-    request,
-
-    oph_id
-
-):
+    # --------------------------------------------------------
+    # Get patient
+    # --------------------------------------------------------
 
     patient = get_object_or_404(
 
@@ -818,194 +825,345 @@ def patient_journey(
 
     )
 
+    # --------------------------------------------------------
+    # Check patient consent
+    # --------------------------------------------------------
+
     consent = PatientConsent.objects.filter(
+
         patient=patient
+
     ).first()
 
+    # --------------------------------------------------------
+    # Check emergency override
+    # --------------------------------------------------------
+
     is_emergency_override = request.session.get(
-        f'emergency_override_{oph_id}',
+
+        f"emergency_override_{oph_id}",
+
         False
+
     )
 
-    if (not consent or not consent.is_granted) and not is_emergency_override:
+    # --------------------------------------------------------
+    # Restrict access when consent is absent
+    # --------------------------------------------------------
+
+    if (
+
+        not consent
+
+        or consent.status not in ["Granted", "Active", "Yes"]
+
+    ) and not is_emergency_override:
+
         messages.warning(
+
             request,
-            "Access restricted: Patient has not granted data sharing consent."
+
+            "Access restricted: Patient has not "
+            "granted data sharing consent."
+
         )
+
         return redirect(
-            'patient_profile',
+
+            "patient_profile",
+
             oph_id=patient.oph_id
+
         )
+
+    # ========================================================
+    # GET VISITS
+    # ========================================================
 
     visits = (
 
-        patient.visits.all()
+        patient.visits
+
+        .select_related(
+            "facility"
+        )
+
+        .all()
 
         .order_by(
-
             "-visit_date"
-
         )
 
     )
+
+    # ========================================================
+    # GET REFERRALS
+    # ========================================================
 
     referrals = (
 
-        patient.referrals.all()
+        patient.referrals
 
-        .order_by(
+        .select_related(
 
-            "-referral_date"
+            "referring_facility",
+
+            "receiving_facility"
 
         )
 
+        .all()
+
+        .order_by(
+            "-referral_date"
+        )
+
     )
+
+    # ========================================================
+    # GET EXTERNAL IDENTIFIERS
+    # ========================================================
 
     external_identifiers = (
 
-        patient.external_identifiers.all()
+        patient.external_identifiers
+
+        .select_related(
+            "facility"
+        )
+
+        .all()
 
         .order_by(
-
             "-created_at"
-
         )
 
     )
 
+    # ========================================================
+    # BUILD PATIENT JOURNEY
+    # ========================================================
+
     timeline_events = []
 
-    # --------------------------------------
-    # PATIENT REGISTRATION
-    # --------------------------------------
+    # --------------------------------------------------------
+    # 1. REGISTRATION
+    # --------------------------------------------------------
 
     timeline_events.append({
 
-        "event_type": "Patient Registered",
+        "event_type":
+            "Patient Registered",
 
-        "event_category": "registration",
+        "event_category":
+            "registration",
 
-        "date": patient.created_at,
+        "date":
+            patient.created_at,
 
-        "facility": "OnePatient Hub",
+        "facility":
+            "OnePatient Hub",
 
         "description": (
 
             "Patient identity created in "
-
             "the OnePatient Hub identity registry."
 
         ),
 
-        "status": "Completed",
+        "status":
+            "Completed",
 
-        "icon": "user"
+        "icon":
+            "user"
 
     })
 
-    # --------------------------------------
-    # HEALTHCARE VISITS
-    # --------------------------------------
+    # --------------------------------------------------------
+    # 2. HEALTHCARE VISITS
+    # --------------------------------------------------------
 
     for visit in visits:
 
+        if visit.facility:
+
+            facility_name = (
+
+                visit.facility.facility_name
+
+            )
+
+        else:
+
+            facility_name = (
+                "Unknown Facility"
+            )
+
         timeline_events.append({
 
-            "event_type": "Healthcare Visit",
+            "event_type":
+                "Healthcare Visit",
 
-            "event_category": "visit",
+            "event_category":
+                "visit",
 
-            "date": visit.visit_date,
+            "date":
+                visit.visit_date,
 
-            "facility": visit.facility_name,
+            "facility":
+                facility_name,
 
             "description": (
 
                 f"{visit.visit_type}: "
-
                 f"{visit.reason}"
 
             ),
 
-            "status": "Completed",
+            "provider":
+                visit.healthcare_provider,
 
-            "icon": "calendar"
+            "notes":
+                visit.notes,
+
+            "status":
+                "Completed",
+
+            "icon":
+                "calendar"
 
         })
 
-    # --------------------------------------
-    # REFERRALS
-    # --------------------------------------
+    # --------------------------------------------------------
+    # 3. REFERRALS
+    # --------------------------------------------------------
 
     for referral in referrals:
 
+        if referral.referring_facility:
+
+            referring_facility = (
+
+                referral
+                .referring_facility
+                .facility_name
+
+            )
+
+        else:
+
+            referring_facility = (
+                "Unknown Facility"
+            )
+
+        if referral.receiving_facility:
+
+            receiving_facility = (
+
+                referral
+                .receiving_facility
+                .facility_name
+
+            )
+
+        else:
+
+            receiving_facility = (
+                "Unknown Facility"
+            )
+
         timeline_events.append({
 
-            "event_type": "Patient Referral",
+            "event_type":
+                "Patient Referral",
 
-            "event_category": "referral",
+            "event_category":
+                "referral",
 
-            "date": referral.referral_date,
+            "date":
+                referral.referral_date,
 
             "facility": (
 
-                f"{referral.referring_facility} "
-
+                f"{referring_facility} "
                 f"→ "
-
-                f"{referral.receiving_facility}"
+                f"{receiving_facility}"
 
             ),
 
-            "description": referral.reason,
+            "description":
+                referral.reason,
 
-            "status": referral.status,
+            "clinical_notes":
+                referral.clinical_notes,
 
-            "icon": "arrow"
+            "status":
+                referral.status,
+
+            "icon":
+                "arrow"
 
         })
 
-    # --------------------------------------
-    # EXTERNAL IDENTIFIERS
-    # --------------------------------------
+    # --------------------------------------------------------
+    # 4. EXTERNAL IDENTIFIERS
+    # --------------------------------------------------------
 
     for identifier in external_identifiers:
 
+        if identifier.facility:
+            facility_name = identifier.facility.facility_name
+        else:
+            facility_name = getattr(
+
+                identifier,
+
+                "facility_name",
+
+                None
+
+            )
+
+        if not facility_name:
+
+            facility_name = (
+                "External System"
+            )
+
         timeline_events.append({
 
-            "event_type": (
+            "event_type":
+                "External Identifier Linked",
 
-                "External Identifier Linked"
+            "event_category":
+                "identity",
 
-            ),
+            "date":
+                identifier.created_at,
 
-            "event_category": "identity",
-
-            "date": identifier.created_at,
-
-            "facility": identifier.facility_name,
+            "facility":
+                facility_name,
 
             "description": (
 
                 f"System: "
-
-                f"{identifier.system_name} "
-
-                f"| Identifier: "
-
+                f"{identifier.system_name}"
+                f" | Identifier: "
                 f"{identifier.identifier}"
 
             ),
 
-            "status": "Linked",
+            "status":
+                "Linked",
 
-            "icon": "link"
+            "icon":
+                "link"
 
         })
 
-    # --------------------------------------
-    # SORT TIMELINE
-    # --------------------------------------
+    # ========================================================
+    # SORT JOURNEY CHRONOLOGICALLY
+    # ========================================================
 
     timeline_events.sort(
 
@@ -1015,9 +1173,45 @@ def patient_journey(
 
     )
 
-    # --------------------------------------
+    # ========================================================
+    # JOURNEY STATISTICS
+    # ========================================================
+
+    journey_statistics = {
+
+        "total_events":
+            len(timeline_events),
+
+        "total_visits":
+            visits.count(),
+
+        "total_referrals":
+            referrals.count(),
+
+        "total_external_identifiers":
+            external_identifiers.count()
+
+    }
+
+    # ========================================================
+    # ACCESS MODE
+    # ========================================================
+
+    if is_emergency_override:
+
+        access_mode = (
+            "Emergency Override"
+        )
+
+    else:
+
+        access_mode = (
+            "Consent Granted"
+        )
+
+    # ========================================================
     # AUDIT LOG
-    # --------------------------------------
+    # ========================================================
 
     create_audit_log(
 
@@ -1030,14 +1224,18 @@ def patient_journey(
         description=(
 
             f"Viewed patient journey "
-
-            f"{patient.oph_id}"
+            f"{patient.oph_id}. "
+            f"Access mode: {access_mode}."
 
         ),
 
         object_id=patient.oph_id
 
     )
+
+    # ========================================================
+    # RENDER JOURNEY
+    # ========================================================
 
     return render(
 
@@ -1047,52 +1245,127 @@ def patient_journey(
 
         {
 
-            "patient": patient,
+            "patient":
+                patient,
 
             "timeline_events":
+                timeline_events,
 
-                timeline_events
+            "journey_statistics":
+                journey_statistics,
+
+            "access_mode":
+                access_mode,
+
+            "is_emergency_override":
+                is_emergency_override,
+
+            "consent":
+                consent,
+
+            "visits":
+                visits,
+
+            "referrals":
+                referrals,
+
+            "external_identifiers":
+                external_identifiers
 
         }
 
     )
 
 
-# ==========================================
+# ============================================================
 # EMERGENCY OVERRIDE
-# ==========================================
+# ============================================================
 
 @login_required
-def trigger_emergency_override(request, oph_id):
-    patient = get_object_or_404(Patient, oph_id=oph_id)
-    
+def trigger_emergency_override(
+    request,
+    oph_id
+):
+
+    patient = get_object_or_404(
+
+        Patient,
+
+        oph_id=oph_id
+
+    )
+
     if request.method == "POST":
-        reason = request.POST.get("override_reason", "No reason provided")
-        
-        # Enable override in session for this specific patient
-        request.session[f'emergency_override_{oph_id}'] = True
-        
-        # Log the critical override event
+
+        reason = request.POST.get(
+
+            "override_reason",
+
+            "No reason provided"
+
+        )
+
+        # ----------------------------------------------------
+        # Enable emergency override for this patient
+        # ----------------------------------------------------
+
+        request.session[
+            f"emergency_override_{oph_id}"
+        ] = True
+
+        # ----------------------------------------------------
+        # Audit critical override
+        # ----------------------------------------------------
+
         create_audit_log(
+
             request=request,
+
             action="EMERGENCY_OVERRIDE",
+
             module="Consent Management",
+
             description=(
-                f"EMERGENCY OVERRIDE triggered for patient {patient.oph_id}. "
+
+                f"EMERGENCY OVERRIDE triggered "
+                f"for patient {patient.oph_id}. "
                 f"Reason: {reason}"
+
             ),
+
             object_id=patient.oph_id
+
         )
-        
+
+        # ----------------------------------------------------
+        # Notify user
+        # ----------------------------------------------------
+
         messages.error(
+
             request,
-            "⚠️ Emergency override active. Access granted for clinical emergency."
+
+            "⚠️ Emergency override active. "
+            "Access granted for clinical emergency."
+
         )
-        
-        return redirect("patient_journey", oph_id=patient.oph_id)
-        
+
+        return redirect(
+
+            "patient_journey",
+
+            oph_id=patient.oph_id
+
+        )
+
     return render(
+
         request,
+
         "patients/emergency_override.html",
-        {"patient": patient}
+
+        {
+            "patient": patient
+        }
+
     )
