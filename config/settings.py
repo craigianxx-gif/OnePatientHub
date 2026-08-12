@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     "patients",
     "visits",
     "referrals",
-    "laboratory",
     "billing",
     "reports",
     "api",
