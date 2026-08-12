@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ==========================================
+   API ENDPOINTS UI
+========================================== */
+
+.api-page {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
+
+.api-header {
+    margin-bottom: 28px;
+}
+
+.api-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin-bottom: 5px;
+}
+
+.api-header p {
+    color: #7a8584;
+    margin: 0;
+}
+
+.api-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.api-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.api-card.full-width {
+    grid-column: span 2;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eef1f0;
+    padding-bottom: 12px;
+}
+
+/* Endpoint Row */
+.endpoint-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid #eef1f0;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: #fcfcfc;
+    transition: all 0.15s ease;
+}
+
+.endpoint-row:hover {
+    border-color: #dce4e2;
+    background: white;
+}
+
+.endpoint-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.method-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.method-get {
+    background: #e8f3ee;
+    color: #26704d;
+}
+
+.method-post {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.method-put {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.method-delete {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.endpoint-path {
+    font-family: monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #293633;
+}
+
+.endpoint-desc {
+    font-size: 0.8rem;
+    color: #7a8584;
+}
+
+/* Code Snippet Box */
+.code-box {
+    background: #0d1d1b;
+    color: #e2e8f0;
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding: 16px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.code-key { color: #38bdf8; }
+.code-string { color: #34d399; }
+
+@media (max-width: 1024px) {
+    .api-grid {
+        grid-template-columns: 1fr;
+    }
+    .api-card.full-width {
+        grid-column: span 1;
+    }
+}
+</style>
+
+<div class="api-page">
+
+    <!-- Page Header -->
+    <div class="api-header">
+        <h1>FHIR API Endpoints</h1>
+        <p>Explore and integrate automated health data exchange nodes for OnePatient Hub.</p>
+    </div>
+
+    <div class="api-grid">
+
+        <!-- Left Column: Patient Endpoints -->
+        <div class="api-card">
+            <div class="card-title">
+                <span>👤</span> Patient Resource Operations
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-get">GET</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Patient</div>
+                        <div class="endpoint-desc">List or search patients by identifier</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-post">POST</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Patient</div>
+                        <div class="endpoint-desc">Register a new patient record</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-get">GET</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Patient/{oph_id}</div>
+                        <div class="endpoint-desc">Retrieve single patient bundle</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-put">PUT</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Patient/{oph_id}</div>
+                        <div class="endpoint-desc">Update patient demographics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-delete">DEL</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Patient/{oph_id}</div>
+                        <div class="endpoint-desc">Remove patient record node</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Organization Endpoints -->
+        <div class="api-card">
+            <div class="card-title">
+                <span>🏥</span> Organization & Metadata
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-get">GET</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Organization</div>
+                        <div class="endpoint-desc">List registered healthcare facilities</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-get">GET</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/Organization/{facility_id}</div>
+                        <div class="endpoint-desc">Retrieve specific facility details</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint-row">
+                <div class="endpoint-info">
+                    <span class="method-badge method-get">GET</span>
+                    <div>
+                        <div class="endpoint-path">/api/fhir/metadata</div>
+                        <div class="endpoint-desc">Server CapabilityStatement</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Width: Sample Request Payload -->
+        <div class="api-card full-width">
+            <div class="card-title">
+                <span>⚡</span> Example FHIR Payload (`POST /api/fhir/Patient`)
+            </div>
+            <pre class="code-box"><code>{
+  <span class="code-key">"resourceType"</span>: <span class="code-string">"Patient"</span>,
+  <span class="code-key">"identifier"</span>: [
+    { <span class="code-key">"system"</span>: <span class="code-string">"https://onepatienthub.org/national-id"</span>, <span class="code-key">"value"</span>: <span class="code-string">"63-123456-A63"</span> }
+  ],
+  <span class="code-key">"name"</span>: [
+    { <span class="code-key">"family"</span>: <span class="code-string">"Moyo"</span>, <span class="code-key">"given"</span>: [<span class="code-string">"John"</span>] }
+  ],
+  <span class="code-key">"gender"</span>: <span class="code-string">"male"</span>,
+  <span class="code-key">"birthDate"</span>: <span class="code-string">"1990-05-14"</span>
+}</code></pre>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

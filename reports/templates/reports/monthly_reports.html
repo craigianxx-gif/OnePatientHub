@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}National Reporting Centre | OnePatient Hub{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f7f6;
+        font-family: 'Inter', system-ui, sans-serif;
+        scroll-behavior: smooth;
+    }
+
+    /* --- Command Center Header (Matched to Dashboard) --- */
+    .dashboard-header {
+        background: linear-gradient(135deg, #0D1D1B 0%, #163C35 100%);
+        color: white;
+        padding: 32px 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        box-shadow: 0 10px 30px rgba(13, 29, 27, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .dashboard-header h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-family: 'Fraunces', serif;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .dashboard-header p {
+        opacity: 0.85;
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-action {
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none;
+        color: white;
+        cursor: pointer;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .btn-teal { background: #115e59; }
+    .btn-teal:hover { background: #0f4c48; box-shadow: 0 4px 12px rgba(17, 94, 89, 0.3); }
+    .btn-coral { background: #e4633f; }
+    .btn-coral:hover { background: #cf5635; box-shadow: 0 4px 12px rgba(228, 99, 63, 0.3); }
+
+    /* --- Typography & Sections --- */
+    .section-title {
+        margin: 40px 0 20px 0;
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+    }
+
+    .row.g-4 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin: 0;
+    }
+
+    /* Auto sizing for variable columns */
+    .row.g-4 > [class*="col-"] {
+        padding: 0;
+    }
+    
+    .col-grid-6 { flex: 1 1 150px; }
+    .col-grid-4 { flex: 1 1 240px; }
+
+    /* --- Metric Cards --- */
+    .stat-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .icon-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: white;
+    }
+
+    /* Color Palette */
+    .bg-teal { background: #115e59; }
+    .bg-coral { background: #e4633f; }
+    .bg-blue { background: #2563eb; }
+    .bg-purple { background: #7c3aed; }
+    .bg-amber { background: #d97706; }
+    .bg-slate { background: #475569; }
+
+    .text-teal { color: #115e59; }
+    .text-coral { color: #e4633f; }
+    .text-blue { color: #2563eb; }
+    .text-purple { color: #7c3aed; }
+    .text-amber { color: #d97706; }
+    .text-slate { color: #475569; }
+
+    .stat-title {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    /* --- Chart & Table Cards --- */
+    .content-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        height: 100%;
+    }
+    
+    .content-card h5 {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .audit-table th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 600;
+    }
+    
+    .audit-table td {
+        font-size: 0.95rem;
+        color: #334155;
+    }
+
+    /* --- Forms & Filters --- */
+    .form-control-custom {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        color: #334155;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        width: 100%;
+        cursor: pointer;
+    }
+    .form-control-custom:focus {
+        border-color: #115e59;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(17, 94, 89, 0.1);
+        background: white;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        align-items: end;
+    }
+
+    /* --- Disease Sub-stats --- */
+    .disease-stats { display: flex; justify-content: space-between; gap: 12px; margin-top: auto;}
+    .d-stat { flex: 1; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+    .d-stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+    .d-stat-val { font-size: 1.15rem; font-weight: 700; color: #0f172a; }
+
+    /* --- Export Cards --- */
+    a.export-card { text-decoration: none; align-items: center; text-align: center; justify-content: center; padding: 32px 24px;}
+    a.export-card:hover { border-color: #e4633f; }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div>
+            <h2><i class="bi bi-clipboard-data"></i> National Reporting Centre</h2>
+            <p>Comprehensive health information reporting, surveillance, and interoperability exports.</p>
+        </div>
+        <div class="header-actions">
+            <button type="button" class="btn-action btn-teal" onclick="document.getElementById('report-filter-form').submit();">
+                <i class="bi bi-arrow-clockwise"></i> Generate Report
+            </button>
+            <a href="#export-centre" class="btn-action btn-coral">
+                <i class="bi bi-cloud-download"></i> Export Centre
+            </a>
+        </div>
+    </div>
+
+    <!-- Report Configuration -->
+    <div class="content-card mb-4" style="height: auto;">
+        <h5><i class="bi bi-sliders"></i> Report Configuration</h5>
+        <form method="GET" class="filter-grid" id="report-filter-form">
+            <div>
+                <div class="stat-title mb-2">Reporting Period</div>
+                <select class="form-control-custom" name="period" onchange="this.form.submit()">
+                    <option value="current_month" {% if request.GET.period == 'current_month' or not request.GET.period %}selected{% endif %}>August 2026</option>
+                    <option value="last_month" {% if request.GET.period == 'last_month' %}selected{% endif %}>July 2026</option>
+                    <option value="ytd" {% if request.GET.period == 'ytd' %}selected{% endif %}>Year to Date (2026)</option>
+                </select>
+            </div>
+            <div>
+                <div class="stat-title mb-2">Province</div>
+                <select class="form-control-custom" name="province" onchange="this.form.submit()">
+                    <option value="all" {% if request.GET.province == 'all' or not request.GET.province %}selected{% endif %}>All Provinces</option>
+                    <option value="harare" {% if request.GET.province == 'harare' %}selected{% endif %}>Harare Province</option>
+                    <option value="bulawayo" {% if request.GET.province == 'bulawayo' %}selected{% endif %}>Bulawayo Province</option>
+                </select>
+            </div>
+            <div>
+                <div class="stat-title mb-2">Facility</div>
+                <select class="form-control-custom" name="facility" onchange="this.form.submit()">
+                    <option value="all" {% if request.GET.facility == 'all' or not request.GET.facility %}selected{% endif %}>All Facilities</option>
+                    <option value="harare_central" {% if request.GET.facility == 'harare_central' %}selected{% endif %}>Harare Central Hospital</option>
+                    <option value="parirenyatwa" {% if request.GET.facility == 'parirenyatwa' %}selected{% endif %}>Parirenyatwa Group</option>
+                </select>
+            </div>
+            <div>
+                <div class="stat-title mb-2">Report Type</div>
+                <select class="form-control-custom" name="report_type" onchange="this.form.submit()">
+                    <option value="comprehensive" {% if request.GET.report_type == 'comprehensive' or not request.GET.report_type %}selected{% endif %}>Comprehensive Summary</option>
+                    <option value="surveillance" {% if request.GET.report_type == 'surveillance' %}selected{% endif %}>Disease Surveillance</option>
+                    <option value="interoperability" {% if request.GET.report_type == 'interoperability' %}selected{% endif %}>Interoperability Audit</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <!-- National Summary -->
+    <h4 class="section-title">National Summary</h4>
+    <div class="row g-4">
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-teal"><i class="bi bi-people-fill"></i></div>
+                </div>
+                <div class="stat-title">Total Patients</div>
+                <div class="stat-value">{{ report.total_patients|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-blue"><i class="bi bi-hospital-fill"></i></div>
+                </div>
+                <div class="stat-title">Registered Facilities</div>
+                <div class="stat-value">{{ report.total_facilities|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-slate"><i class="bi bi-arrow-left-right"></i></div>
+                </div>
+                <div class="stat-title">Total Referrals</div>
+                <div class="stat-value">{{ report.total_referrals|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-purple"><i class="bi bi-hdd-network-fill"></i></div>
+                </div>
+                <div class="stat-title">Connected Systems</div>
+                <div class="stat-value">{{ report.connected_systems|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-amber"><i class="bi bi-cpu-fill"></i></div>
+                </div>
+                <div class="stat-title">API Requests</div>
+                <div class="stat-value">{{ report.api_requests|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-coral"><i class="bi bi-file-earmark-medical-fill"></i></div>
+                </div>
+                <div class="stat-title">FHIR Published</div>
+                <div class="stat-value">{{ report.fhir_resources|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Population Statistics -->
+    <h4 class="section-title">Demographics & Population</h4>
+    <div class="row g-4">
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Male Patients</div>
+                <div class="stat-value text-blue">{{ report.pct_male|default:"0" }}%</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Female Patients</div>
+                <div class="stat-value text-coral">{{ report.pct_female|default:"0" }}%</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Children (0-14)</div>
+                <div class="stat-value text-teal">{{ report.pct_children|default:"0" }}%</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Adults (15-64)</div>
+                <div class="stat-value text-purple">{{ report.pct_adults|default:"0" }}%</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Seniors (65+)</div>
+                <div class="stat-value text-amber">{{ report.pct_seniors|default:"0" }}%</div>
+            </div>
+        </div>
+        <div class="col-grid-6">
+            <div class="stat-card">
+                <div class="stat-title mb-2">Average Age</div>
+                <div class="stat-value text-slate">{{ report.average_age|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disease Surveillance -->
+    <h4 class="section-title">Disease Surveillance</h4>
+    <div class="row g-4">
+        <div class="col-grid-4">
+            <div class="stat-card">
+                <h5 class="text-coral mb-3 fw-bold"><i class="bi bi-activity"></i> HIV Tracking</h5>
+                <div class="disease-stats">
+                    <div class="d-stat">
+                        <div class="d-stat-label">Screened</div>
+                        <div class="d-stat-val">{{ report.hiv_screened|default:"0" }}</div>
+                    </div>
+                    <div class="d-stat">
+                        <div class="d-stat-label text-coral">Positive</div>
+                        <div class="d-stat-val">{{ report.hiv_positive|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-grid-4">
+            <div class="stat-card">
+                <h5 class="text-blue mb-3 fw-bold"><i class="bi bi-lungs"></i> Tuberculosis</h5>
+                <div class="disease-stats">
+                    <div class="d-stat">
+                        <div class="d-stat-label">Screened</div>
+                        <div class="d-stat-val">{{ report.tb_screened|default:"0" }}</div>
+                    </div>
+                    <div class="d-stat">
+                        <div class="d-stat-label text-blue">Positive</div>
+                        <div class="d-stat-val">{{ report.tb_positive|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-grid-4">
+            <div class="stat-card">
+                <h5 class="text-teal mb-3 fw-bold"><i class="bi bi-bug"></i> Malaria</h5>
+                <div class="disease-stats">
+                    <div class="d-stat">
+                        <div class="d-stat-label">Screened</div>
+                        <div class="d-stat-val">{{ report.malaria_screened|default:"0" }}</div>
+                    </div>
+                    <div class="d-stat">
+                        <div class="d-stat-label text-teal">Positive</div>
+                        <div class="d-stat-val">{{ report.malaria_positive|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-grid-4">
+            <div class="stat-card">
+                <h5 class="text-purple mb-3 fw-bold"><i class="bi bi-heart-pulse"></i> Maternal Care</h5>
+                <div class="disease-stats">
+                    <div class="d-stat">
+                        <div class="d-stat-label">Reg.</div>
+                        <div class="d-stat-val">{{ report.maternal_cases|default:"0" }}</div>
+                    </div>
+                    <div class="d-stat">
+                        <div class="d-stat-label text-purple">Delivered</div>
+                        <div class="d-stat-val">{{ report.maternal_deliveries|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Facility Activity and Report History -->
+    <div class="row g-4 mt-2">
+        <!-- Facility Activity -->
+        <div class="col-lg-7" style="flex: 2 1 500px;">
+            <h4 class="section-title border-0 pb-0 mt-0">Facility Activity Feed</h4>
+            <div class="content-card">
+                <div class="table-responsive">
+                    <table class="table table-hover audit-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Facility Name</th>
+                                <th>Province</th>
+                                <th>Visits</th>
+                                <th>Referrals</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for facility in facility_activity %}
+                            <tr>
+                                <td class="fw-bold">{{ facility.name }}</td>
+                                <td>{{ facility.province }}</td>
+                                <td>{{ facility.visits }}</td>
+                                <td>{{ facility.referrals_out }}</td>
+                                <td>
+                                    {% if facility.status == 'Online' %}
+                                        <span class="badge bg-teal">Online</span>
+                                    {% else %}
+                                        <span class="badge bg-slate">{{ facility.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">No facility data recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report History -->
+        <div class="col-lg-5" style="flex: 1 1 350px;">
+            <h4 class="section-title border-0 pb-0 mt-0">Report History</h4>
+            <div class="content-card">
+                <div class="table-responsive">
+                    <table class="table table-hover audit-table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Report</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for history in report_history %}
+                            <tr>
+                                <td class="fw-bold">
+                                    {{ history.name }}<br>
+                                    <small class="text-muted">By {{ history.generated_by }}</small>
+                                </td>
+                                <td>{{ history.date|date:"d M Y" }}</td>
+                                <td><a href="{{ history.download_url }}" class="text-blue fw-bold text-decoration-none"><i class="bi bi-download"></i> DL</a></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-4 text-muted">No history found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Centre -->
+    <h4 class="section-title" id="export-centre">Data Exchange & Export Centre</h4>
+    <div class="row g-4">
+        <div class="col-grid-4">
+            <a href="{% url 'export_report_pdf' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
+                <i class="bi bi-file-earmark-pdf" style="font-size: 2.5rem; color:#e4633f;"></i>
+                <div class="stat-title mt-3" style="color:#0f172a;">Export PDF Report</div>
+            </a>
+        </div>
+        <div class="col-grid-4">
+            <a href="{% url 'export_report_csv' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
+                <i class="bi bi-filetype-csv" style="font-size: 2.5rem; color:#115e59;"></i>
+                <div class="stat-title mt-3" style="color:#0f172a;">Export CSV Data</div>
+            </a>
+        </div>
+        <div class="col-grid-4">
+            <a href="{% url 'export_fhir_bundle' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
+                <i class="bi bi-braces-asterisk" style="font-size: 2.5rem; color:#7c3aed;"></i>
+                <div class="stat-title mt-3" style="color:#0f172a;">Export FHIR Bundle</div>
+            </a>
+        </div>
+        <div class="col-grid-4">
+            <a href="{% url 'export_dhis2_json' selected_year|default:'2026' selected_month|default:'8' %}" class="stat-card export-card">
+                <i class="bi bi-database-down" style="font-size: 2.5rem; color:#2563eb;"></i>
+                <div class="stat-title mt-3" style="color:#0f172a;">Export DHIS2 JSON</div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Staggered Card Animation Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".stat-card, .content-card").forEach((card, index) => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            setTimeout(() => {
+                card.style.transition = "all 0.4s ease-out";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, index * 50);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Connected Systems | OnePatient Hub API{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f7f6;
+        font-family: 'Manrope', system-ui, sans-serif;
+    }
+
+    /* --- Header: flat navy, consistent with Register System --- */
+    .api-header {
+        background: #0D1D1B;
+        color: white;
+        padding: 28px 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .api-header h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-family: 'Fraunces', serif;
+        font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .api-header p {
+        opacity: 0.65;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .btn-register {
+        background-color: #115e59;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 12px 24px;
+        border-radius: 10px;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-register:hover {
+        background-color: #0d4a46;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* --- Metric Cards --- */
+    .stat-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+    }
+
+    .icon-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    /* Restrained palette shared with the rest of the app */
+    .bg-teal { background: #115e59; }
+    .bg-coral { background: #e4633f; }
+    .bg-slate { background: #475569; }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-title {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0D1D1B;
+        line-height: 1.2;
+        font-family: 'Fraunces', serif;
+    }
+
+    /* --- Table Card --- */
+    .content-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 28px;
+        margin-top: 28px;
+    }
+
+    .content-card h5 {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        color: #0D1D1B;
+        font-size: 1.15rem;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .content-card-subtitle {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+    }
+
+    .system-table th {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #94a3b8;
+        font-weight: 700;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 12px;
+    }
+
+    .system-table td {
+        font-size: 0.92rem;
+        color: #334155;
+        vertical-align: middle;
+        padding: 16px 8px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .system-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-connected { background: #e3f2ee; color: #0d4a46; }
+    .status-connected::before { background: #115e59; }
+
+    .status-maintenance { background: #fdf1e8; color: #9a4d1f; }
+    .status-maintenance::before { background: #e4633f; }
+
+    .status-disconnected { background: #f1f5f9; color: #64748b; }
+    .status-disconnected::before { background: #94a3b8; }
+
+    .mono-text {
+        font-family: 'Courier New', monospace;
+        color: #94a3b8;
+        font-size: 0.82rem;
+    }
+
+    .action-link {
+        color: #115e59;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.88rem;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+        color: #0d4a46;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #94a3b8;
+        padding: 56px 0;
+    }
+
+    .empty-state i {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="api-header">
+        <div>
+            <h2><i class="bi bi-hdd-network"></i> Connected Systems</h2>
+            <p>Manage external systems integrated with the FHIR interoperability platform</p>
+        </div>
+        <div>
+            <a href="{% url 'register_system' %}" class="btn-register">
+                <i class="bi bi-plus-lg"></i> Register new system
+            </a>
+        </div>
+    </div>
+
+    <!-- Overview Metrics -->
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="icon-circle bg-slate"><i class="bi bi-diagram-2-fill"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Total registered</span>
+                    <span class="stat-value">{{ total_systems|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="icon-circle bg-teal"><i class="bi bi-check-circle-fill"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Active connections</span>
+                    <span class="stat-value">{{ connected_systems_count|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="icon-circle bg-coral"><i class="bi bi-tools"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Maintenance / down</span>
+                    <span class="stat-value">{{ offline_systems|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Systems Registry Table -->
+    <div class="content-card">
+        <h5><i class="bi bi-card-list"></i> Systems registry</h5>
+        <div class="content-card-subtitle">Every external node currently registered on the network.</div>
+        <div class="table-responsive">
+            <table class="table system-table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>System name</th>
+                        <th>Type</th>
+                        <th>Organization</th>
+                        <th>FHIR ver</th>
+                        <th>Status</th>
+                        <th>Last sync</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for system in systems %}
+                    <tr>
+                        <td class="fw-bold" style="color: #0D1D1B;">{{ system.system_name }}</td>
+                        <td>{{ system.get_system_type_display }}</td>
+                        <td>{{ system.organization }}</td>
+                        <td><span class="mono-text">{{ system.fhir_version }}</span></td>
+                        <td>
+                            {% if system.status == 'Connected' %}
+                                <span class="status-badge status-connected">Connected</span>
+                            {% elif system.status == 'Maintenance' %}
+                                <span class="status-badge status-maintenance">Maintenance</span>
+                            {% else %}
+                                <span class="status-badge status-disconnected">Disconnected</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if system.last_sync %}
+                                {{ system.last_sync|date:"M d, Y H:i" }}
+                            {% else %}
+                                <span class="text-muted">Never</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'system_profile' system.id %}" class="action-link">Manage</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="bi bi-hdd"></i>
+                                No connected systems yet — register the first one to get started.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

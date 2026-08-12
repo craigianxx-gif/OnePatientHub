@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Referral Management | OnePatient Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+    }
+
+    .page-title h1 {
+        font-size: 1.85rem;
+        margin-bottom: 4px;
+    }
+
+    .page-title p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .controls-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 16px;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        max-width: 500px;
+    }
+
+    .search-input {
+        flex: 1;
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        padding: 0 16px;
+        min-height: 44px;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--deep-teal);
+        box-shadow: 0 0 0 3px var(--teal-tint);
+    }
+
+    .table-card {
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .oph-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .oph-table th {
+        background: var(--cream);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .oph-table td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-light);
+        font-size: 0.9rem;
+        font-weight: 500;
+        vertical-align: middle;
+    }
+
+    .oph-table tbody tr {
+        transition: background 150ms ease;
+    }
+
+    .oph-table tbody tr:hover {
+        background: var(--teal-tint);
+    }
+
+    .oph-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Status Form Inline styling */
+    .status-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-select {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-light);
+        background: var(--surface-white);
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-dark);
+    }
+
+    .btn-update {
+        background: var(--deep-teal);
+        color: var(--surface-white);
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: background 150ms ease;
+    }
+
+    .btn-update:hover {
+        background: var(--deep-teal-hover);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-title">
+        <h1>Referral Management</h1>
+        <p>Track and manage patient transfers between facilities.</p>
+    </div>
+    <a href="{% url 'create_referral' %}" class="btn-teal">
+        + Create Referral
+    </a>
+</div>
+
+<div class="controls-wrapper">
+    <form method="GET" class="search-form">
+        <input type="text" name="q" value="{{ query|default:'' }}" class="search-input" placeholder="Search by OPH-ID, patient name, or facility...">
+        <button type="submit" class="btn-teal">Search</button>
+    </form>
+</div>
+
+<div class="table-card">
+    <table class="oph-table">
+        <thead>
+            <tr>
+                <th>OPH-ID</th>
+                <th>Patient</th>
+                <th>Referring Facility</th>
+                <th>Receiving Facility</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for referral in referrals %}
+            <tr>
+                <td><span class="oph-badge">{{ referral.patient.oph_id }}</span></td>
+                <td>{{ referral.patient.first_name }} {{ referral.patient.last_name }}</td>
+                <td>{{ referral.referring_facility }}</td>
+                <td>{{ referral.receiving_facility }}</td>
+                <td>{{ referral.referral_date|date:"M d, Y" }}</td>
+                <td>{{ referral.get_status_display|default:referral.status }}</td>
+                <td>
+                    <form method="POST" action="{% url 'update_referral_status' referral.id %}" class="status-form">
+                        {% csrf_token %}
+                        <select name="status" class="status-select">
+                            {% for value, label in referral.STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if referral.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-update">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                    No referrals found matching your search.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

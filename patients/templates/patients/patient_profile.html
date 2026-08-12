@@ -1,0 +1,1325 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+/* ==========================================
+   PATIENT PROFILE PAGE
+========================================== */
+
+.patient-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.patient-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin-bottom: 5px;
+}
+
+.patient-header p {
+    color: #7a8584;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-modern {
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-modern-primary {
+    background: var(--deep-teal);
+    color: white;
+}
+
+.btn-modern-primary:hover {
+    background: #163b36;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-modern-outline {
+    border: 1px solid #dce4e2;
+    color: #44504e;
+    background: white;
+}
+
+.btn-modern-outline:hover {
+    background: #f5f8f7;
+    color: var(--deep-teal);
+}
+
+.btn-modern-danger-outline {
+    border: 1px solid #f0c9c5;
+    color: #b42318;
+    background: #fff8f7;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-modern-danger-outline:hover {
+    background: #fef2f2;
+    border-color: #f98080;
+}
+
+/* ==========================================
+   PATIENT HERO
+========================================== */
+
+.patient-hero {
+    background: linear-gradient(
+        135deg,
+        var(--deep-teal),
+        #173b36
+    );
+
+    border-radius: 20px;
+    padding: 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 15px 35px
+        rgba(15, 48, 43, 0.18);
+}
+
+.patient-hero::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    right: -100px;
+    top: -120px;
+}
+
+.patient-hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.patient-identity {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.patient-avatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 20px;
+    background: var(--coral);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,0.18);
+}
+
+.patient-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 7px;
+}
+
+.patient-subtitle {
+    color: rgba(255,255,255,0.68);
+    font-size: 0.9rem;
+}
+
+.oph-id-box {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-width: 210px;
+}
+
+.oph-id-label {
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.oph-id-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+   QUICK STATS
+========================================== */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 16px;
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 22px
+        rgba(0,0,0,0.06);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5f3;
+    color: var(--deep-teal);
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: #7b8785;
+}
+
+/* ==========================================
+   MAIN GRID
+========================================== */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.4fr;
+    gap: 24px;
+}
+
+.modern-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-heading h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+}
+
+.card-heading p {
+    margin: 4px 0 0;
+    color: #87918f;
+    font-size: 0.82rem;
+}
+
+/* ==========================================
+   DEMOGRAPHICS
+========================================== */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.info-item {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef1f0;
+}
+
+.info-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #87918f;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #293633;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+/* ==========================================
+   IDENTIFIERS
+========================================== */
+
+.identifier-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 15px;
+
+    background: #f8faf9;
+    border: 1px solid #edf1ef;
+    border-radius: 12px;
+
+    margin-bottom: 10px;
+}
+
+.identifier-system {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.system-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #e7f0ee;
+    color: var(--deep-teal);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+}
+
+.identifier-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.identifier-facility {
+    font-size: 0.76rem;
+    color: #87918f;
+}
+
+.identifier-value {
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+
+    background: white;
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: 1px solid #e1e8e5;
+}
+
+/* ==========================================
+   PATIENT JOURNEY
+========================================== */
+
+.journey-container {
+    position: relative;
+    padding-left: 38px;
+}
+
+.journey-container::before {
+    content: "";
+
+    position: absolute;
+
+    left: 13px;
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    background: linear-gradient(
+        to bottom,
+        var(--coral),
+        #dfe9e6
+    );
+
+    border-radius: 10px;
+}
+
+.journey-event {
+    position: relative;
+    padding: 0 0 28px 20px;
+}
+
+.journey-event:last-child {
+    padding-bottom: 0;
+}
+
+.journey-marker {
+    position: absolute;
+
+    left: -38px;
+    top: 0;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+
+    background: var(--deep-teal);
+
+    border: 4px solid white;
+
+    box-shadow:
+        0 0 0 2px var(--deep-teal);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 0.75rem;
+}
+
+.journey-event-card {
+    background: #fbfcfc;
+
+    border: 1px solid #e5ebe9;
+
+    border-radius: 14px;
+
+    padding: 16px 18px;
+
+    transition: all 0.2s ease;
+}
+
+.journey-event-card:hover {
+    transform: translateX(3px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,0.05);
+}
+
+.journey-event-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+.journey-event-title {
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
+    color: var(--deep-teal);
+}
+
+.journey-event-date {
+    font-size: 0.75rem;
+
+    color: #87918f;
+
+    white-space: nowrap;
+}
+
+.journey-event-facility {
+    margin-top: 7px;
+
+    font-size: 0.82rem;
+
+    font-weight: 600;
+
+    color: #44504e;
+}
+
+.journey-event-description {
+    margin-top: 6px;
+
+    font-size: 0.82rem;
+
+    line-height: 1.5;
+
+    color: #77827f;
+}
+
+.journey-status {
+    display: inline-block;
+
+    margin-top: 10px;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    background: #e8f3ee;
+
+    color: #26704d;
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: #87918f;
+}
+
+.empty-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f0f5f3;
+    color: var(--deep-teal);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 12px;
+
+    font-size: 1.3rem;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1100px) {
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .patient-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .oph-id-box {
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .patient-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions a {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-identity {
+        align-items: flex-start;
+    }
+
+    .patient-name {
+        font-size: 1.35rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .identifier-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .journey-event-top {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+}
+
+</style>
+
+
+<div class="patient-page">
+
+
+    <!-- ==========================================
+         PAGE HEADER
+    ========================================== -->
+
+    <div class="patient-header">
+
+        <div>
+
+            <h1>Patient Profile</h1>
+
+            <p>
+                Unified patient identity and healthcare record
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="{% url 'patient_directory' %}"
+                class="btn-modern btn-modern-outline"
+            >
+                ← Back
+            </a>
+
+
+            <a
+                href="{% url 'edit_patient' patient.oph_id %}"
+                class="btn-modern btn-modern-primary"
+            >
+                Edit Patient
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         PATIENT HERO
+    ========================================== -->
+
+    <div class="patient-hero">
+
+        <div class="patient-hero-content">
+
+            <div class="patient-identity">
+
+                <div class="patient-avatar">
+
+                    {{ patient.first_name|first|upper }}
+
+                    {{ patient.last_name|first|upper }}
+
+                </div>
+
+
+                <div>
+
+                    <h2 class="patient-name">
+
+                        {{ patient.first_name }}
+
+                        {{ patient.last_name }}
+
+                    </h2>
+
+
+                    <div class="patient-subtitle">
+
+                        Unified Patient Identity Record
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="oph-id-box">
+
+                <div class="oph-id-label">
+
+                    OnePatient Hub ID
+
+                </div>
+
+
+                <div class="oph-id-value">
+
+                    {{ patient.oph_id }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         QUICK STATS
+    ========================================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👤
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+
+                    {{ visits|length }}
+
+                </div>
+
+                <div class="stat-label">
+
+                    Healthcare Visits
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔗
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+
+                    {{ external_identifiers|length }}
+
+                </div>
+
+                <div class="stat-label">
+
+                    External Identifiers
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ↗
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+
+                    {{ referrals|length }}
+
+                </div>
+
+                <div class="stat-label">
+
+                    Referrals
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+
+                    Active
+
+                </div>
+
+                <div class="stat-label">
+
+                    Identity Status
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         MAIN CONTENT
+    ========================================== -->
+
+    <div class="profile-grid">
+
+
+        <!-- ======================================
+             LEFT COLUMN
+        ======================================= -->
+
+        <div>
+
+
+            <!-- PATIENT INFORMATION -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>Patient Information</h3>
+
+                        <p>
+                            Core demographic information
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            First Name
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.first_name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Last Name
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.last_name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            National ID
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.national_id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Gender
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.gender }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Date of Birth
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.date_of_birth }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Phone Number
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.phone_number|default:"Not provided" }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Address
+                        </div>
+
+                        <div class="info-value">
+                            {{ patient.address|default:"Not provided" }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DATA SHARING CONSENT STATUS CARD -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>Data Sharing Consent</h3>
+
+                        <p>
+                            Interoperability access preferences
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'manage_consent' patient.oph_id %}"
+                        class="btn-modern btn-modern-primary"
+                    >
+                        Manage
+                    </a>
+
+                </div>
+
+                {% with consent=patient.patientconsent_set.first %}
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8faf9; border: 1px solid #edf1ef; border-radius: 12px; margin-bottom: 12px;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: #44504e;">Consent Status</span>
+                        
+                        {% if consent and consent.is_granted %}
+                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: #e8f3ee; color: #1b5e3b; font-size: 0.75rem; font-weight: 700;">
+                                ● Granted
+                            </span>
+                        {% else %}
+                            <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: #fef2f2; color: #b91c1c; font-size: 0.75rem; font-weight: 700;">
+                                ● Not Granted / Restricted
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    {% if consent and consent.notes %}
+                        <div style="font-size: 0.82rem; color: #77827f; padding: 4px 2px; margin-bottom: 12px;">
+                            <strong>Notes:</strong> {{ consent.notes }}
+                        </div>
+                    {% endif %}
+
+                    <!-- EMERGENCY OVERRIDE TRIGGER (Appears if consent is restricted/missing) -->
+                    {% if not consent or not consent.is_granted %}
+                        <div style="background: #fff8f7; border: 1px dashed #f0c9c5; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px;">
+                            <div>
+                                <div style="font-size: 0.82rem; font-weight: 700; color: #b42318; margin-bottom: 2px;">Clinical Emergency?</div>
+                                <div style="font-size: 0.75rem; color: #7a8584;">Bypass data restrictions for urgent care.</div>
+                            </div>
+                            <a href="{% url 'trigger_emergency_override' patient.oph_id %}" class="btn-modern-danger-outline">
+                                ⚠️ Override
+                            </a>
+                        </div>
+                    {% endif %}
+
+                {% endwith %}
+
+            </div>
+
+
+            <!-- EXTERNAL IDENTIFIERS -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>
+                            External Patient Identifiers
+                        </h3>
+
+                        <p>
+                            Connected identifiers from other health systems
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'add_external_identifier' patient.oph_id %}"
+                        class="btn-modern btn-modern-primary"
+                    >
+                        + Add
+                    </a>
+
+                </div>
+
+
+                {% if external_identifiers %}
+
+                    {% for identifier in external_identifiers %}
+
+                        <div class="identifier-item">
+
+                            <div class="identifier-system">
+
+                                <div class="system-icon">
+                                    ID
+                                </div>
+
+
+                                <div>
+
+                                    <div class="identifier-name">
+
+                                        {{ identifier.system_name }}
+
+                                    </div>
+
+
+                                    <div class="identifier-facility">
+
+                                        {{ identifier.facility_name }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="identifier-value">
+
+                                {{ identifier.identifier }}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            🔗
+                        </div>
+
+                        <p>
+                            No external identifiers have been linked.
+                        </p>
+
+
+                        <a
+                            href="{% url 'add_external_identifier' patient.oph_id %}"
+                            class="btn-modern btn-modern-outline"
+                        >
+                            Add External Identifier
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ======================================
+             RIGHT COLUMN
+        ======================================= -->
+
+        <div>
+
+
+            <!-- ======================================
+                 UNIFIED PATIENT JOURNEY
+            ======================================= -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>
+                            Patient Journey
+                        </h3>
+
+                        <p>
+                            Unified care history across facilities
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if timeline_events %}
+
+                    <div class="journey-container">
+
+
+                        {% for event in timeline_events %}
+
+                            <div class="journey-event">
+
+
+                                <div class="journey-marker">
+
+                                    {% if event.event_category == "registration" %}
+                                        👤
+
+                                    {% elif event.event_category == "visit" %}
+                                        📅
+
+                                    {% elif event.event_category == "referral" %}
+                                        ↗
+
+                                    {% elif event.event_category == "identity" %}
+                                        🔗
+
+                                    {% else %}
+                                        ●
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="journey-event-card">
+
+
+                                    <div class="journey-event-top">
+
+
+                                        <div class="journey-event-title">
+
+                                            {{ event.event_type }}
+
+                                        </div>
+
+
+                                        <div class="journey-event-date">
+
+                                            {{ event.date|date:"d M Y" }}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="journey-event-facility">
+
+                                        📍 {{ event.facility }}
+
+                                    </div>
+
+
+                                    <div class="journey-event-description">
+
+                                        {{ event.description }}
+
+                                    </div>
+
+
+                                    {% if event.status %}
+
+                                        <span class="journey-status">
+
+                                            {{ event.status }}
+
+                                        </span>
+
+                                    {% endif %}
+
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            🧭
+                        </div>
+
+
+                        <p>
+                            No patient journey events have been recorded yet.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==========================================
+         DANGER ZONE
+    ========================================== -->
+
+    <div class="modern-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <h3>
+                    Patient Record Management
+                </h3>
+
+                <p>
+                    Permanently remove this patient record
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'delete_patient' patient.oph_id %}"
+                class="btn-modern"
+                style="
+                    color: #b42318;
+                    border: 1px solid #f0c9c5;
+                    background: #fff8f7;
+                "
+            >
+                Delete Patient
+            </a>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

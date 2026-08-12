@@ -1,0 +1,17 @@
+Hello {{ full_name }},
+
+Your OnePatient Hub account has been approved.
+
+Username:
+{{ username }}
+
+Temporary Password:
+{{ temporary_password }}
+
+Login:
+http://127.0.0.1:8000/
+
+For security reasons, you must change your temporary password after your first login.
+
+Regards,
+OnePatient Hub Administration

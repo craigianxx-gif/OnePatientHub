@@ -1,0 +1,304 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Submitted | OnePatient Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --deep-teal: #112A26;
+            --mid-teal: #1B3A35;
+            --light-teal: #244A44;
+            --coral: #E4633F;
+            --coral-hover: #D05533;
+            --bg-light: #F4F6F5;
+            --ink: #111816;
+            --sage: #A3BDB5;
+            --muted: #64746F;
+            --border: #E2E8E5;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: var(--bg-light);
+            font-family: 'Manrope', system-ui, sans-serif;
+            color: var(--ink);
+        }
+
+        .oph-display {
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
+        }
+
+        /* Layout */
+        .oph-screen {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+        }
+
+        /* --- Left Brand Panel --- */
+        .oph-brand {
+            background: radial-gradient(circle at 30% 20%, var(--light-teal) 0%, var(--mid-teal) 40%, var(--deep-teal) 100%);
+            padding: 4rem 5rem;
+            position: relative;
+            overflow: hidden;
+            width: 45%;
+            display: flex;
+            align-items: center;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .oph-brand svg.nodes {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+        }
+
+        @keyframes oph-node-flow {
+            0%, 100% { opacity: 0.2; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .oph-brand .node { animation: oph-node-flow 3.5s ease-in-out infinite alternate; }
+
+        .oph-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem 0.5rem 0.5rem;
+            border-radius: 50px;
+            display: inline-flex;
+            backdrop-filter: blur(10px);
+        }
+
+        .oph-badge img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .oph-brand-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+        }
+
+        .oph-brand h1 {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 2.75rem;
+            line-height: 1.15;
+            margin-top: 2rem;
+            letter-spacing: -0.02em;
+        }
+        .oph-brand h1 span { color: var(--coral); font-style: italic; }
+
+        .oph-feature-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 3rem;
+        }
+        .oph-feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            color: #E8F0ED;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .oph-feature-list .icon-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(228,99,63,0.15);
+            border: 1px solid rgba(228,99,63,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--coral);
+        }
+
+        /* --- Right Form Panel --- */
+        .oph-form-panel {
+            width: 55%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Animated entry for the card */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .oph-login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 440px;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            text-align: center;
+        }
+
+        .success-icon-wrap {
+            width: 64px;
+            height: 64px;
+            background: rgba(22, 48, 44, 0.05); /* Very light teal tint */
+            color: var(--deep-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .oph-login-card h2 {
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 0.75rem;
+            font-size: 2rem;
+        }
+        
+        .oph-login-card p.subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .oph-btn-primary {
+            background: var(--deep-teal);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(17, 42, 38, 0.15);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .oph-btn-primary:hover {
+            background: var(--mid-teal);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(17, 42, 38, 0.2);
+        }
+        
+        .oph-btn-primary:active { 
+            transform: translateY(1px); 
+            box-shadow: 0 2px 4px rgba(17, 42, 38, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .oph-screen { flex-direction: column; height: auto; min-height: 100vh; }
+            .oph-brand, .oph-form-panel { width: 100%; }
+            .oph-brand { padding: 3rem 2rem; }
+            .oph-form-panel { padding: 2rem 1rem; background: var(--bg-light); }
+            .oph-login-card { padding: 2rem; }
+            .oph-brand h1 { font-size: 2.25rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="oph-screen">
+
+    <!-- LEFT: Brand Panel -->
+    <div class="oph-brand">
+        <!-- Abstract Nodes Background -->
+        <svg class="nodes" aria-hidden="true">
+            <line x1="10%" y1="20%" x2="45%" y2="35%" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <line x1="45%" y1="35%" x2="80%" y2="15%" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <line x1="45%" y1="35%" x2="35%" y2="65%" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <line x1="35%" y1="65%" x2="70%" y2="75%" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+            <circle class="node" cx="10%" cy="20%" r="4" fill="#A3BDB5" style="animation-delay:0s" />
+            <circle class="node" cx="45%" cy="35%" r="5" fill="#E4633F" style="animation-delay:0.4s" />
+            <circle class="node" cx="80%" cy="15%" r="4" fill="#A3BDB5" style="animation-delay:0.8s" />
+            <circle class="node" cx="35%" cy="65%" r="4" fill="#A3BDB5" style="animation-delay:1.2s" />
+            <circle class="node" cx="70%" cy="75%" r="4" fill="#A3BDB5" style="animation-delay:1.6s" />
+        </svg>
+
+        <div class="oph-brand-inner">
+            <div class="oph-badge align-items-center gap-2">
+                <img src="{% static 'images/oph-icon.png' %}" alt="" onerror="this.style.display='none'">
+                <span class="text-white fw-semibold" style="font-size: 0.9rem; padding-right: 0.5rem;">OnePatient Hub</span>
+            </div>
+
+            <h1 class="oph-display">
+                One patient, One record.<br>
+                <span>Connected everywhere.</span>
+            </h1>
+           
+            <ul class="oph-feature-list">
+                <li>
+                    <span class="icon-dot">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </span>
+                    Unified national patient identity
+                </li>
+                <li>
+                    <span class="icon-dot">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+                    </span>
+                    HL7 FHIR R4 interoperability
+                </li>
+                <li>
+                    <span class="icon-dot">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </span>
+                    Longitudinal electronic health records
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- RIGHT: Success Panel -->
+    <div class="oph-form-panel">
+        <div class="oph-login-card">
+
+            <div class="success-icon-wrap">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+
+            <h2 class="oph-display">Request Submitted</h2>
+            <p class="subtitle">Your account request has been securely forwarded to a system administrator for verification. You will receive an email once your institutional identity has been confirmed.</p>
+            
+            <a href="{% url 'login' %}" class="btn oph-btn-primary w-100">
+                Return to Login
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

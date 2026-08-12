@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Patient | OnePatient Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-wrapper {
+        max-width: 650px;
+        margin: 0 auto;
+        padding-top: 12px;
+    }
+
+    /* --- Header & Layout --- */
+    .page-header {
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        color: var(--text-dark);
+        transition: all 150ms ease;
+    }
+
+    .btn-back:hover {
+        background: var(--cream);
+        color: var(--deep-teal);
+    }
+
+    .header-text h2 {
+        margin: 0;
+        font-size: 1.75rem;
+        color: var(--deep-teal);
+    }
+
+    .header-text p {
+        margin: 4px 0 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    /* --- Modern Card --- */
+    .form-card { 
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        box-shadow: var(--shadow-md);
+    }
+
+    /* --- Django Form Styling --- */
+    .django-form-wrapper p { 
+        margin-bottom: 1.5rem; 
+        position: relative; 
+    }
+    
+    .django-form-wrapper p > label { 
+        font-weight: 700; 
+        font-size: 0.85rem; 
+        margin-bottom: 0.5rem; 
+        display: block; 
+        color: var(--text-dark); 
+    }
+    
+    .django-form-wrapper p > input, 
+    .django-form-wrapper p > select, 
+    .django-form-wrapper p > textarea { 
+        display: block; 
+        width: 100%; 
+        padding: 0.8rem 1rem; 
+        font-size: 0.95rem; 
+        font-family: 'Manrope', sans-serif;
+        color: var(--text-dark); 
+        background-color: var(--cream); 
+        border: 1px solid var(--border-light); 
+        border-radius: var(--radius-sm); 
+        transition: all 150ms ease; 
+    }
+    
+    /* Focus state (Coral ring) */
+    .django-form-wrapper p > input:focus, 
+    .django-form-wrapper p > select:focus,
+    .django-form-wrapper p > textarea:focus { 
+        border-color: var(--coral); 
+        background-color: var(--surface-white); 
+        outline: none; 
+        box-shadow: 0 0 0 4px var(--coral-tint); 
+    }
+
+    /* --- Highly Visible Error Styling --- */
+    .errorlist {
+        list-style: none;
+        padding: 0.75rem 1rem;
+        margin: 0 0 0.5rem 0;
+        background: #FEF2F0;
+        border: 1px solid #FCD3CB;
+        border-radius: var(--radius-sm);
+        color: #B53414;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .errorlist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .errorlist li::before {
+        content: "!";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        background: #B53414;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        font-weight: bold;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .django-form-wrapper p:has(.errorlist) > label {
+        color: #B53414;
+    }
+    
+    .django-form-wrapper p:has(.errorlist) > input,
+    .django-form-wrapper p:has(.errorlist) > select,
+    .django-form-wrapper p:has(.errorlist) > textarea {
+        border-color: #FCD3CB;
+        background-color: #FEF2F0;
+    }
+    
+    .django-form-wrapper p:has(.errorlist) > input:focus,
+    .django-form-wrapper p:has(.errorlist) > select:focus,
+    .django-form-wrapper p:has(.errorlist) > textarea:focus {
+        box-shadow: 0 0 0 4px rgba(181, 52, 20, 0.12);
+        border-color: #B53414;
+        background-color: var(--surface-white);
+    }
+
+    .non-field-errors {
+        margin-bottom: 2rem;
+    }
+
+    .form-divider {
+        height: 1px;
+        background-color: var(--border-light);
+        margin: 32px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    
+    <!-- Header with Back Button -->
+    <div class="page-header">
+        <!-- FIXED: changed patient_records to patient_directory -->
+        <a href="{% url 'patient_directory' %}" class="btn-back" title="Back to Directory">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <div class="header-text">
+            <h2>Register New Patient</h2>
+            <p>Enter demographic details to generate a secure OPH-ID.</p>
+        </div>
+    </div>
+
+    <!-- Registration Card -->
+    <div class="form-card">
+        <form method="POST" class="django-form-wrapper" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            {{ form.as_p }}
+            
+            <div class="form-divider"></div>
+            
+            <button type="submit" class="btn-teal" style="width: 100%; justify-content: center; height: 50px; font-size: 1rem;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Confirm & Register Patient
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

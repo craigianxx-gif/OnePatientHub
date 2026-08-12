@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}OnePatient Hub{% endblock %}</title>
+
+    <!-- Typography: Fraunces (Headings) & Manrope (Body/UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* Visual System Palette */
+            --deep-teal: #16302C;
+            --deep-teal-hover: #0f221f;
+            --coral: #E4633F;
+            --coral-hover: #cd5230;
+            --cream: #F7F4EF;
+            --surface-white: #FFFFFF;
+            
+            /* UI State & Feedback */
+            --text-dark: #1C2526;
+            --text-muted: #5C6A67;
+            --border-light: #E2DDD5;
+            --teal-tint: rgba(22, 48, 44, 0.05);
+            --coral-tint: rgba(228, 99, 63, 0.08);
+            --success-green: #2E7D32;
+            --success-bg: #E8F5E9;
+            
+            /* Shadows & Radius */
+            --shadow-sm: 0 1px 3px rgba(22, 48, 44, 0.06);
+            --shadow-md: 0 4px 12px rgba(22, 48, 44, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Typography Hierarchy */
+        h1, h2, h3, .heading-serif {
+            font-family: 'Fraunces', serif;
+            color: var(--deep-teal);
+            font-weight: 600;
+        }
+
+        /* Main Workspace Structure */
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--cream);
+        }
+
+        /* Top Navigation Header - Retained CSS just in case you ever want it back */
+        .top-nav {
+            height: 70px;
+            background: var(--surface-white);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .global-search {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .global-search input {
+            width: 100%;
+            height: 44px;
+            padding: 0 16px 0 42px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: var(--cream);
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            transition: all 150ms ease;
+        }
+
+        .global-search input:focus {
+            outline: none;
+            border-color: var(--deep-teal);
+            background: var(--surface-white);
+            box-shadow: 0 0 0 3px rgba(22, 48, 44, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .nav-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Sync Status Indicator */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.825rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success-green);
+        }
+
+        .sync-dot.attention {
+            background-color: var(--coral);
+        }
+
+        /* Identifiers Styling */
+        .oph-badge {
+            background: var(--deep-teal);
+            color: var(--surface-white);
+            font-family: monospace, monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.03em;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* Shared Button Styles */
+        .btn-teal {
+            background: var(--deep-teal);
+            color: var(--surface-white);
+            padding: 10px 20px;
+            min-height: 44px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+
+        .btn-teal:hover {
+            background: var(--deep-teal-hover);
+        }
+
+        @media (max-width: 768px) {
+            .content-area { padding: 16px; }
+            .top-nav { padding: 0 16px; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Persistent Sidebar -->
+        {% include 'sidebar.html' %}
+
+        <div class="main-wrapper">
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

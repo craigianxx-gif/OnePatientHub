@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.override-page {
+    max-width: 650px;
+    margin: 40px auto;
+}
+
+.warning-card {
+    background: white;
+    border: 1px solid #f0c9c5;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(180, 35, 24, 0.05);
+}
+
+.warning-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.warning-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #b42318;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.warning-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #b42318;
+    margin: 0;
+}
+
+.warning-desc {
+    color: #44504e;
+    font-size: 0.925rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #87918f;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dce4e2;
+    border-radius: 12px;
+    font-size: 0.925rem;
+    color: #293633;
+    background: #fcfcfc;
+    box-sizing: border-box;
+    outline: none;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    border-color: #b42318;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.08);
+}
+
+.btn-danger-modern {
+    background: #b42318;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-danger-modern:hover {
+    background: #991b1b;
+}
+
+.btn-outline-modern {
+    border: 1px solid #dce4e2;
+    color: #44504e;
+    background: white;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+}
+</style>
+
+<div class="override-page">
+    <div class="warning-card">
+        <div class="warning-header">
+            <div class="warning-icon">⚠️</div>
+            <div>
+                <h1 class="warning-title">Emergency Consent Override</h1>
+                <div style="font-size: 0.85rem; color: #7a8584;">Patient OPH-ID: {{ patient.oph_id }}</div>
+            </div>
+        </div>
+
+        <p class="warning-desc">
+            You are about to override data-sharing restrictions for <strong>{{ patient.first_name }} {{ patient.last_name }}</strong>. This action will be permanently recorded in the national audit registry alongside your user profile and justification. Use this option strictly for life-threatening or urgent clinical care emergencies.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="override_reason">Clinical Justification / Reason Required *</label>
+                <textarea name="override_reason" id="override_reason" required placeholder="Specify the nature of the medical emergency (e.g., Unconscious trauma patient admitted to ICU requiring acute history access)..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-danger-modern">
+                    Confirm Emergency Override
+                </button>
+                <a href="{% url 'patient_profile' patient.oph_id %}" class="btn-outline-modern">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

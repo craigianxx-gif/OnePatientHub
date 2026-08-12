@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register System | OnePatient Hub API{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f7f6;
+        font-family: 'Manrope', system-ui, sans-serif;
+    }
+
+    /* --- Header: quieter, no gradient noise --- */
+    .api-header {
+        background: #0D1D1B;
+        color: white;
+        padding: 28px 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .api-header h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-family: 'Fraunces', serif;
+        font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .api-header p {
+        opacity: 0.65;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .btn-back {
+        background-color: transparent;
+        color: rgba(255,255,255,0.75);
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 8px 4px;
+        border: none;
+        transition: color 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-back:hover {
+        color: #ffffff;
+    }
+
+    /* --- Layout: form + connection status side rail --- */
+    .register-layout {
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 0;
+        max-width: 880px;
+        margin: 0 auto;
+    }
+
+    /* --- Step rail: the signature element ---
+       A literal connection line linking the two real steps of
+       bringing a system onto the network: identify it, then wire it up. */
+    .step-rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-node {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #115e59;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Fraunces', serif;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-node.pending {
+        background: #f4f7f6;
+        color: #94a3b8;
+        border: 2px solid #d8e2e0;
+    }
+
+    .step-connector {
+        width: 2px;
+        flex: 1;
+        background: repeating-linear-gradient(
+            to bottom,
+            #cbd9d6 0,
+            #cbd9d6 4px,
+            transparent 4px,
+            transparent 9px
+        );
+        min-height: 56px;
+        margin: 6px 0;
+    }
+
+    /* --- Form sections --- */
+    .form-panel {
+        padding-left: 28px;
+    }
+
+    .form-section {
+        padding-bottom: 48px;
+    }
+
+    .form-section-title {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        color: #0D1D1B;
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+        padding-top: 6px;
+    }
+
+    .form-section-subtitle {
+        color: #64748b;
+        font-size: 0.88rem;
+        margin-bottom: 24px;
+    }
+
+    /* --- Form controls: plain labels, no floating-label clutter --- */
+    .field-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #334155;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 8px;
+    }
+
+    .field-label .text-danger {
+        color: #e4633f !important;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #d8e2e0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        color: #0D1D1B;
+        background-color: white;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #115e59;
+        box-shadow: 0 0 0 3px rgba(17, 94, 89, 0.12);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #b3bfbd;
+    }
+
+    textarea.form-control {
+        height: 100px !important;
+        resize: vertical;
+    }
+
+    .form-text {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-top: 6px;
+    }
+
+    .field-group {
+        margin-bottom: 22px;
+    }
+
+    /* --- Action bar: one CTA gets the contrast, cancel stays quiet --- */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 20px;
+        padding-top: 28px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn-submit {
+        background-color: #115e59;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 13px 28px;
+        border-radius: 10px;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background-color: #0d4a46;
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: none;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 8px;
+        border: none;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        color: #334155;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+        .register-layout {
+            grid-template-columns: 1fr;
+        }
+        .step-rail {
+            flex-direction: row;
+            margin-bottom: 12px;
+        }
+        .step-connector {
+            display: none;
+        }
+        .form-panel {
+            padding-left: 0;
+        }
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="api-header">
+        <div>
+            <h2><i class="bi bi-node-plus-fill"></i> Register System</h2>
+            <p>Add a new external node to the OnePatient Hub network</p>
+        </div>
+        <div>
+            <a href="{% url 'connected_systems' %}" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Directory
+            </a>
+        </div>
+    </div>
+
+    <!-- Registration Form -->
+    <form method="POST" action="{% url 'register_system' %}">
+        {% csrf_token %}
+
+        <div class="register-layout">
+
+            <!-- Step rail -->
+            <div class="step-rail">
+                <div class="step-node">1</div>
+                <div class="step-connector"></div>
+                <div class="step-node pending">2</div>
+            </div>
+
+            <!-- Steps -->
+            <div class="form-panel">
+
+                <!-- Step 1: Identification -->
+                <div class="form-section">
+                    <div class="form-section-title">System identification</div>
+                    <div class="form-section-subtitle">Tell us which system you're connecting and who runs it.</div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="system_name" class="field-label">System name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="system_name" name="system_name" required placeholder="Harare Central EHR">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="organization" class="field-label">Managing organization <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="organization" name="organization" required placeholder="Ministry of Health">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="system_type" class="field-label">System type <span class="text-danger">*</span></label>
+                                <select class="form-select" id="system_type" name="system_type" required>
+                                    <option value="" selected disabled>Choose one</option>
+                                    <option value="Hospital">Hospital EHR</option>
+                                    <option value="Laboratory">Laboratory Information System</option>
+                                    <option value="Shared Health Record">Shared Health Record</option>
+                                    <option value="Client Registry">Client Registry</option>
+                                    <option value="DHIS2">DHIS2</option>
+                                    <option value="Pharmacy">Pharmacy Management System</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="fhir_version" class="field-label">FHIR version</label>
+                                <select class="form-select" id="fhir_version" name="fhir_version">
+                                    <option value="R4" selected>FHIR Release 4 (R4)</option>
+                                    <option value="STU3">FHIR STU3</option>
+                                    <option value="Custom">Custom / proprietary</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Connectivity -->
+                <div class="form-section">
+                    <div class="form-section-title">Connectivity &amp; security</div>
+                    <div class="form-section-subtitle">Where OnePatient Hub sends and receives data, and how it authenticates.</div>
+
+                    <div class="field-group">
+                        <label for="base_url" class="field-label">API base URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="base_url" name="base_url" required placeholder="https://api.example.org/fhir/v1">
+                        <div class="form-text">The root endpoint for dispatching and receiving FHIR payloads.</div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="authentication" class="field-label">Authentication <span class="text-danger">*</span></label>
+                                <select class="form-select" id="authentication" name="authentication" required>
+                                    <option value="Bearer Token" selected>Bearer token (JWT)</option>
+                                    <option value="API Key">API key</option>
+                                    <option value="OAuth2">OAuth 2.0</option>
+                                    <option value="Basic Auth">Basic auth</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="field-group">
+                                <label for="status" class="field-label">Initial status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="Connected">Connected</option>
+                                    <option value="Disconnected" selected>Disconnected &mdash; pending setup</option>
+                                    <option value="Maintenance">Maintenance mode</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="field-group">
+                                <label for="description" class="field-label">Notes</label>
+                                <textarea class="form-control" id="description" name="description" placeholder="Integration scope, technical contacts, payload requirements..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action bar -->
+                <div class="form-actions">
+                    <a href="{% url 'connected_systems' %}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check2-circle"></i> Register system
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

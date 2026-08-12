@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+    .facility-page {
+        padding: 32px 40px;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================
+       PAGE HEADER
+    ========================== */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 28px;
+    }
+
+    .page-title h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        color: #102A43;
+    }
+
+    .page-title p {
+        margin-top: 8px;
+        color: #718096;
+        font-size: 15px;
+    }
+
+
+    /* =========================
+       TOP RIGHT DASHBOARD BUTTON
+    ========================== */
+
+    .dashboard-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: #ffffff;
+        color: #0F766E;
+        border: 1px solid #D9E2EC;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .dashboard-button:hover {
+        background: #F0FDFA;
+        border-color: #0F766E;
+    }
+
+
+    /* =========================
+       REGISTER FACILITY LINK
+    ========================== */
+
+    .register-section {
+        margin-top: 14px;
+        margin-bottom: 22px;
+    }
+
+    .register-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        background: #E8633F;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .register-button:hover {
+        background: #D65332;
+    }
+
+
+    /* =========================
+       SEARCH CARD
+    ========================== */
+
+    .search-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 14px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 12px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 13px 16px;
+        border: 1px solid #D9E2EC;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #0F766E;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .search-button {
+        padding: 12px 22px;
+        background: #0F766E;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background: #0B5F59;
+    }
+
+
+    /* =========================
+       TABLE
+    ========================== */
+
+    .table-card {
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .facility-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .facility-table thead {
+        background: #F7FAFC;
+    }
+
+    .facility-table th {
+        text-align: left;
+        padding: 17px 20px;
+        font-size: 12px;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .facility-table td {
+        padding: 18px 20px;
+        border-bottom: 1px solid #EDF2F7;
+        color: #2D3748;
+        font-size: 14px;
+    }
+
+    .facility-table tbody tr:hover {
+        background: #FAFCFC;
+    }
+
+
+    /* =========================
+       FACILITY DATA
+    ========================== */
+
+    .facility-id {
+        font-weight: 700;
+        color: #0F766E;
+    }
+
+    .facility-name {
+        font-weight: 600;
+        color: #102A43;
+    }
+
+    .facility-type {
+        color: #718096;
+    }
+
+
+    /* =========================
+       STATUS
+    ========================== */
+
+    .status-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        background: #E6FFFA;
+        color: #087F5B;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-active::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        background: #10B981;
+        border-radius: 50%;
+    }
+
+    .status-inactive {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        background: #F1F5F9;
+        color: #64748B;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    /* =========================
+       VIEW FACILITY BUTTON
+    ========================== */
+
+    .view-button {
+        color: #0F766E;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .view-button:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       EMPTY STATE
+    ========================== */
+
+    .empty-state {
+        text-align: center;
+        padding: 70px 20px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: #2D3748;
+    }
+
+    .empty-state p {
+        color: #718096;
+        margin-bottom: 24px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 900px) {
+
+        .page-header {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .facility-page {
+            padding: 24px;
+        }
+
+        .table-card {
+            overflow-x: auto;
+        }
+
+        .facility-table {
+            min-width: 850px;
+        }
+
+    }
+
+</style>
+
+
+<div class="facility-page">
+
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="page-header">
+
+
+        <div class="page-title">
+
+            <h1>
+                Registered Healthcare Facilities
+            </h1>
+
+            <p>
+                Manage registered healthcare facilities
+            </p>
+
+        </div>
+
+
+        <!-- BACK TO DASHBOARD -->
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="dashboard-button"
+        >
+
+            ← Back to Dashboard
+
+        </a>
+
+
+    </div>
+
+
+    <!-- =========================
+         REGISTER FACILITY
+    ========================== -->
+
+    
+
+
+    <!-- =========================
+         SEARCH
+    ========================== -->
+
+    <div class="search-card">
+
+        <form
+            method="GET"
+            class="search-form"
+        >
+
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search by facility name, ID, province or district..."
+                class="search-input"
+            >
+
+
+            <button
+                type="submit"
+                class="search-button"
+            >
+
+                Search
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================
+         FACILITY TABLE
+    ========================== -->
+
+    <div class="table-card">
+
+
+        {% if facilities %}
+
+
+            <table class="facility-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Facility ID
+                        </th>
+
+                        <th>
+                            Facility Name
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Province
+                        </th>
+
+                        <th>
+                            District
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for facility in facilities %}
+
+
+                        <tr>
+
+
+                            <td>
+
+                                <span class="facility-id">
+
+                                    {{ facility.facility_id }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="facility-name">
+
+                                    {{ facility.facility_name }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="facility-type">
+
+                                    {{ facility.facility_type }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ facility.province }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ facility.district }}
+
+                            </td>
+
+
+                            <td>
+
+
+                                {% if facility.is_active %}
+
+                                    <span class="status-active">
+
+                                        Active
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-inactive">
+
+                                        Inactive
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{% url 'facility_profile' facility.facility_id %}"
+                                    class="view-button"
+                                >
+
+                                    View Facility →
+
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        {% else %}
+
+
+            <div class="empty-state">
+
+
+                <div class="empty-icon">
+
+                    🏥
+
+                </div>
+
+
+                <h3>
+
+                    No facilities registered yet
+
+                </h3>
+
+
+                <p>
+
+                    Start by registering your first healthcare facility.
+
+                </p>
+
+
+                <a
+                    href="{% url 'register_facility' %}"
+                    class="register-button"
+                >
+
+                    + Register First Facility
+
+                </a>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

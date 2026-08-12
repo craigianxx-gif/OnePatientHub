@@ -1,0 +1,990 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+/* ==========================================
+   FACILITY PROFILE PAGE
+========================================== */
+
+.facility-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.facility-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.facility-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin-bottom: 5px;
+}
+
+.facility-header p {
+    color: #7a8584;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-modern {
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-modern-primary {
+    background: var(--deep-teal);
+    color: white;
+}
+
+.btn-modern-primary:hover {
+    background: #163b36;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-modern-outline {
+    border: 1px solid #dce4e2;
+    color: #44504e;
+    background: white;
+}
+
+.btn-modern-outline:hover {
+    background: #f5f8f7;
+    color: var(--deep-teal);
+}
+
+/* ==========================================
+   FACILITY HERO
+========================================== */
+
+.facility-hero {
+    background: linear-gradient(
+        135deg,
+        var(--deep-teal),
+        #173b36
+    );
+
+    border-radius: 20px;
+    padding: 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 15px 35px
+        rgba(15, 48, 43, 0.18);
+}
+
+.facility-hero::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+    right: -100px;
+    top: -120px;
+}
+
+.facility-hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.facility-identity {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.facility-avatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 20px;
+    background: var(--coral);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,0.18);
+}
+
+.facility-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 7px;
+}
+
+.facility-subtitle {
+    color: rgba(255,255,255,0.68);
+    font-size: 0.9rem;
+}
+
+.facility-id-box {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-width: 210px;
+}
+
+.facility-id-label {
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.facility-id-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+   QUICK STATS
+========================================== */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 16px;
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 22px
+        rgba(0,0,0,0.06);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5f3;
+    color: var(--deep-teal);
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: #7b8785;
+}
+
+/* ==========================================
+   MAIN GRID
+========================================== */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.4fr;
+    gap: 24px;
+}
+
+.modern-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-heading h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+}
+
+.card-heading p {
+    margin: 4px 0 0;
+    color: #87918f;
+    font-size: 0.82rem;
+}
+
+/* ==========================================
+   FACILITY INFORMATION
+========================================== */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.info-item {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef1f0;
+}
+
+.info-item.full-width {
+    grid-column: span 2;
+}
+
+.info-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #87918f;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #293633;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+/* ==========================================
+   FHIR & INTEROPERABILITY SECTION
+========================================== */
+
+.fhir-details-space {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fhir-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef1f0;
+}
+
+.fhir-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.fhir-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7a8584;
+}
+
+.fhir-value-badges {
+    display: flex;
+    gap: 8px;
+}
+
+.badge-tag {
+    background: #e8f3ee;
+    color: #26704d;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badge-code {
+    font-family: monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    background: #f8faf9;
+    padding: 6px 10px;
+    border-radius: 7px;
+    border: 1px solid #e1e8e5;
+}
+
+.badge-endpoint {
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: #1d4ed8;
+    background: #eff6ff;
+    padding: 6px 10px;
+    border-radius: 7px;
+    border: 1px solid #bfdbfe;
+    word-break: break-all;
+}
+
+/* ==========================================
+   CONNECTED MODULES
+========================================== */
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.module-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #f8faf9;
+    border: 1px solid #edf1ef;
+    border-radius: 12px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #33413e;
+}
+
+.module-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #e8f3ee;
+    color: #26704d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1100px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .facility-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .facility-id-box {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .facility-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .header-actions {
+        width: 100%;
+    }
+    .header-actions a {
+        flex: 1;
+        justify-content: center;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .facility-identity {
+        align-items: flex-start;
+    }
+    .facility-name {
+        font-size: 1.35rem;
+    }
+    .info-grid, .modules-grid {
+        grid-template-columns: 1fr;
+    }
+    .info-item.full-width {
+        grid-column: span 1;
+    }
+}
+
+</style>
+
+
+<div class="facility-page">
+
+    <!-- ==========================================
+         PAGE HEADER
+    ========================================== -->
+
+    <div class="facility-header">
+
+        <div>
+
+            <h1>Facility Profile</h1>
+
+            <p>
+                Unified facility registry and interoperability profile
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="{% url 'facility_directory' %}"
+                class="btn-modern btn-modern-outline"
+            >
+                ← Back
+            </a>
+
+            <a
+                href="{% url 'edit_facility' facility.facility_id %}"
+                class="btn-modern btn-modern-primary"
+            >
+                Edit Facility
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         FACILITY HERO
+    ========================================== -->
+
+    <div class="facility-hero">
+
+        <div class="facility-hero-content">
+
+            <div class="facility-identity">
+
+                <div class="facility-avatar">
+                    🏥
+                </div>
+
+
+                <div>
+
+                    <h2 class="facility-name">
+                        {{ facility.facility_name }}
+                    </h2>
+
+
+                    <div class="facility-subtitle">
+                        {{ facility.facility_type }} • {{ facility.province }} Province
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="facility-id-box">
+
+                <div class="facility-id-label">
+                    Facility ID
+                </div>
+
+
+                <div class="facility-id-value">
+                    {{ facility.facility_id }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         QUICK STATS
+    ========================================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👤
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+                    2,154
+                </div>
+
+                <div class="stat-label">
+                    Registered Patients
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ↗
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+                    145
+                </div>
+
+                <div class="stat-label">
+                    Referrals Sent
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div>
+
+                <div class="stat-value">
+                    18
+                </div>
+
+                <div class="stat-label">
+                    Staff Accounts
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <div class="stat-value" style="color: #26704d;">
+                    Online ✓
+                </div>
+
+                <div class="stat-label">
+                    API Status
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         MAIN CONTENT
+    ========================================== -->
+
+    <div class="profile-grid">
+
+        <!-- ======================================
+             LEFT COLUMN
+        ======================================= -->
+
+        <div>
+
+            <!-- FACILITY INFORMATION -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>Facility Information</h3>
+
+                        <p>
+                            Core demographic and administrative data
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Facility ID
+                        </div>
+
+                        <div class="info-value" style="font-family: monospace;">
+                            {{ facility.facility_id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Facility Type
+                        </div>
+
+                        <div class="info-value">
+                            {{ facility.facility_type }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Country Code
+                        </div>
+
+                        <div class="info-value">
+                            {{ facility.country_code }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Province
+                        </div>
+
+                        <div class="info-value">
+                            {{ facility.province }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            District
+                        </div>
+
+                        <div class="info-value">
+                            {{ facility.district|default:"Not specified" }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Status
+                        </div>
+
+                        <div class="info-value">
+                            {% if facility.is_active %}
+                                <span style="color: #26704d;">● Active</span>
+                            {% else %}
+                                <span style="color: #64748b;">● Inactive</span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-item full-width">
+
+                        <div class="info-label">
+                            Physical Address
+                        </div>
+
+                        <div class="info-value">
+                            {{ facility.physical_address|default:"Not provided" }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONNECTED MODULES -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>Connected Modules</h3>
+
+                        <p>
+                            Active subsystems linked to this facility
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modules-grid">
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Patient Registry
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Facility Registry
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Referrals
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Patient Journey
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        External Identifiers
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Audit Logs
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        Monthly Reports
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-check">✓</div>
+                        FHIR API
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             RIGHT COLUMN
+        ======================================= -->
+
+        <div>
+
+            <!-- FHIR INTEROPERABILITY -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>FHIR Interoperability</h3>
+
+                        <p>
+                            Standards-based exchange and resource binding
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="fhir-details-space">
+
+                    <div class="fhir-row">
+                        <div class="fhir-label">Resources Published</div>
+                        <div class="fhir-value-badges">
+                            <span class="badge-tag">Organization</span>
+                            <span class="badge-tag">Location</span>
+                            <span class="badge-tag">Endpoint</span>
+                        </div>
+                    </div>
+
+
+                    <div class="fhir-row">
+                        <div class="fhir-label">FHIR Organization ID</div>
+                        <div class="badge-code">
+                            {{ facility.fhir_organization_id|default:"Not assigned" }}
+                        </div>
+                    </div>
+
+
+                    <div class="fhir-row">
+                        <div class="fhir-label">REST Endpoint</div>
+                        <div class="badge-endpoint">
+                            /api/fhir/Organization/{{ facility.fhir_organization_id|default:facility.facility_id }}
+                        </div>
+                    </div>
+
+
+                    <div class="fhir-row">
+                        <div class="fhir-label">Capability Statement</div>
+                        <div style="font-weight: 600; font-size: 0.88rem; color: #293633;">
+                            Available
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECENT ACTIVITY -->
+
+            <div class="modern-card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h3>Recent Activity</h3>
+
+                        <p>
+                            Audit trail of recent facility interactions
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; margin-top: 6px; flex-shrink: 0;"></div>
+                        <div>
+                            <div style="font-size: 0.88rem; font-weight: 600; color: #293633;">Facility profile viewed</div>
+                            <div style="font-size: 0.75rem; color: #87918f; margin-top: 2px;">Just now</div>
+                        </div>
+                    </div>
+
+
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; margin-top: 6px; flex-shrink: 0;"></div>
+                        <div>
+                            <div style="font-size: 0.88rem; font-weight: 600; color: #293633;">Facility registered in hub</div>
+                            <div style="font-size: 0.75rem; color: #87918f; margin-top: 2px;">Recent</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         DANGER ZONE
+    ========================================== -->
+
+    <div class="modern-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <h3>Facility Record Management</h3>
+
+                <p>
+                    Permanently remove this facility record from the registry
+                </p>
+
+            </div>
+
+
+            <a
+                href="#"
+                class="btn-modern"
+                style="
+                    color: #b42318;
+                    border: 1px solid #f0c9c5;
+                    background: #fff8f7;
+                "
+            >
+                Delete Facility
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}API Keys | OnePatient Hub API{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f7f6;
+        font-family: 'Manrope', system-ui, sans-serif;
+    }
+
+    /* --- Header: flat navy, consistent across the app --- */
+    .api-header {
+        background: #0D1D1B;
+        color: white;
+        padding: 28px 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .api-header h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-family: 'Fraunces', serif;
+        font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .api-header p {
+        opacity: 0.65;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* --- Cards --- */
+    .dashboard-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 28px;
+    }
+
+    .card-title {
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        color: #0D1D1B;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+    }
+
+    .card-subtitle {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 22px;
+    }
+
+    /* --- Secret Token Banner: this is the one moment that earns visual weight --- */
+    .secret-banner {
+        background: #0D1D1B;
+        border-radius: 14px;
+        padding: 24px 28px;
+        margin-bottom: 28px;
+    }
+
+    .secret-banner h5 {
+        color: white;
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .secret-banner h5 i {
+        color: #e4633f;
+    }
+
+    .secret-banner p {
+        color: rgba(255,255,255,0.65);
+        font-size: 0.9rem;
+        margin-bottom: 16px;
+    }
+
+    .token-box {
+        font-family: 'Courier New', monospace;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 12px 16px;
+        border-radius: 10px;
+        color: #6ee7c9;
+        font-size: 1rem;
+        word-break: break-all;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .btn-copy {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-copy:hover {
+        background: rgba(255,255,255,0.18);
+        color: white;
+    }
+
+    /* --- Form controls --- */
+    .field-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #334155;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 8px;
+    }
+
+    .field-label .text-danger {
+        color: #e4633f !important;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #d8e2e0;
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: 0.92rem;
+        color: #0D1D1B;
+        background-color: white;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #115e59;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(17, 94, 89, 0.12);
+        outline: none;
+    }
+
+    .field-group {
+        margin-bottom: 20px;
+    }
+
+    .btn-submit {
+        background-color: #115e59;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: none;
+        width: 100%;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        background-color: #0d4a46;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* --- Table --- */
+    .table-container {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        background: #f8fafc;
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.4px;
+        padding: 14px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table td {
+        padding: 16px 20px;
+        color: #334155;
+        vertical-align: middle;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .key-name {
+        font-weight: 700;
+        color: #0D1D1B;
+    }
+
+    .key-system {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-top: 2px;
+    }
+
+    .key-prefix {
+        font-family: 'Courier New', monospace;
+        background: #f1f5f9;
+        color: #475569;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    /* --- Status badges: same dot-indicator language as the systems registry --- */
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .badge-active { background: #e3f2ee; color: #0d4a46; }
+    .badge-active::before { background: #115e59; }
+
+    .badge-revoked { background: #f1f5f9; color: #64748b; }
+    .badge-revoked::before { background: #94a3b8; }
+
+    .btn-revoke {
+        background: none;
+        color: #e4633f;
+        border: 1px solid #f3d3c6;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-revoke:hover {
+        background-color: #fdf1e8;
+        color: #9a4d1f;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #94a3b8;
+        padding: 56px 0;
+    }
+
+    .empty-state i {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="api-header">
+        <div>
+            <h2><i class="bi bi-key-fill"></i> API Key Management</h2>
+            <p>Issue and manage access tokens for external systems connecting to OnePatient Hub</p>
+        </div>
+    </div>
+
+    <!-- Newly Generated Raw Key Banner (Shown only once upon creation) -->
+    {% if generated_raw_key %}
+    <div class="secret-banner">
+        <h5><i class="bi bi-exclamation-triangle-fill"></i> Copy this key now</h5>
+        <p>It will never be shown again once you leave or refresh this page.</p>
+        <div class="token-box">
+            <span id="rawTokenText">{{ generated_raw_key }}</span>
+            <button class="btn-copy" onclick="navigator.clipboard.writeText(document.getElementById('rawTokenText').innerText); this.innerHTML='<i class=\'bi bi-check2\'></i> Copied'; setTimeout(() => this.innerHTML='<i class=\'bi bi-clipboard\'></i> Copy key', 2000);">
+                <i class="bi bi-clipboard"></i> Copy key
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Generate Key Form Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="dashboard-card">
+                <div class="card-title"><i class="bi bi-plus-circle"></i> Issue new key</div>
+                <div class="card-subtitle">Grants one external system access to the FHIR API.</div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="generate">
+
+                    <div class="field-group">
+                        <label class="field-label">Target system <span class="text-danger">*</span></label>
+                        <select class="form-select" name="system_id" required>
+                            <option value="" selected disabled>Select a connected system</option>
+                            {% for sys in systems %}
+                                <option value="{{ sys.id }}">{{ sys.system_name }} ({{ sys.organization }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Key name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g. Harare EHR production key">
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Expiration</label>
+                        <select class="form-select" name="expiry_days">
+                            <option value="30">30 days</option>
+                            <option value="90" selected>90 days</option>
+                            <option value="365">1 year</option>
+                            <option value="0">Never expires</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-shield-lock"></i> Generate key
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Keys Directory Table Column -->
+        <div class="col-lg-8">
+            <div class="table-container">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Key name / system</th>
+                            <th>Prefix</th>
+                            <th>Status</th>
+                            <th>Expires</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k in keys %}
+                        <tr>
+                            <td>
+                                <div class="key-name">{{ k.name }}</div>
+                                <div class="key-system"><i class="bi bi-hdd-network"></i> {{ k.system.system_name }}</div>
+                            </td>
+                            <td>
+                                <span class="key-prefix">{{ k.prefix }}...</span>
+                            </td>
+                            <td>
+                                {% if k.is_active %}
+                                    <span class="status-badge badge-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge badge-revoked">Revoked</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if k.expires_at %}
+                                    {{ k.expires_at|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="text-muted">Never</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if k.is_active %}
+                                <form method="POST" style="display:inline;" onsubmit="return confirm('Revoke this API key? This cannot be undone.');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="revoke">
+                                    <input type="hidden" name="key_id" value="{{ k.id }}">
+                                    <button type="submit" class="btn-revoke" title="Revoke key">
+                                        <i class="bi bi-slash-circle"></i> Revoke
+                                    </button>
+                                </form>
+                                {% else %}
+                                    <span class="text-muted" style="font-size: 0.85rem;">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-key"></i>
+                                    No API keys issued yet — use the form on the left to create one.
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

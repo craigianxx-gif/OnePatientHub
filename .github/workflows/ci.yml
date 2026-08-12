@@ -1,0 +1,38 @@
+name: OnePatient Hub CI
+
+# This tells GitHub to run the workflow every time you push code to the main branch
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out your code from the repository
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Step 2: Build the Docker image to ensure your Dockerfile works
+    - name: Build Docker Image
+      run: docker compose build web
+
+    # Step 3: Start the database and web containers in the background
+    - name: Start Containers
+      run: docker compose up -d
+
+    # Step 4: Run Django System Checks (catches syntax errors and missing variables)
+    - name: Check Django Project
+      run: docker compose exec -T web python manage.py check
+
+    # Step 5: Test Database Migrations
+    - name: Run Migrations
+      run: docker compose exec -T web python manage.py migrate
+
+    # Step 6: Shut down the containers
+    - name: Stop Containers
+      if: always()
+      run: docker compose down

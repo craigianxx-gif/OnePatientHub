@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.consent-form-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    color: #7a8584;
+    margin: 0;
+}
+
+.modern-card {
+    background: white;
+    border: 1px solid #e5ebe9;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.patient-summary-box {
+    background: #f8faf9;
+    border: 1px solid #e5ebe9;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.patient-summary-name {
+    font-weight: 700;
+    color: var(--deep-teal);
+    font-size: 1.05rem;
+}
+
+.patient-summary-id {
+    font-size: 0.85rem;
+    color: #7a8584;
+    font-family: monospace;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #87918f;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dce4e2;
+    border-radius: 12px;
+    font-size: 0.925rem;
+    color: #293633;
+    background: #fcfcfc;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--deep-teal);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(15, 48, 43, 0.08);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.checkbox-group input {
+    width: auto;
+    accent-color: var(--deep-teal);
+    cursor: pointer;
+}
+
+.error-message {
+    color: #b42318;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #eef1f0;
+}
+
+.btn-modern {
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.btn-modern-primary {
+    background: var(--deep-teal);
+    color: white;
+    border: none;
+}
+
+.btn-modern-primary:hover {
+    background: #163b36;
+    transform: translateY(-1px);
+}
+
+.btn-modern-outline {
+    border: 1px solid #dce4e2;
+    color: #44504e;
+    background: white;
+}
+
+.btn-modern-outline:hover {
+    background: #f5f8f7;
+    color: var(--deep-teal);
+}
+</style>
+
+<div class="consent-form-page">
+
+    <div class="page-header">
+        <h1>Manage Patient Consent</h1>
+        <p>Update or record data sharing preferences for interoperable exchange.</p>
+    </div>
+
+    <div class="modern-card">
+
+        <div class="patient-summary-box">
+            <div>
+                <div class="patient-summary-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                <div class="patient-summary-id">National ID: {{ patient.national_id }}</div>
+            </div>
+            <div>
+                <span class="patient-summary-id" style="background: #eef1f0; padding: 4px 10px; border-radius: 6px;">{{ patient.oph_id }}</span>
+            </div>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="error-message" style="margin-bottom: 16px;">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    {{ form.is_granted }}
+                    <label for="{{ form.is_granted.id_for_label }}" style="margin: 0; text-transform: none; font-weight: 600; color: #293633; cursor: pointer; font-size: 0.95rem;">
+                        Patient grants consent for inter-facility data sharing and HIE access
+                    </label>
+                </div>
+                {% for error in form.is_granted.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.notes.id_for_label }}">Consent Notes / Restrictions</label>
+                {{ form.notes }}
+                {% for error in form.notes.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-modern btn-modern-primary">
+                    Save Consent Record
+                </button>
+                <a href="{% url 'patient_profile' patient.oph_id %}" class="btn-modern btn-modern-outline">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

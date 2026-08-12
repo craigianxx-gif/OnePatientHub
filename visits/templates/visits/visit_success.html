@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Visit Recorded | OnePatient Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-container {
+        max-width: 650px;
+        margin: 0 auto;
+        padding-top: 12px;
+    }
+
+    /* --- Back Button Header --- */
+    .page-header {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        color: var(--text-dark);
+        transition: all 150ms ease;
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        background: var(--cream);
+        color: var(--deep-teal);
+    }
+
+    /* --- Success Card Styling --- */
+    .success-card {
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 48px 40px;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Distinct Green Success Icon */
+    .success-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--success-bg);
+        color: var(--success-green);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+
+    .success-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .success-card h2 {
+        font-size: 1.75rem;
+        margin-bottom: 12px;
+        color: var(--deep-teal);
+    }
+
+    .success-card p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 32px;
+        line-height: 1.5;
+    }
+
+    /* --- Action Buttons --- */
+    .action-group {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--text-dark);
+        border: 1px solid var(--border-light);
+        padding: 10px 20px;
+        min-height: 44px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 150ms ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--cream);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+    <!-- Top Back Button -->
+    <div class="page-header">
+        <a href="{% url 'dashboard' %}" class="btn-back" title="Go Back">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+    </div>
+
+    <!-- Success Card -->
+    <div class="success-card">
+        
+        <div class="success-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        <h2>Visit Recorded Successfully</h2>
+        <p>The patient visit has been securely saved to the OnePatient Hub system.</p>
+
+        <div class="action-group">
+            <a href="{% url 'create_visit' %}" class="btn-teal">
+                Record Another Visit
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

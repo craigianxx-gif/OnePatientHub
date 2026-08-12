@@ -1,0 +1,976 @@
+<style>
+
+    .sidebar {
+        width: 260px;
+        background: linear-gradient(
+            180deg,
+            var(--deep-teal) 0%,
+            #0D1D1B 100%
+        );
+
+        color: #FFFFFF;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        padding: 20px 12px;
+
+        flex-shrink: 0;
+
+        height: 100vh;
+
+        position: sticky;
+        top: 0;
+        overflow: hidden;
+    }
+
+
+    /* ================================
+       BRAND
+    ================================= */
+
+    .brand-header {
+
+        padding: 8px 12px 20px 12px;
+
+        border-bottom: 1px solid
+        rgba(255, 255, 255, 0.1);
+
+        margin-bottom: 16px;
+    }
+
+
+    .brand-title {
+
+        font-family: 'Fraunces', serif;
+
+        font-size: 1.35rem;
+
+        font-weight: 700;
+
+        color: #FFFFFF;
+
+        text-decoration: none;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+
+    .brand-badge {
+
+        width: 10px;
+
+        height: 10px;
+
+        background-color: var(--coral);
+
+        border-radius: 50%;
+    }
+
+
+    /* ================================
+       NAVIGATION
+    ================================= */
+
+    .nav-menu {
+
+        list-style: none;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 4px;
+
+        overflow-y: auto;
+
+        max-height: calc(100vh - 160px);
+
+        padding-right: 4px;
+        margin: 0;
+        padding-left: 0;
+    }
+
+
+    .nav-menu::-webkit-scrollbar {
+
+        width: 4px;
+    }
+
+
+    .nav-menu::-webkit-scrollbar-thumb {
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.2
+        );
+
+        border-radius: 4px;
+    }
+
+
+    .nav-section-title {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.45);
+        padding: 12px 16px 4px 16px;
+        margin-top: 6px;
+        font-weight: 700;
+    }
+
+
+    .nav-item a {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 10px 16px;
+
+        min-height: 40px;
+
+        border-radius: var(--radius-sm);
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.75
+        );
+
+        text-decoration: none;
+
+        font-weight: 500;
+
+        font-size: 0.9rem;
+
+        transition: all 150ms ease;
+    }
+
+
+    .nav-item a:hover {
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+        color: #FFFFFF;
+    }
+
+
+    .nav-item.active a {
+
+        background: var(--coral);
+
+        color: #FFFFFF;
+
+        font-weight: 600;
+    }
+
+
+    .nav-item svg {
+
+        width: 18px;
+
+        height: 18px;
+
+        flex-shrink: 0;
+    }
+
+
+    /* ================================
+       USER FOOTER
+    ================================= */
+
+    .user-footer {
+
+        padding-top: 12px;
+
+        margin-top: 12px;
+
+        border-top: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+    }
+
+
+    .user-info {
+
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    .user-name {
+
+        font-size: 0.875rem;
+
+        font-weight: 600;
+
+        color: #FFFFFF;
+    }
+
+
+    .user-role {
+
+        font-size: 0.75rem;
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.6
+        );
+
+        text-transform: capitalize;
+    }
+
+
+    .logout-link {
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.6
+        );
+
+        padding: 8px;
+
+        border-radius: var(--radius-sm);
+
+        transition:
+            color 150ms ease,
+            background 150ms ease;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+    }
+
+
+    .logout-link:hover {
+
+        color: var(--coral);
+
+        background: rgba(
+            228,
+            99,
+            63,
+            0.1
+        );
+    }
+
+</style>
+
+
+<aside class="sidebar">
+
+    <div>
+
+        <!-- ================================
+             BRAND
+        ================================= -->
+
+        <div class="brand-header">
+
+            <a
+                href="{% url 'dashboard' %}"
+                class="brand-title"
+            >
+
+                <span class="brand-badge"></span>
+
+                OnePatient Hub
+
+            </a>
+
+        </div>
+
+
+        <!-- ================================
+             NAVIGATION
+        ================================= -->
+
+        <nav>
+
+            <ul class="nav-menu">
+
+
+                <!-- ================================
+                     DASHBOARD
+                ================================= -->
+
+                <li
+                    class="nav-item
+                    {% if request.resolver_match.url_name == 'dashboard' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z
+                                M14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z
+                                M4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z
+                                M14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                            />
+
+                        </svg>
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+
+                <!-- ================================
+                     PATIENT MANAGEMENT
+                ================================= -->
+
+                <div class="nav-section-title">Patient Management</div>
+
+                <li
+                    class="nav-item
+                    {% if 'patients' in request.path and 'journey' not in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'patient_directory' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857
+                                M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857
+                                M7 20H2v-2a3 3 0 015.356-1.857
+                                M7 20v-2c0-.656.126-1.283.356-1.857
+                                m0 0a5.002 5.002 0 019.288 0
+                                M15 7a3 3 0 11-6 0 3 3 0 016 0z
+                                m6 3a2 2 0 11-4 0 2 2 0 014 0z
+                                M7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                            />
+
+                        </svg>
+
+                        Patients
+
+                    </a>
+
+                </li>
+
+                <!-- Visits -->
+                <li
+                    class="nav-item
+                    {% if 'visit' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'create_visit' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2
+                                M9 5a2 2 0 002 2h2a2 2 0 002-2
+                                M9 5a2 2 0 012-2h2a2 2 0 012 2
+                                m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                            />
+
+                        </svg>
+
+                        Visits
+
+                    </a>
+
+                </li>
+
+
+                <!-- Referrals -->
+                <li
+                    class="nav-item
+                    {% if 'referral' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="/referrals/"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3 12h18M14 5l7 7-7 7"
+                            />
+
+                        </svg>
+
+                        Referrals
+
+                    </a>
+
+                </li>
+
+
+                <!-- ================================
+                     FACILITY MANAGEMENT
+                ================================= -->
+
+                <div class="nav-section-title">Facility Management</div>
+
+                <!-- Register Facility (Administrator Only) -->
+                {% if request.user.profile.role == "administrator" %}
+
+                <li
+                    class="nav-item
+                    {% if request.resolver_match.url_name == 'register_facility' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'register_facility' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4v16m8-8H4"
+                            />
+
+                        </svg>
+
+                        Register Facility
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                <!-- Facility Registry (Administrator Only) -->
+                {% if request.user.profile.role == "administrator" %}
+
+                <li
+                    class="nav-item
+                    {% if request.resolver_match.url_name == 'facility_directory' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'facility_directory' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M3 21h18
+                                M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16
+                                M9 7h2m-2 4h2m-2 4h2
+                                m4-8h2m-2 4h2m-2 4h2"
+                            />
+
+                        </svg>
+
+                        Facilities
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+
+                <!-- ================================
+                     ADMINISTRATION
+                ================================= -->
+
+                <div class="nav-section-title">Administration</div>
+
+                <!-- Account Requests -->
+                {% if request.user.profile.role == "administrator" %}
+
+                <li class="nav-item {% if 'account-requests' in request.path %}active{% endif %}">
+
+                    <a href="{% url 'account_requests' %}" style="justify-content: space-between;">
+                        
+                        <span style="display: flex; align-items: center; gap: 12px;">
+                            <svg
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm7-3v6m3-3h-6"
+                                />
+                            </svg>
+                            Account Requests
+                        </span>
+
+                        <!-- Notification Badge -->
+                        {% if pending_requests_count > 0 %}
+                            <span style="
+                                background-color: #e74c3c; 
+                                color: white; 
+                                font-size: 0.75rem; 
+                                font-weight: bold; 
+                                padding: 2px 8px; 
+                                border-radius: 12px;">
+                                {{ pending_requests_count }}
+                            </span>
+                        {% endif %}
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                <!-- Users -->
+                <li
+                    class="nav-item
+                    {% if 'users' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="#"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                            />
+
+                        </svg>
+
+                        Users
+
+                    </a>
+
+                </li>
+
+
+                <!-- Audit Logs (Administrator Only) -->
+                {% if request.user.profile.role == "administrator" %}
+
+                <li
+                    class="nav-item
+                    {% if 'audit' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'audit_logs' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                            />
+
+                            <polyline
+                                points="12 6 12 12 16 14"
+                            />
+
+                        </svg>
+
+                        Audit Logs
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+
+                <!-- ================================
+                     INTEROPERABILITY
+                ================================= -->
+
+                <div class="nav-section-title">Interoperability</div>
+
+                <!-- Connected Systems -->
+                <li
+                    class="nav-item
+                    {% if 'connected-systems' in request.path %}
+                        active
+                    {% endif %}"
+                >
+                    <a
+                        href="{% url 'connected_systems' %}"
+                    >
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+                            />
+                        </svg>
+                        Connected Systems
+                    </a>
+                </li>
+
+                <!-- API Keys -->
+                <li
+                    class="nav-item
+                    {% if 'api-keys' in request.path %}
+                        active
+                    {% endif %}"
+                >
+                    <a
+                        href="{% url 'api_keys' %}"
+                    >
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                            />
+                        </svg>
+                        API Keys
+                    </a>
+                </li>
+
+                <!-- FHIR Resources -->
+                <li
+                    class="nav-item
+                    {% if 'api/resources' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'fhir_resources_ui' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                            />
+
+                        </svg>
+
+                        FHIR Resources
+
+                    </a>
+
+                </li>
+
+                <!-- API Endpoints -->
+                <li
+                    class="nav-item
+                    {% if 'api/endpoints' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="{% url 'api_endpoints_ui' %}"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                            />
+
+                        </svg>
+
+                        API Endpoints
+
+                    </a>
+
+                        <!-- FHIR Transactions -->
+                <li
+                    class="nav-item
+                    {% if 'fhir/transactions' in request.path %}
+                        active
+                    {% endif %}"
+                >
+                    <a
+                        href="{% url 'fhir_transactions' %}"
+                    >
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                        </svg>
+                        FHIR Transactions
+                    </a>
+                </li>
+
+                </li>
+
+                <!-- Monthly Reports -->
+                <li
+                    class="nav-item
+                    {% if 'report' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="/reports/"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6a2 2 0 01-2 2h-2a2 2 0 01-2-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"
+                            />
+
+                        </svg>
+
+                        Monthly Reports
+
+                    </a>
+
+                </li>
+
+
+                <!-- ================================
+                     SETTINGS
+                ================================= -->
+
+                <div class="nav-section-title">Settings</div>
+
+                <li
+                    class="nav-item
+                    {% if 'settings' in request.path %}
+                        active
+                    {% endif %}"
+                >
+
+                    <a
+                        href="#"
+                    >
+
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+
+                        </svg>
+
+                        Settings
+
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+
+    <!-- ================================
+         USER FOOTER
+    ================================= -->
+
+    <div class="user-footer">
+
+        <div class="user-info">
+
+            <span class="user-name">
+
+                {{ request.user.get_full_name|default:request.user.username }}
+
+            </span>
+
+            <span class="user-role">
+
+                {{ request.user.profile.get_role_display|default:"Staff" }}
+
+            </span>
+
+        </div>
+
+
+        <a
+            href="{% url 'logout' %}"
+            class="logout-link"
+            title="Logout"
+        >
+
+            <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7
+                    m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+
+            </svg>
+
+        </a>
+
+    </div>
+
+</aside>

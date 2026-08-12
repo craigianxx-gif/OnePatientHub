@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block title %}HIV Test Records | OnePatient Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-wrapper {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* --- Page Header --- */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .header-text h1 {
+        margin: 0;
+        font-size: 1.85rem;
+        color: var(--deep-teal);
+    }
+
+    .header-text p {
+        margin: 6px 0 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    .btn-action-coral {
+        background: var(--coral);
+        color: var(--surface-white);
+        padding: 10px 20px;
+        min-height: 44px;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        transition: background 150ms ease, transform 100ms ease;
+    }
+
+    .btn-action-coral:hover {
+        background: var(--coral-hover);
+        color: var(--surface-white);
+    }
+
+    /* --- Search Bar --- */
+    .search-container {
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 12px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+    }
+
+    .search-input-wrapper svg {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-form input {
+        width: 100%;
+        height: 44px;
+        padding: 0 16px 0 46px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        background: var(--cream);
+        transition: all 150ms ease;
+    }
+
+    .search-form input:focus {
+        outline: none;
+        border-color: var(--deep-teal);
+        background: var(--surface-white);
+        box-shadow: 0 0 0 3px rgba(22, 48, 44, 0.05);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--text-dark);
+        border: 1px solid var(--border-light);
+        padding: 0 24px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 150ms ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--cream);
+    }
+
+    /* --- Table Styling --- */
+    .table-card {
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow-x: auto;
+    }
+
+    .oph-table { 
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    
+    .oph-table th {
+        background: var(--surface-white);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border-light);
+        padding: 20px 24px;
+        white-space: nowrap;
+    }
+
+    .oph-table td {
+        padding: 16px 24px;
+        vertical-align: middle;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+        border-bottom: 1px solid rgba(216, 222, 217, 0.5);
+    }
+
+    .oph-table tbody tr { transition: background-color 150ms ease; }
+    .oph-table tbody tr:hover { background-color: var(--cream); }
+    .oph-table tbody tr:last-child td { border-bottom: none; }
+
+    /* --- Data Typography & Badges --- */
+    .mono-id {
+        font-family: monospace, sans-serif;
+        font-weight: 600;
+        color: var(--deep-teal);
+        font-size: 0.9rem;
+    }
+
+    .patient-name {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-block;
+    }
+
+    /* Generic fallback style */
+    .status-badge.default { background: var(--border-light); color: var(--text-muted); }
+
+    .btn-receipt {
+        color: var(--deep-teal);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-receipt:hover { text-decoration: underline; }
+
+    /* --- Empty State --- */
+    .oph-empty-state {
+        padding: 64px 32px;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .oph-empty-state svg {
+        color: #9FB8AF;
+        margin-bottom: 16px;
+    }
+
+    .oph-empty-state h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0 0 8px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-text">
+            <h1>HIV Test Records</h1>
+            <p>National registry of patient HIV testing and results.</p>
+        </div>
+        
+        <a href="{% url 'create_hiv_test' %}" class="btn-action-coral">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Record HIV Test
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <form method="GET" class="search-form">
+            <div class="search-input-wrapper">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search by OPH-ID, patient name, facility, or result...">
+            </div>
+            <button type="submit" class="btn-secondary">Search</button>
+        </form>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <table class="oph-table">
+            <thead>
+                <tr>
+                    <th>OPH-ID</th>
+                    <th>Patient Name</th>
+                    <th>Facility</th>
+                    <th>Test Type</th>
+                    <th>Sample Date</th>
+                    <th>Result</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hiv_test in hiv_tests %}
+                <tr>
+                    <td class="mono-id">{{ hiv_test.patient.oph_id }}</td>
+                    <td class="patient-name">{{ hiv_test.patient.first_name }} {{ hiv_test.patient.last_name }}</td>
+                    <td>{{ hiv_test.requesting_facility }}</td>
+                    <td>{{ hiv_test.test_type }}</td>
+                    <td>{{ hiv_test.sample_collection_date|date:"Y-m-d" }}</td>
+                    
+                    <td>
+                        <!-- Basic badge styling based on result text -->
+                        <span class="status-badge 
+                            {% if hiv_test.result == 'Positive' %}
+                               " style="background: rgba(228, 99, 63, 0.1); color: var(--coral);"
+                            {% elif hiv_test.result == 'Negative' %}
+                               " style="background: var(--success-bg); color: var(--success-green);"
+                            {% else %}
+                               default"
+                            {% endif %}>
+                            {{ hiv_test.result|default:"Pending" }}
+                        </span>
+                    </td>
+                    
+                    <td style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">
+                        {{ hiv_test.status }}
+                    </td>
+                    
+                    <td>
+                        <a href="{% url 'hiv_test_receipt' hiv_test.id %}" class="btn-receipt">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Receipt
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="oph-empty-state">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <h5>No records found</h5>
+                        <p>There are currently no HIV test records matching your criteria.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

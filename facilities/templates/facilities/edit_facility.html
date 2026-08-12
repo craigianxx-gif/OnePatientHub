@@ -1,0 +1,501 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+    .facility-page {
+        padding: 30px;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .page-header p {
+        color: #777;
+        margin-top: 8px;
+    }
+
+    .facility-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: span 2;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #263238;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d7dce0;
+        border-radius: 8px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .help-text {
+        font-size: 13px;
+        color: #777;
+        margin-top: 6px;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-primary {
+        background: #0f766e;
+        color: white;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background: #0b5f59;
+    }
+
+    .btn-secondary {
+        background: #f1f3f4;
+        color: #333;
+        padding: 12px 22px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e5e7;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .checkbox-group input {
+        width: auto;
+    }
+
+    .facility-id-display {
+        background: #f4f7f7;
+        padding: 12px 14px;
+        border-radius: 8px;
+        color: #555;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: span 1;
+        }
+
+        .facility-page {
+            padding: 20px;
+        }
+
+    }
+
+</style>
+
+
+<div class="facility-page">
+
+    <div class="page-header">
+
+        <h1>Edit Facility</h1>
+
+        <p>
+            Update the details of this registered healthcare facility.
+        </p>
+
+    </div>
+
+
+    <div class="facility-card">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="error-message">
+
+                    {{ form.non_field_errors }}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="form-grid">
+
+
+                <!-- Facility ID -->
+
+                <div class="form-group">
+
+                    <label>
+                        Facility ID
+                    </label>
+
+                    <div class="facility-id-display">
+
+                        {{ facility.facility_id }}
+
+                    </div>
+
+                    <span class="help-text">
+
+                        Facility IDs cannot be changed after registration.
+
+                    </span>
+
+                </div>
+
+
+                <!-- Facility Name -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.facility_name.id_for_label }}">
+
+                        Facility Name
+
+                    </label>
+
+                    {{ form.facility_name }}
+
+                    {% for error in form.facility_name.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Facility Type -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.facility_type.id_for_label }}">
+
+                        Facility Type
+
+                    </label>
+
+                    {{ form.facility_type }}
+
+                    {% for error in form.facility_type.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Country Code -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.country_code.id_for_label }}">
+
+                        Country Code
+
+                    </label>
+
+                    {{ form.country_code }}
+
+                    {% for error in form.country_code.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Province -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.province.id_for_label }}">
+
+                        Province
+
+                    </label>
+
+                    {{ form.province }}
+
+                    {% for error in form.province.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- District -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.district.id_for_label }}">
+
+                        District
+
+                    </label>
+
+                    {{ form.district }}
+
+                    {% for error in form.district.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Physical Address -->
+
+                <div class="form-group full-width">
+
+                    <label for="{{ form.physical_address.id_for_label }}">
+
+                        Physical Address
+
+                    </label>
+
+                    {{ form.physical_address }}
+
+                    {% for error in form.physical_address.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Phone Number -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.phone_number.id_for_label }}">
+
+                        Phone Number
+
+                    </label>
+
+                    {{ form.phone_number }}
+
+                    {% for error in form.phone_number.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Email -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.email.id_for_label }}">
+
+                        Email Address
+
+                    </label>
+
+                    {{ form.email }}
+
+                    {% for error in form.email.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- FHIR Organization ID -->
+
+                <div class="form-group full-width">
+
+                    <label for="{{ form.fhir_organization_id.id_for_label }}">
+
+                        FHIR Organization ID
+
+                    </label>
+
+                    {{ form.fhir_organization_id }}
+
+                    <span class="help-text">
+
+                        Used for future FHIR interoperability.
+
+                    </span>
+
+                    {% for error in form.fhir_organization_id.errors %}
+
+                        <div class="error-message">
+
+                            {{ error }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Active Status -->
+
+                <div class="form-group full-width">
+
+                    <div class="checkbox-group">
+
+                        {{ form.is_active }}
+
+                        <label for="{{ form.is_active.id_for_label }}">
+
+                            Facility is active
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
+
+                    Save Changes
+
+                </button>
+
+
+                <a
+                    href="{% url 'facility_profile' facility.facility_id %}"
+                    class="btn-secondary"
+                >
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

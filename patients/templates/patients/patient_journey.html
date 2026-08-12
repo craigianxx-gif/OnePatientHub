@@ -1,0 +1,66 @@
+{% extends 'base.html' %} <!-- Adjust this if your base template has a different name -->
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    
+    <!-- Patient Header -->
+    <div class="patient-header" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e9ecef;">
+        <h2 style="margin-top: 0;">Patient Journey / Horizontal Tracking</h2>
+        <p style="font-size: 1.2em; margin-bottom: 5px;">
+            <strong>OPH-ID:</strong> {{ patient.oph_id }}
+        </p>
+        <p style="margin: 0; color: #6c757d;">
+            {{ patient.first_name }} {{ patient.last_name }}
+        </p>
+    </div>
+
+    <!-- Timeline Wrapper -->
+    <div class="timeline" style="border-left: 3px solid #0d6efd; padding-left: 30px; margin-left: 20px;">
+        
+        {% for event in timeline_events %}
+        <!-- Individual Timeline Event -->
+        <div class="timeline-event" style="position: relative; margin-bottom: 30px;">
+            
+            <!-- Timeline Node (The dot on the line) -->
+            <div class="timeline-node" style="position: absolute; width: 16px; height: 16px; background: #0d6efd; border-radius: 50%; left: -39.5px; top: 4px; border: 3px solid #fff;"></div>
+            
+            <!-- Event Content Box -->
+            <div class="event-card" style="background: #fff; padding: 15px 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e9ecef;">
+                
+                <div class="event-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="font-weight: bold; color: #495057; font-size: 1.1em;">
+                        {{ event.event_type }}
+                    </span>
+                    <span style="color: #6c757d; font-size: 0.9em; font-weight: bold;">
+                        {{ event.date|date:"d M Y" }}
+                    </span>
+                </div>
+                
+                <div class="event-body" style="color: #495057;">
+                    <p style="margin: 0 0 5px 0;">
+                        <strong>Facility:</strong> {{ event.facility }}
+                    </p>
+                    <p style="margin: 0 0 5px 0;">
+                        <strong>Description:</strong> {{ event.description }}
+                    </p>
+                    {% if event.status %}
+                    <p style="margin: 0;">
+                        <strong>Status:</strong> 
+                        <span style="background: #e9ecef; padding: 2px 8px; border-radius: 12px; font-size: 0.85em;">
+                            {{ event.status }}
+                        </span>
+                    </p>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+        {% empty %}
+        <div style="color: #6c757d; font-style: italic;">
+            No journey events recorded for this patient yet.
+        </div>
+        {% endfor %}
+        
+    </div>
+</div>
+{% endblock %}

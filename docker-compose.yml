@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: onepatienthub
+      POSTGRES_USER: craigianxx
+      POSTGRES_PASSWORD: 1629
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      # These variables tell Django how to find the database container
+      - POSTGRES_DB=onepatienthub
+      - POSTGRES_USER=craigianxx
+      - POSTGRES_PASSWORD=1629
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+volumes:
+  postgres_data:

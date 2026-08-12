@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* ==========================================
+       BASE & LAYOUT
+    ========================================== */
+    .page-container {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .header-subtitle {
+        color: var(--coral, #E4633F);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        background: var(--cream, #F4F4F4);
+        color: var(--deep-teal, #16302C);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .back-button:hover {
+        background: #e8e2d8;
+        transform: translateX(-2px);
+    }
+
+    /* ==========================================
+       CARDS
+    ========================================== */
+    .summary-card, .form-card {
+        background: #ffffff;
+        border: 1px solid var(--border-light, #E2E8F0);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .summary-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-card {
+        padding: 2rem 2.5rem;
+    }
+
+    /* ==========================================
+       SUMMARY DETAILS
+    ========================================== */
+    .summary-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.2rem;
+    }
+
+    .summary-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: var(--cream, #F4F4F4);
+        color: var(--deep-teal, #16302C);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .summary-title {
+        margin: 0;
+        color: var(--ink, #1A202C);
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .summary-desc {
+        margin: 0.2rem 0 0;
+        color: var(--text-muted, #718096);
+        font-size: 0.9rem;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .summary-block {
+        background: var(--cream, #F8FAFC);
+        border: 1px solid var(--border-light, #E2E8F0);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .summary-label {
+        display: block;
+        color: var(--text-muted, #718096);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.35rem;
+    }
+
+    /* ==========================================
+       FORM ELEMENTS (Professional Styling)
+    ========================================== */
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border-light, #E2E8F0);
+    }
+
+    .form-header h3 {
+        margin: 0;
+        color: var(--ink, #1A202C);
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .form-header p {
+        margin: 0.4rem 0 0;
+        color: var(--text-muted, #718096);
+        font-size: 0.95rem;
+    }
+
+    .field-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .field-label {
+        display: block;
+        color: var(--ink, #1A202C);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Input Field Styling */
+    .form-card input[type="text"],
+    .form-card input[type="number"],
+    .form-card input[type="email"],
+    .form-card input[type="password"],
+    .form-card select,
+    .form-card textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.8rem 1rem;
+        border: 1.5px solid var(--border-light, #CBD5E1);
+        border-radius: 8px;
+        background: #FAFAFA;
+        color: var(--ink, #1A202C);
+        font-size: 0.95rem;
+        outline: none;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .form-card input:hover,
+    .form-card select:hover,
+    .form-card textarea:hover {
+        border-color: #A0AEC0;
+    }
+
+    .form-card input:focus,
+    .form-card select:focus,
+    .form-card textarea:focus {
+        background: #ffffff;
+        border-color: var(--deep-teal, #16302C);
+        box-shadow: 0 0 0 4px rgba(22, 48, 44, 0.1);
+    }
+
+    .form-card select {
+        cursor: pointer;
+        appearance: auto;
+    }
+
+    .field-help {
+        display: block;
+        color: var(--text-muted, #718096);
+        margin-top: 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    /* ==========================================
+       BUTTONS (Professional Styling)
+    ========================================== */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding-top: 1.5rem;
+        margin-top: 2rem;
+        border-top: 1px solid var(--border-light, #E2E8F0);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: 2px solid transparent;
+        font-family: inherit;
+    }
+
+    .btn-primary {
+        background: var(--deep-teal, #16302C);
+        color: #ffffff;
+        border-color: var(--deep-teal, #16302C);
+    }
+
+    .btn-primary:hover {
+        background: #1f423d;
+        border-color: #1f423d;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 48, 44, 0.2);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        background: #ffffff;
+        color: var(--ink, #1A202C);
+        border-color: var(--border-light, #CBD5E1);
+    }
+
+    .btn-secondary:hover {
+        background: var(--cream, #F8FAFC);
+        border-color: #A0AEC0;
+    }
+
+    /* ==========================================
+       ALERTS & ERRORS
+    ========================================== */
+    .alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .field-error {
+        color: #DC2626;
+        font-size: 0.85rem;
+        margin-top: 0.4rem;
+        font-weight: 500;
+    }
+
+    /* ==========================================
+       RESPONSIVE
+    ========================================== */
+    @media (max-width: 700px) {
+        .page-container { padding: 1rem; }
+        .page-header { display: block; }
+        .back-button { margin-top: 1rem; }
+        .form-card { padding: 1.5rem; }
+        .form-actions { flex-direction: column; align-items: stretch; }
+        .form-actions .btn { width: 100%; text-align: center; }
+    }
+</style>
+
+<div class="page-container">
+
+    <!-- ==========================================
+         PAGE HEADER
+    ========================================== -->
+    <div class="page-header">
+        <div>
+            <p class="header-subtitle">Patient Identity Management</p>
+            <h1>Add External Identifier</h1>
+            <p>Link an identifier from another healthcare system to this patient's OPH-ID.</p>
+        </div>
+
+        <!-- BACK BUTTON -->
+        <a href="{% url 'patient_profile' patient.oph_id %}" class="back-button">
+            &larr; Back to Patient Profile
+        </a>
+    </div>
+
+    <!-- ==========================================
+         PATIENT SUMMARY
+    ========================================== -->
+    <div class="summary-card">
+        <div class="summary-header">
+            <div class="summary-icon">ID</div>
+            <div>
+                <h3 class="summary-title">Patient Identity</h3>
+                <p class="summary-desc">The external identifier will be linked to this patient.</p>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-block">
+                <span class="summary-label">OPH-ID</span>
+                <strong style="color: var(--deep-teal, #16302C); font-size: 1.05rem; letter-spacing: 0.5px;">
+                    {{ patient.oph_id }}
+                </strong>
+            </div>
+
+            <div class="summary-block">
+                <span class="summary-label">Patient Name</span>
+                <strong style="color: var(--ink, #1A202C); font-size: 1.05rem;">
+                    {{ patient.first_name }} {{ patient.last_name }}
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         FORM CARD
+    ========================================== -->
+    <div class="form-card">
+        <div class="form-header">
+            <h3>External System Details</h3>
+            <p>Enter the identifier used by another healthcare information system or facility.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="field-group">
+                    <label for="{{ field.id_for_label }}" class="field-label">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="field-help">{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="field-error">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <!-- ==========================================
+                 ACTIONS
+            ========================================== -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Save External Identifier
+                </button>
+                <a href="{% url 'patient_profile' patient.oph_id %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

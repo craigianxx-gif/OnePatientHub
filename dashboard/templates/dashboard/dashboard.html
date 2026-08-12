@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}OnePatient Hub Dashboard{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body {
+        background: #f4f7f6;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    /* --- Command Center Header --- */
+    .dashboard-header {
+        background: linear-gradient(135deg, #0D1D1B 0%, #163C35 100%);
+        color: white;
+        padding: 32px 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        box-shadow: 0 10px 30px rgba(13, 29, 27, 0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dashboard-header h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-family: 'Fraunces', serif;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .dashboard-header p {
+        opacity: 0.85;
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .header-user-info {
+        text-align: right;
+    }
+
+    .header-user-info h5 {
+        margin: 0 0 4px 0;
+        font-weight: 600;
+    }
+    
+    .header-user-info small {
+        color: #20c997;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* --- Typography & Sections --- */
+    .section-title {
+        margin: 40px 0 20px 0;
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+    }
+
+        /* --- Force stat cards to lay out horizontally --- */
+    .row.g-4 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin: 0;
+    }
+
+    .row.g-4 > [class*="col-"] {
+        flex: 1 1 240px;   /* grow, shrink, base width */
+        max-width: 100%;
+        padding: 0;
+    }
+
+    /* Keep chart cards (8/4 split) wider on large screens */
+    .row.g-4 > .col-lg-8 {
+        flex: 2 1 480px;
+    }
+    .row.g-4 > .col-lg-4 {
+        flex: 1 1 320px;
+    }
+
+
+    /* --- Metric Cards --- */
+    .stat-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .icon-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: white;
+    }
+
+    /* Color Palette */
+    .bg-teal { background: #115e59; }
+    .bg-coral { background: #e4633f; }
+    .bg-blue { background: #2563eb; }
+    .bg-purple { background: #7c3aed; }
+    .bg-amber { background: #d97706; }
+    .bg-slate { background: #475569; }
+
+    .stat-title {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    /* --- Chart & Table Cards --- */
+    .content-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        height: 100%;
+    }
+    
+    .content-card h5 {
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .audit-table th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 600;
+    }
+    
+    .audit-table td {
+        font-size: 0.95rem;
+        color: #334155;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div>
+            <h2><i class="bi bi-shield-shaded"></i> OnePatient Hub</h2>
+            <p>National Patient Identity & Interoperability Platform</p>
+        </div>
+        <div class="header-user-info">
+            <h5>Welcome, {{ request.user.first_name|default:"Administrator" }}</h5>
+            <small>System Operations</small>
+        </div>
+    </div>
+
+    <!-- Population Overview -->
+    <h4 class="section-title">Population Overview</h4>
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-teal"><i class="bi bi-people-fill"></i></div>
+                </div>
+                <div class="stat-title">Total Patients</div>
+                <div class="stat-value">{{ total_patients|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-blue"><i class="bi bi-gender-male"></i></div>
+                </div>
+                <div class="stat-title">Male Patients</div>
+                <div class="stat-value">{{ total_male|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-coral"><i class="bi bi-gender-female"></i></div>
+                </div>
+                <div class="stat-title">Female Patients</div>
+                <div class="stat-value">{{ total_female|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-slate"><i class="bi bi-person-lines-fill"></i></div>
+                </div>
+                <div class="stat-title">Avg Age</div>
+                <div class="stat-value">{{ avg_age|default:"31" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demographics -->
+    <div class="row g-4 mt-2">
+        <div class="col-lg-8">
+            <div class="content-card">
+                <h5><i class="bi bi-bar-chart-fill"></i> Patients by Age Group</h5>
+                <canvas id="ageChart" height="100"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="content-card">
+                <h5><i class="bi bi-geo-alt-fill"></i> Patients by Province</h5>
+                <canvas id="provinceChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Facility Overview -->
+    <h4 class="section-title">Facility Distribution</h4>
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-purple"><i class="bi bi-building"></i></div>
+                </div>
+                <div class="stat-title">Registered Facilities</div>
+                <div class="stat-value">{{ total_facilities|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-teal"><i class="bi bi-check-circle-fill"></i></div>
+                </div>
+                <div class="stat-title">Active Facilities</div>
+                <div class="stat-value">{{ active_facilities|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-blue"><i class="bi bi-hospital-fill"></i></div>
+                </div>
+                <div class="stat-title">Hospitals</div>
+                <div class="stat-value">{{ hospitals|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-amber"><i class="bi bi-house-heart-fill"></i></div>
+                </div>
+                <div class="stat-title">Clinics</div>
+                <div class="stat-value">{{ clinics|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interoperability -->
+    <h4 class="section-title">Interoperability Health</h4>
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-teal"><i class="bi bi-diagram-3-fill"></i></div>
+                </div>
+                <div class="stat-title">FHIR Resources</div>
+                <div class="stat-value">{{ fhir_resources|default:"5" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-slate"><i class="bi bi-link-45deg"></i></div>
+                </div>
+                <div class="stat-title">External IDs Linked</div>
+                <div class="stat-value">{{ external_identifiers|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-blue"><i class="bi bi-hdd-network-fill"></i></div>
+                </div>
+                <div class="stat-title">Facilities Connected</div>
+                <div class="stat-value">{{ connected_facilities|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="card-header-flex">
+                    <div class="icon-circle bg-purple"><i class="bi bi-arrow-repeat"></i></div>
+                </div>
+                <div class="stat-title">API Requests (Today)</div>
+                <div class="stat-value">{{ api_requests_today|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent System Activity -->
+    <h4 class="section-title">Latest Audit Activity</h4>
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="table table-hover audit-table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Module</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_audits %}
+                    <tr>
+                        <td class="text-muted"><small>{{ log.timestamp|date:"d M Y H:i" }}</small></td>
+                        <td class="fw-bold">{{ log.user.username|default:"System" }}</td>
+                        <td>
+                            <span class="badge bg-slate">{{ log.action }}</span>
+                        </td>
+                        <td>{{ log.module }}</td>
+                        <td>{{ log.description }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No audit activity recorded today.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js Setup -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global Chart Defaults
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    // Age Distribution Chart (Bar)
+    new Chart(document.getElementById("ageChart"), {
+        type: "bar",
+        data: {
+            labels: ["0-5 yrs", "6-17 yrs", "18-35 yrs", "36-60 yrs", "60+ yrs"],
+            datasets: [{
+                label: "Patients",
+                data: [
+                    {{ age_0_5|default:"120" }}, 
+                    {{ age_6_17|default:"350" }}, 
+                    {{ age_18_35|default:"800" }}, 
+                    {{ age_36_60|default:"450" }}, 
+                    {{ age_60_plus|default:"150" }}
+                ],
+                backgroundColor: "#115e59",
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [2, 4], color: "#e2e8f0" } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Provincial Distribution Chart (Doughnut)
+    new Chart(document.getElementById("provinceChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Harare", "Bulawayo", "Manicaland", "Masvingo"],
+            datasets: [{
+                data: [
+                    {{ prov_harare|default:"45" }}, 
+                    {{ prov_bulawayo|default:"25" }}, 
+                    {{ prov_manicaland|default:"15" }}, 
+                    {{ prov_masvingo|default:"15" }}
+                ],
+                backgroundColor: ["#115e59", "#2563eb", "#e4633f", "#d97706"],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '70%',
+            plugins: {
+                legend: { position: "bottom", labels: { padding: 20, usePointStyle: true } }
+            }
+        }
+    });
+
+    // Staggered Card Animation
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".stat-card, .content-card").forEach((card, index) => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            setTimeout(() => {
+                card.style.transition = "all 0.4s ease-out";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, index * 50);
+        });
+    });
+</script>
+{% endblock %}
