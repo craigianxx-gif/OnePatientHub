@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "patients",
     "visits",
     "referrals",
-    "billing",
+    #"billing",
     "reports",
     "api",
     "hiv_testing",
