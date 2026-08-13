@@ -21,6 +21,8 @@ class AuditLog(models.Model):
         ("EXPORT", "Export"),
 
         ("OTHER", "Other"),
+        
+        ("EMERGENCY_OVERRIDE", "Emergency Override"),
 
     ]
 

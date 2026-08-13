@@ -10,84 +10,182 @@
     --bg-card: #ffffff;
     --border-color: #e5ebe9;
     --text-primary: #0f172a;
-    --text-muted: #7a8584;
-    --error-bg: #fff8f7;
-    --error-border: #f0c9c5;
-    --error-text: #b42318;
-    --success-bg: #e8f3ee;
-    --success-text: #1b5e3b;
+    --text-muted: #64748b;
+    
+    /* Dedicated Severe Red for Break-Glass */
+    --severe-red-bg: #7f1d1d;
+    --severe-red-text: #fef2f2;
+    --severe-red-accent: #ef4444;
 }
 
 .journey-page {
     max-width: 1000px;
     margin: 20px auto 60px;
     padding: 0 16px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: var(--text-primary);
 }
 
 /* ==========================================
-   HEADER & BANNER
+   BREADCRUMBS
 ========================================== */
-.modern-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    margin-bottom: 24px;
+.breadcrumbs {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+.breadcrumbs a {
+    color: var(--deep-teal);
+    text-decoration: none;
+}
+.breadcrumbs a:hover {
+    text-decoration: underline;
 }
 
-.journey-header {
+/* ==========================================
+   BREAK-GLASS BANNER
+========================================== */
+.break-glass-banner {
+    background: var(--severe-red-bg);
+    color: var(--severe-red-text);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f1f5f4;
+    box-shadow: 0 8px 16px rgba(127, 29, 29, 0.15);
 }
 
-.journey-header h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--deep-teal);
+.break-glass-info h3 {
     margin: 0 0 6px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.access-badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+.break-glass-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.countdown-container {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.timer-block {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.timer-label {
+    font-size: 0.70rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.timer-value {
+    font-size: 1.6rem;
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+/* Updated Button Styling */
+.btn-revoke {
+    background: #dc2626;
+    color: #ffffff;
+    border: 1px solid #b91c1c;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Prevents text from wrapping */
+    flex-shrink: 0;      /* Prevents flexbox from squishing the button */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-revoke:hover {
+    background: #b91c1c;
+    border-color: #991b1b;
+}
+
+/* ==========================================
+   IDENTITY BLOCK
+========================================== */
+.identity-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.avatar-large {
+    width: 64px;
+    height: 64px;
+    background: var(--deep-teal);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.identity-details h1 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: var(--deep-teal);
+    line-height: 1;
+}
+
+.identity-meta {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.oph-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-}
-
-.access-normal {
-    background: var(--success-bg);
-    color: var(--success-text);
-}
-
-.access-emergency {
-    background: var(--error-bg);
-    color: var(--error-text);
-    border: 1px solid var(--error-border);
-}
-
-.patient-meta p {
-    margin: 0 0 5px 0;
-    font-size: 1.05rem;
-}
-
-.patient-meta .oph-id {
-    font-family: monospace;
-    background: #f8faf9;
+    background: #f1f5f4;
     padding: 4px 10px;
     border-radius: 6px;
-    border: 1px solid var(--border-color);
+    font-family: monospace;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.copy-btn {
+    background: none;
+    border: none;
     color: var(--deep-teal);
-    font-weight: 700;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.copy-btn:hover {
+    color: var(--accent-teal);
 }
 
 /* ==========================================
@@ -100,270 +198,261 @@
     margin-bottom: 36px;
 }
 
-.stat-card {
-    background: #f8faf9;
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.stat-block {
+    padding: 0 10px;
 }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.04);
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 
 .stat-value {
     font-size: 1.8rem;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--deep-teal);
-    margin-bottom: 4px;
 }
 
-.stat-label {
-    font-size: 0.85rem;
-    font-weight: 600;
+.stat-zero {
+    opacity: 0.4; /* Mute zero values */
+}
+
+.stat-subtext {
+    font-size: 0.7rem;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    margin-top: 2px;
 }
 
 /* ==========================================
-   TIMELINE STYLES
+   TIMELINE
 ========================================== */
+.timeline-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+}
+
 .timeline-container {
     position: relative;
-    padding-left: 40px;
+    padding-left: 24px;
     margin-top: 20px;
 }
 
 .timeline-container::before {
     content: "";
     position: absolute;
-    left: 15px;
+    left: 7px;
     top: 8px;
-    bottom: 8px;
-    width: 3px;
-    background: linear-gradient(to bottom, var(--accent-teal), #dfe9e6);
-    border-radius: 10px;
+    bottom: 0;
+    width: 2px;
+    background: #cbd5e1;
 }
 
 .timeline-event {
     position: relative;
-    padding: 0 0 32px 10px;
-}
-
-.timeline-event:last-child {
-    padding-bottom: 0;
+    padding: 0 0 32px 20px;
 }
 
 .timeline-node {
     position: absolute;
-    left: -33px;
-    top: 0;
-    width: 24px;
-    height: 24px;
+    left: -22px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background: var(--deep-teal);
-    border: 4px solid white;
-    box-shadow: 0 0 0 2px var(--deep-teal);
+    background: var(--success-bg);
+    border: 2px solid var(--success-text);
     z-index: 2;
 }
 
-.event-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 20px 24px;
-    transition: all 0.2s ease;
+.timeline-cap {
+    position: relative;
+    padding-left: 20px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-style: italic;
 }
 
-.event-card:hover {
-    transform: translateX(4px);
-    box-shadow: 0 8px 24px rgba(15, 48, 43, 0.06);
-    border-color: #cbd5e1;
+.timeline-cap::before {
+    content: "";
+    position: absolute;
+    left: -19px;
+    top: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #cbd5e1;
 }
 
 .event-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: baseline;
+    margin-bottom: 4px;
 }
 
 .event-type {
-    font-size: 1.1rem;
     font-weight: 700;
-    color: var(--deep-teal);
+    color: var(--text-primary);
 }
 
 .event-date {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    background: #f1f5f4;
-    padding: 4px 10px;
-    border-radius: 8px;
 }
 
-.event-body p {
-    margin: 0 0 8px 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #334155;
+.event-body {
+    font-size: 0.9rem;
+    color: var(--text-primary);
 }
 
-.event-body strong {
-    color: var(--deep-teal);
-    font-weight: 600;
-}
-
-.event-notes {
-    background: #f8faf9;
-    border-left: 3px solid var(--accent-teal);
-    padding: 10px 14px;
-    border-radius: 0 8px 8px 0;
-    margin: 12px 0 0 0 !important;
-    font-size: 0.9rem !important;
-    color: #475569 !important;
-}
-
-.event-status {
+.status-badge {
     display: inline-block;
-    margin-top: 12px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: #f1f5f4;
-    color: var(--deep-teal);
+    margin-top: 8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--success-bg);
+    color: var(--success-text);
     font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.empty-timeline {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    background: #f8faf9;
-    border-radius: 14px;
-    border: 1px dashed #cbd5e1;
-}
-
-@media (max-width: 768px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .journey-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    .event-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
+    font-weight: 600;
 }
 </style>
 
 <div class="journey-page">
-    
-    <!-- HEADER & ACCESS BANNER -->
-    <div class="modern-card">
-        <div class="journey-header">
-            <div>
-                <h2>Patient Journey</h2>
-                <p style="color: var(--text-muted); margin: 0;">Longitudinal health record tracking</p>
+
+    <!-- BREADCRUMBS -->
+    <div class="breadcrumbs">
+        <a href="{% url 'patient_directory' %}">Patients</a> / 
+        <a href="{% url 'patient_profile' patient.oph_id %}">{{ patient.first_name }} {{ patient.last_name }}</a> / 
+        <span style="color: var(--text-primary); font-weight: 600;">Journey</span>
+    </div>
+
+    <!-- PERSISTENT BREAK-GLASS BANNER -->
+    {% if is_emergency_override %}
+    <div class="break-glass-banner">
+        <div class="break-glass-info">
+            <h3>⚠️ Emergency override active — bypassing standard controls</h3>
+            <p>Triggered by {{ override_user }} • {{ override_reason }}</p>
+        </div>
+        <div class="countdown-container">
+            <div class="timer-block">
+                <span class="timer-label">Time Remaining</span>
+                <span class="timer-value" id="countdown-timer">--:--</span>
             </div>
+            <a href="{% url 'end_emergency_override' patient.oph_id %}" class="btn-revoke">End override</a>
+        </div>
+    </div>
+    
+    <!-- Timer Script -->
+    <script>
+        const expireTime = new Date("{{ override_expires_at }}").getTime();
+        
+        const updateTimer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = expireTime - now;
             
-            {% if is_emergency_override %}
-                <span class="access-badge access-emergency">
-                    ⚠️ {{ access_mode }}
-                </span>
-            {% else %}
-                <span class="access-badge access-normal">
-                    ● {{ access_mode }}
-                </span>
-            {% endif %}
-        </div>
+            if (distance < 0) {
+                clearInterval(updateTimer);
+                document.getElementById("countdown-timer").innerHTML = "00:00";
+                window.location.reload(); // Auto-refresh when expired
+                return;
+            }
+            
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById("countdown-timer").innerHTML = 
+                (minutes < 10 ? "0" : "") + minutes + ":" + 
+                (seconds < 10 ? "0" : "") + seconds;
+        }, 1000);
+    </script>
+    {% endif %}
 
-        <div class="patient-meta">
-            <p><strong>OPH-ID:</strong> <span class="oph-id">{{ patient.oph_id }}</span></p>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">
-                {{ patient.first_name }} {{ patient.last_name }} &nbsp;|&nbsp; National ID: {{ patient.national_id }}
-            </p>
+    <!-- IDENTITY BLOCK -->
+    <div class="identity-card">
+        <div class="avatar-large">
+            {{ patient.first_name|first|upper }}{{ patient.last_name|first|upper }}
+        </div>
+        <div>
+            <div class="identity-details">
+                <h1>{{ patient.first_name }} {{ patient.last_name }}</h1>
+                <div class="identity-meta">
+                    DOB: {{ patient.date_of_birth|date:"d M Y" }} &nbsp;•&nbsp; {{ patient.gender }} &nbsp;•&nbsp; National ID: {{ patient.national_id }} &nbsp;•&nbsp; 
+                    <span class="oph-badge">
+                        OPH-ID: <span id="oph-id-text">{{ patient.oph_id }}</span>
+                        <button class="copy-btn" onclick="copyOphId()" title="Copy ID">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- JOURNEY STATISTICS -->
+    <!-- STATS GRID -->
     <div class="stats-grid">
-        <div class="stat-card" style="border-bottom: 3px solid var(--accent-teal);">
+        <div class="stat-block {% if journey_statistics.total_events == 0 %}stat-zero{% endif %}">
+            <div class="stat-label">Total events</div>
             <div class="stat-value">{{ journey_statistics.total_events }}</div>
-            <div class="stat-label">Total Events</div>
+            <div class="stat-subtext">Includes registration</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ journey_statistics.total_visits }}</div>
+        <div class="stat-block {% if journey_statistics.total_visits == 0 %}stat-zero{% endif %}">
             <div class="stat-label">Visits</div>
+            <div class="stat-value">{{ journey_statistics.total_visits }}</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ journey_statistics.total_referrals }}</div>
+        <div class="stat-block {% if journey_statistics.total_referrals == 0 %}stat-zero{% endif %}">
             <div class="stat-label">Referrals</div>
+            <div class="stat-value">{{ journey_statistics.total_referrals }}</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ journey_statistics.total_external_identifiers }}</div>
+        <div class="stat-block {% if journey_statistics.total_external_identifiers == 0 %}stat-zero{% endif %}">
             <div class="stat-label">External IDs</div>
+            <div class="stat-value">{{ journey_statistics.total_external_identifiers }}</div>
         </div>
     </div>
 
-    <!-- TIMELINE CONTAINER -->
-    <div class="modern-card" style="padding-top: 40px; padding-bottom: 40px;">
-        <h3 style="margin-top: 0; margin-bottom: 24px; color: var(--deep-teal); font-size: 1.2rem;">Timeline of Care</h3>
+    <!-- TIMELINE -->
+    <div class="timeline-section">
+        <h3 style="margin-top: 0; margin-bottom: 24px; font-size: 1.2rem; color: var(--deep-teal);">Timeline of care</h3>
         
         <div class="timeline-container">
             {% for event in timeline_events %}
             <div class="timeline-event">
-                
                 <div class="timeline-node"></div>
                 
-                <div class="event-card">
-                    <div class="event-header">
-                        <span class="event-type">{{ event.event_type }}</span>
-                        <span class="event-date">{{ event.date|date:"d M Y, H:i" }}</span>
-                    </div>
-                    
-                    <div class="event-body">
-                        <p><strong>📍 Facility:</strong> {{ event.facility }}</p>
-                        <p><strong>📝 Description:</strong> {{ event.description }}</p>
-                        
-                        {% if event.provider %}
-                            <p><strong>👨‍⚕️ Provider:</strong> {{ event.provider }}</p>
-                        {% endif %}
-                        
-                        {% if event.notes %}
-                            <p class="event-notes"><strong>Notes:</strong> {{ event.notes }}</p>
-                        {% endif %}
-
-                        {% if event.clinical_notes %}
-                            <p class="event-notes"><strong>Clinical Notes:</strong> {{ event.clinical_notes }}</p>
-                        {% endif %}
-                        
-                        {% if event.status %}
-                            <div class="event-status">{{ event.status }}</div>
-                        {% endif %}
-                    </div>
+                <div class="event-header">
+                    <span class="event-type">{{ event.event_type }}</span>
+                    <span class="event-date">{{ event.date|date:"d M Y, H:i" }}</span>
                 </div>
                 
-            </div>
-            {% empty %}
-            <div class="empty-timeline">
-                <span style="font-size: 2rem; display: block; margin-bottom: 10px;">🧭</span>
-                No journey events recorded for this patient yet.
+                <div class="event-body">
+                    <span style="color: var(--text-muted);">📍 {{ event.facility }} —</span> {{ event.description }}
+                </div>
+                
+                {% if event.status %}
+                <div class="status-badge">{{ event.status }}</div>
+                {% endif %}
             </div>
             {% endfor %}
+            
+            <!-- Explicit Cap -->
+            <div class="timeline-cap">
+                No further events yet.
+            </div>
         </div>
     </div>
 
 </div>
+
+<!-- Copy to Clipboard Script -->
+<script>
+function copyOphId() {
+    const ophId = document.getElementById("oph-id-text").innerText;
+    navigator.clipboard.writeText(ophId).then(() => {
+        alert("OPH-ID copied to clipboard!");
+    });
+}
+</script>
+
 {% endblock %}

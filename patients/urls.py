@@ -37,6 +37,14 @@ urlpatterns = [
         name="trigger_emergency_override"
     ),
 
+    # /patients/<oph_id>/emergency-override/end/
+    # End Emergency Consent Override
+    path(
+        "<str:oph_id>/emergency-override/end/",
+        views.end_emergency_override,
+        name="end_emergency_override"
+    ),
+
     # /patients/<oph_id>/
     # Patient Profile
     path(

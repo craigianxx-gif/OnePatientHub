@@ -1,4 +1,10 @@
 import random
+import datetime  
+
+from django.utils import timezone
+from datetime import timedelta
+
+from audit.models import AuditLog
 
 from django.shortcuts import (
     render,
@@ -511,15 +517,12 @@ def patient_profile(request, oph_id):
         })
 
     # --------------------------------------------------------
-    # Sort timeline
+    # Sort timeline (Fixed Date vs Datetime Comparison)
     # --------------------------------------------------------
 
     timeline_events.sort(
-
-        key=lambda event: event["date"],
-
+        key=lambda event: event["date"] if isinstance(event["date"], datetime.datetime) else timezone.make_aware(datetime.datetime.combine(event["date"], datetime.time.min)),
         reverse=True
-
     )
 
     # --------------------------------------------------------
@@ -818,11 +821,8 @@ def patient_journey(request, oph_id):
     # --------------------------------------------------------
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
 
     # --------------------------------------------------------
@@ -830,50 +830,62 @@ def patient_journey(request, oph_id):
     # --------------------------------------------------------
 
     consent = PatientConsent.objects.filter(
-
         patient=patient
-
     ).first()
 
     # --------------------------------------------------------
-    # Check emergency override
+    # Evaluate Emergency Override TTL (60 Minutes)
     # --------------------------------------------------------
+    
+    is_emergency_override = False
+    override_data = request.session.get(f"emergency_override_{oph_id}")
 
-    is_emergency_override = request.session.get(
-
-        f"emergency_override_{oph_id}",
-
-        False
-
-    )
+    if override_data and not isinstance(override_data, bool):
+        try:
+            # Native datetime timezone formatting for Django 5+
+            trigger_time = datetime.datetime.fromtimestamp(
+                float(override_data), 
+                tz=datetime.timezone.utc
+            )
+            
+            # Check if current time is within 60 minutes of trigger time
+            if timezone.now() - trigger_time <= timedelta(minutes=60):
+                is_emergency_override = True
+            else:
+                # TTL Expired: Revoke access and clean session
+                del request.session[f"emergency_override_{oph_id}"]
+                request.session.modified = True
+                messages.error(
+                    request,
+                    "🔒 Emergency override period (60 minutes) has expired. Access revoked."
+                )
+        except (ValueError, TypeError):
+            # Fallback for unexpected data types
+            del request.session[f"emergency_override_{oph_id}"]
+            request.session.modified = True
+            
+    elif override_data:
+        # Purge legacy boolean session data
+        del request.session[f"emergency_override_{oph_id}"]
+        request.session.modified = True
 
     # --------------------------------------------------------
     # Restrict access when consent is absent
     # --------------------------------------------------------
 
     if (
-
         not consent
-
-        or consent.status not in ["Granted", "Active", "Yes"]
-
+        or consent.status not in ["Granted", "Active", "Yes", "GRANTED"]
     ) and not is_emergency_override:
 
         messages.warning(
-
             request,
-
-            "Access restricted: Patient has not "
-            "granted data sharing consent."
-
+            "Access restricted: Patient has not granted data sharing consent."
         )
 
         return redirect(
-
             "patient_profile",
-
             oph_id=patient.oph_id
-
         )
 
     # ========================================================
@@ -1165,12 +1177,10 @@ def patient_journey(request, oph_id):
     # SORT JOURNEY CHRONOLOGICALLY
     # ========================================================
 
+    # Safe chronological sorting by harmonizing Dates and Datetimes
     timeline_events.sort(
-
-        key=lambda event: event["date"],
-
+        key=lambda event: event["date"] if isinstance(event["date"], datetime.datetime) else timezone.make_aware(datetime.datetime.combine(event["date"], datetime.time.min)),
         reverse=True
-
     )
 
     # ========================================================
@@ -1194,20 +1204,33 @@ def patient_journey(request, oph_id):
     }
 
     # ========================================================
-    # ACCESS MODE
+    # ACCESS MODE & CONTEXTUAL TRANSPARENCY
     # ========================================================
 
+    override_reason = None
+    override_timestamp = None
+    override_expires_at = None
+    override_user = None
+
     if is_emergency_override:
-
-        access_mode = (
-            "Emergency Override"
-        )
-
+        access_mode = "Emergency Override"
+        
+        # Fetch the exact audit log that triggered this session
+        latest_override = AuditLog.objects.filter(
+            action="EMERGENCY_OVERRIDE",
+            object_id=patient.oph_id
+        ).order_by("-timestamp").first()
+        
+        if latest_override:
+            override_reason = latest_override.description
+            override_timestamp = latest_override.timestamp
+            
+            # Calculate explicit expiration time for frontend JS countdown
+            override_expires_at = (override_timestamp + timedelta(minutes=60)).isoformat()
+            
+            override_user = latest_override.user.username if latest_override.user else "Unknown Clinician"
     else:
-
-        access_mode = (
-            "Consent Granted"
-        )
+        access_mode = "Consent Granted"
 
     # ========================================================
     # AUDIT LOG
@@ -1259,6 +1282,18 @@ def patient_journey(request, oph_id):
 
             "is_emergency_override":
                 is_emergency_override,
+                
+            "override_reason": 
+                override_reason,
+                
+            "override_timestamp": 
+                override_timestamp,
+                
+            "override_expires_at":
+                override_expires_at,
+                
+            "override_user":
+                override_user,
 
             "consent":
                 consent,
@@ -1278,7 +1313,7 @@ def patient_journey(request, oph_id):
 
 
 # ============================================================
-# EMERGENCY OVERRIDE
+# TRIGGER EMERGENCY OVERRIDE
 # ============================================================
 
 @login_required
@@ -1288,84 +1323,98 @@ def trigger_emergency_override(
 ):
 
     patient = get_object_or_404(
-
         Patient,
-
         oph_id=oph_id
-
     )
 
     if request.method == "POST":
 
         reason = request.POST.get(
-
             "override_reason",
-
-            "No reason provided"
-
-        )
+            ""
+        ).strip()
+        
+        # ----------------------------------------------------
+        # Input Validation: Require a valid clinical reason
+        # ----------------------------------------------------
+        if not reason:
+            messages.error(
+                request,
+                "A valid clinical justification reason is required to trigger an emergency override."
+            )
+            return render(
+                request,
+                "patients/emergency_override.html",
+                {"patient": patient}
+            )
 
         # ----------------------------------------------------
-        # Enable emergency override for this patient
+        # Enable emergency override with TTL Timestamp
         # ----------------------------------------------------
-
-        request.session[
-            f"emergency_override_{oph_id}"
-        ] = True
-
+        request.session[f"emergency_override_{oph_id}"] = timezone.now().timestamp()
+        request.session.modified = True
+        
         # ----------------------------------------------------
         # Audit critical override
         # ----------------------------------------------------
-
-        create_audit_log(
-
-            request=request,
-
-            action="EMERGENCY_OVERRIDE",
-
-            module="Consent Management",
-
-            description=(
-
-                f"EMERGENCY OVERRIDE triggered "
-                f"for patient {patient.oph_id}. "
-                f"Reason: {reason}"
-
-            ),
-
-            object_id=patient.oph_id
-
-        )
+        try:
+            create_audit_log(
+                request=request,
+                action="EMERGENCY_OVERRIDE",
+                module="Consent Management",
+                description=(
+                    f"EMERGENCY OVERRIDE triggered for patient {patient.oph_id}. "
+                    f"Reason: {reason}"
+                ),
+                object_id=patient.oph_id
+            )
+        except Exception as e:
+            print(f"\n❌ AUDIT LOG ERROR DURING OVERRIDE: {str(e)}\n")
 
         # ----------------------------------------------------
         # Notify user
         # ----------------------------------------------------
-
-        messages.error(
-
+        messages.warning(
             request,
-
-            "⚠️ Emergency override active. "
-            "Access granted for clinical emergency."
-
+            "⚠️ Emergency override active. Access granted under urgent care protocol."
         )
 
         return redirect(
-
             "patient_journey",
-
             oph_id=patient.oph_id
-
         )
-
+        
     return render(
-
         request,
-
         "patients/emergency_override.html",
-
         {
             "patient": patient
         }
-
     )
+
+# ============================================================
+# END EMERGENCY OVERRIDE
+# ============================================================
+
+@login_required
+def end_emergency_override(request, oph_id):
+    patient = get_object_or_404(Patient, oph_id=oph_id)
+    session_key = f"emergency_override_{oph_id}"
+
+    if session_key in request.session:
+        # Purge the session key
+        del request.session[session_key]
+        request.session.modified = True
+
+        # Audit the revocation
+        create_audit_log(
+            request=request,
+            action="UPDATE",  # Using UPDATE as it alters consent state context
+            module="Consent Management",
+            description=f"EMERGENCY OVERRIDE manually revoked for patient {patient.oph_id}.",
+            object_id=patient.oph_id
+        )
+
+        messages.success(request, "Emergency override successfully revoked. Standard access controls restored.")
+
+    return redirect("patient_profile", oph_id=patient.oph_id)
