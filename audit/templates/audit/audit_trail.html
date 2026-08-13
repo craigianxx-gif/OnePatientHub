@@ -161,6 +161,21 @@
         display: inline-block;
     }
 
+    /* --- Critical Break-Glass Alert Styling --- */
+    .action-badge.badge-severe {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fca5a5;
+    }
+
+    .row-severe {
+        background-color: #fffafa !important;
+    }
+    
+    .row-severe td {
+        border-bottom: 1px solid #fee2e2 !important;
+    }
+
     /* --- Timestamp & Monospace Data --- */
     .mono-data {
         font-family: monospace, sans-serif;
@@ -201,7 +216,7 @@
     <div class="page-header">
         <div class="header-text">
             <h1>Audit Trail</h1>
-            <p>System activity log for administrator review[cite: 6].</p>
+            <p>System activity log for administrator review[cite: 5].</p>
         </div>
         
         <a href="{% url 'dashboard' %}" class="btn-secondary">
@@ -249,10 +264,12 @@
             </thead>
             <tbody>
                 {% for log in logs %}
-                <tr>
+                <tr class="{% if log.action == 'EMERGENCY_OVERRIDE' %}row-severe{% endif %}">
                     <td style="font-weight: 600;">{{ log.user.username }}</td>
                     <td>
-                        <span class="action-badge">{{ log.action }}</span>
+                        <span class="action-badge {% if log.action == 'EMERGENCY_OVERRIDE' %}badge-severe{% endif %}">
+                            {{ log.action }}
+                        </span>
                     </td>
                     <td>{{ log.module }}</td>
                     <td>{{ log.description }}</td>
@@ -270,7 +287,7 @@
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                         <h5>No activity recorded</h5>
-                        <p>System activity logs will appear here once users begin interacting with the system, or matching your search criteria[cite: 6].</p>
+                        <p>System activity logs will appear here once users begin interacting with the system, or matching your search criteria[cite: 5].</p>
                     </td>
                 </tr>
                 {% endfor %}
