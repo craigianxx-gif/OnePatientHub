@@ -20,6 +20,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       # These variables tell Django how to find the database container
       - POSTGRES_DB=onepatienthub

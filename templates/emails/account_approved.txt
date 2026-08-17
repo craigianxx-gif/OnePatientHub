@@ -2,6 +2,8 @@ Hello {{ full_name }},
 
 Your OnePatient Hub account has been approved.
 
+Your login credentials are:
+
 Username:
 {{ username }}
 
@@ -9,9 +11,11 @@ Temporary Password:
 {{ temporary_password }}
 
 Login:
-http://127.0.0.1:8000/
+{{ login_url }}
 
 For security reasons, you must change your temporary password after your first login.
+
+If you did not request this account, please contact the OnePatient Hub Administration.
 
 Regards,
 OnePatient Hub Administration

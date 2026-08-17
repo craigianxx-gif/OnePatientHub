@@ -688,35 +688,27 @@
 
                             <div class="action-buttons">
 
+                                <form method="POST" action="{% url 'approve_account_request' account_request.id %}" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit" 
+                                        class="btn btn-approve"
+                                        onclick="return confirm('Approve this account request?');"
+                                    >
+                                        Approve
+                                    </button>
+                                </form>
 
-                                <a
-
-                                    href="{% url 'approve_account_request' account_request.id %}"
-
-                                    class="btn btn-approve"
-
-                                    onclick="return confirm('Approve this account request?');"
-
-                                >
-
-                                    Approve
-
-                                </a>
-
-
-                                <a
-
-                                    href="{% url 'deny_account_request' account_request.id %}"
-
-                                    class="btn btn-deny"
-
-                                    onclick="return confirm('Deny this account request?');"
-
-                                >
-
-                                    Deny
-
-                                </a>
+                                <form method="POST" action="{% url 'deny_account_request' account_request.id %}" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit" 
+                                        class="btn btn-deny"
+                                        onclick="return confirm('Deny this account request?');"
+                                    >
+                                        Deny
+                                    </button>
+                                </form>
 
 
                             </div>

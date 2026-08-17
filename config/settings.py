@@ -21,7 +21,7 @@ SECRET_KEY = (
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 
 # ==========================================
@@ -211,28 +211,27 @@ LOGOUT_REDIRECT_URL = "/"
 
 
 # ==========================================
-# EMAIL CONFIGURATION
+# EMAIL CONFIGURATION (Gmail SMTP)
 # ==========================================
 
-# Development mode:
-# Emails will be printed in the terminal.
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
-EMAIL_BACKEND = (
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
-    "django.core.mail.backends.console.EmailBackend"
-
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    "OnePatient Hub Administration <noreply@onepatienthub.org>"
 )
 
-
-DEFAULT_FROM_EMAIL = (
-
-    "OnePatient Hub Administration "
-
-    "<noreply@onepatienthub.org>"
-
-)
-
-
+# Fail loudly if email credentials are missing
+if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    raise RuntimeError(
+        "EMAIL_HOST_USER and EMAIL_HOST_PASSWORD must be configured as environment variables."
+    )
 # ==========================================
 # FHIR API SETTINGS
 # ==========================================
