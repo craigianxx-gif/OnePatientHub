@@ -146,10 +146,11 @@
     font-size: 1.7rem;
     font-weight: 700;
     margin: 0 0 7px;
+    color: #ffffff; /* FORCE WHITE TEXT FOR VISIBILITY */
 }
 
 .facility-subtitle {
-    color: rgba(255,255,255,0.68);
+    color: rgba(255,255,255,0.85); /* BRIGHTENED SUBTITLE FOR VISIBILITY */
     font-size: 0.9rem;
 }
 
@@ -173,6 +174,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 1px;
+    color: #ffffff; /* FORCE WHITE TEXT FOR VISIBILITY */
 }
 
 /* ==========================================
@@ -520,7 +522,7 @@
 
 
                     <div class="facility-subtitle">
-                        {{ facility.facility_type }} • {{ facility.province }} Province
+                        {{ facility.facility_type }} • {{ facility.province }}
                     </div>
 
                 </div>
@@ -561,7 +563,7 @@
             <div>
 
                 <div class="stat-value">
-                    2,154
+                    {{ patient_count|default:"0" }}
                 </div>
 
                 <div class="stat-label">
@@ -582,7 +584,7 @@
             <div>
 
                 <div class="stat-value">
-                    145
+                    {{ referrals_sent|default:"0" }}
                 </div>
 
                 <div class="stat-label">
@@ -603,7 +605,7 @@
             <div>
 
                 <div class="stat-value">
-                    18
+                    {{ staff_count|default:"0" }}
                 </div>
 
                 <div class="stat-label">
@@ -987,4 +989,4 @@
 
 </div>
 
-{% endblock %}
+{% endblock content %}

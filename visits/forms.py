@@ -1,59 +1,35 @@
 from django import forms
-
 from .models import Visit
-
 
 class VisitForm(forms.ModelForm):
 
     class Meta:
-
         model = Visit
 
-        # CHANGED: Replaced 'facility_name' with 'facility'
+        # EXCLUDED: 'facility' and 'healthcare_provider' to enforce backend security
         fields = [
             "patient",
-            "facility", 
-            "visit_type",
-            "reason",
-            "healthcare_provider",
             "visit_date",
+            "visit_type",
+            "blood_pressure",
+            "temperature",
+            "weight",
+            "reason",
+            "diagnosis",
+            "treatment_plan",
             "notes",
         ]
 
         widgets = {
-
-            # CHANGED: Added a Select dropdown for the new facility relationship
-            "facility": forms.Select(
-                attrs={
-                    "class": "form-control"
-                }
-            ),
-
-            "patient": forms.Select(
-                attrs={
-                    "class": "form-control"
-                }
-            ),
-
-            "visit_date": forms.DateInput(
-                attrs={
-                    "type": "date",
-                    "class": "form-control"
-                }
-            ),
-
-            "reason": forms.Textarea(
-                attrs={
-                    "rows": 4,
-                    "class": "form-control"
-                }
-            ),
-
-            "notes": forms.Textarea(
-                attrs={
-                    "rows": 4,
-                    "class": "form-control"
-                }
-            ),
-
+            "patient": forms.Select(attrs={"class": "form-control"}),
+            "visit_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "visit_type": forms.Select(attrs={"class": "form-control"}),
+            "blood_pressure": forms.TextInput(attrs={"placeholder": "120/80", "class": "form-control"}),
+            "temperature": forms.NumberInput(attrs={"placeholder": "37.0", "step": "0.1", "class": "form-control"}),
+            "weight": forms.NumberInput(attrs={"placeholder": "75.5", "step": "0.1", "class": "form-control"}),
+            
+            "reason": forms.Textarea(attrs={"rows": 2, "class": "form-control"}),
+            "diagnosis": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
+            "treatment_plan": forms.Textarea(attrs={"rows": 3, "class": "form-control"}),
+            "notes": forms.Textarea(attrs={"rows": 2, "class": "form-control"}),
         }

@@ -10,89 +10,55 @@ class PatientConsentForm(forms.ModelForm):
         model = PatientConsent
 
         fields = [
-
             "consent_type",
-
             "status",
-
             "granted_by",
-
             "expiry_date",
-
             "emergency_override",
-
             "notes",
-
         ]
 
         widgets = {
 
             "consent_type": forms.Select(
-
                 attrs={
-
                     "class": "form-control"
-
                 }
-
             ),
 
             "status": forms.Select(
-
                 attrs={
-
                     "class": "form-control"
-
                 }
-
             ),
 
             "granted_by": forms.TextInput(
-
                 attrs={
-
                     "class": "form-control",
-
                     "placeholder": "Patient or Guardian"
-
                 }
-
             ),
 
             "expiry_date": forms.DateInput(
-
+                format="%Y-%m-%d",  # Forces standard backend parsing
                 attrs={
-
                     "class": "form-control",
-
-                    "type": "date"
-
+                    "type": "date"      # Forces native browser calendar
                 }
-
             ),
 
             "emergency_override": forms.CheckboxInput(
-
                 attrs={
-
                     "class": "form-check-input"
-
                 }
-
             ),
 
             "notes": forms.Textarea(
-
                 attrs={
-
                     "class": "form-control",
-
                     "rows": 4,
-
                     "placeholder": "Additional notes"
-
                 }
-
             ),
 
         }

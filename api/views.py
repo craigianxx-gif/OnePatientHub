@@ -19,6 +19,9 @@ from .serializers import FHIRPatientSerializer, FHIROrganizationSerializer
 from .pagination import FHIRBundlePagination
 from .filters import PatientFilter
 
+# Import the custom API Key authentication we just created
+from .authentication import ExternalAPIKeyAuthentication
+
 
 # ==========================================
 # API DOCUMENTATION VIEWS
@@ -111,9 +114,11 @@ class FHIRPatientList(generics.ListCreateAPIView):
     queryset = Patient.objects.prefetch_related('external_identifiers').all()
     serializer_class = FHIRPatientSerializer
     pagination_class = FHIRBundlePagination
-    
     filter_backends = [DjangoFilterBackend]
     filterset_class = PatientFilter
+    
+    # NEW: Wire up the custom API Key auth
+    authentication_classes = [ExternalAPIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
 
@@ -125,6 +130,9 @@ class FHIRPatientDetail(generics.RetrieveUpdateAPIView):
     queryset = Patient.objects.prefetch_related('external_identifiers').all()
     serializer_class = FHIRPatientSerializer
     lookup_field = 'oph_id'
+    
+    # NEW: Wire up the custom API Key auth
+    authentication_classes = [ExternalAPIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
 
@@ -139,6 +147,9 @@ class FHIROrganizationList(generics.ListAPIView):
     queryset = Facility.objects.all()
     serializer_class = FHIROrganizationSerializer
     pagination_class = FHIRBundlePagination
+    
+    # NEW: Wire up the custom API Key auth
+    authentication_classes = [ExternalAPIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
 
@@ -149,6 +160,9 @@ class FHIROrganizationDetail(generics.RetrieveAPIView):
     queryset = Facility.objects.all()
     serializer_class = FHIROrganizationSerializer
     lookup_field = 'facility_id'
+    
+    # NEW: Wire up the custom API Key auth
+    authentication_classes = [ExternalAPIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
 

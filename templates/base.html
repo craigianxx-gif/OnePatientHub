@@ -1,28 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}OnePatient Hub{% endblock %}</title>
+
+    <title>
+        {% block title %}OnePatient Hub{% endblock %}
+    </title>
+
 
     <!-- Typography: Fraunces (Headings) & Manrope (Body/UI) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Manrope:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Chart.js -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+
 
     <style>
+
+        /* =========================================================
+           ROOT VARIABLES
+        ========================================================= */
+
         :root {
+
             /* Visual System Palette */
+
             --deep-teal: #16302C;
             --deep-teal-hover: #0f221f;
             --coral: #E4633F;
             --coral-hover: #cd5230;
             --cream: #F7F4EF;
             --surface-white: #FFFFFF;
-            
+
+
             /* UI State & Feedback */
+
             --text-dark: #1C2526;
             --text-muted: #5C6A67;
             --border-light: #E2DDD5;
@@ -30,184 +65,1218 @@
             --coral-tint: rgba(228, 99, 63, 0.08);
             --success-green: #2E7D32;
             --success-bg: #E8F5E9;
-            
+
+
             /* Shadows & Radius */
-            --shadow-sm: 0 1px 3px rgba(22, 48, 44, 0.06);
-            --shadow-md: 0 4px 12px rgba(22, 48, 44, 0.08);
+
+            --shadow-sm:
+                0 1px 3px rgba(22, 48, 44, 0.06);
+
+            --shadow-md:
+                0 4px 12px rgba(22, 48, 44, 0.08);
+
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 18px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+        /* =========================================================
+           GLOBAL RESET
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            min-height: 100%;
+        }
+
 
         body {
-            font-family: 'Manrope', system-ui, sans-serif;
+
+            font-family:
+                'Manrope',
+                system-ui,
+                sans-serif;
+
             background-color: var(--cream);
+
             color: var(--text-dark);
+
             display: flex;
+
             min-height: 100vh;
+
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Typography Hierarchy */
-        h1, h2, h3, .heading-serif {
-            font-family: 'Fraunces', serif;
+
+
+        /* =========================================================
+           TYPOGRAPHY
+        ========================================================= */
+
+        h1,
+        h2,
+        h3,
+        .heading-serif {
+
+            font-family:
+                'Fraunces',
+                serif;
+
             color: var(--deep-teal);
+
             font-weight: 600;
         }
 
-        /* Main Workspace Structure */
-        .app-container {
+
+
+        /* =========================================================
+           ONEPATIENT HUB PAGE LOADER
+        ========================================================= */
+
+        .oph-app-loader {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
             display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 24px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 20%,
+                    rgba(228, 99, 63, 0.08),
+                    transparent 32%
+                ),
+                rgba(247, 244, 239, 0.98);
+
+            backdrop-filter: blur(10px);
+
+            -webkit-backdrop-filter: blur(10px);
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            transition:
+                opacity 0.35s ease,
+                visibility 0.35s ease;
+        }
+
+
+        .oph-app-loader.is-visible {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            pointer-events: auto;
+        }
+
+
+        .oph-loader-card {
+
+            width: min(420px, 100%);
+
+            padding: 38px 34px;
+
+            border-radius: 22px;
+
+            background: rgba(255, 255, 255, 0.98);
+
+            border:
+                1px solid
+                rgba(22, 48, 44, 0.08);
+
+            box-shadow:
+                0 25px 70px
+                rgba(17, 42, 38, 0.14),
+
+                0 8px 24px
+                rgba(17, 42, 38, 0.06);
+
+            text-align: center;
+        }
+
+
+        .oph-loader-logo {
+
+            width: 68px;
+
+            height: 68px;
+
+            margin:
+                0 auto 22px;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                var(--deep-teal);
+
+            color: white;
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            box-shadow:
+                0 12px 30px
+                rgba(17, 42, 38, 0.18);
+        }
+
+
+        .oph-loader-spinner {
+
+            width: 38px;
+
+            height: 38px;
+
+            margin:
+                0 auto 22px;
+
+            border-radius: 50%;
+
+            border:
+                3px solid #E5EBE8;
+
+            border-top-color:
+                var(--coral);
+
+            animation:
+                ophSpin
+                0.85s
+                linear
+                infinite;
+        }
+
+
+        .oph-loader-card h2 {
+
+            margin:
+                0 0 8px;
+
+            color:
+                var(--deep-teal);
+
+            font-family:
+                "Fraunces",
+                serif;
+
+            font-size: 27px;
+
+            font-weight: 600;
+        }
+
+
+        .oph-loader-card p {
+
+            margin: 0;
+
+            color:
+                var(--text-muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        .oph-loader-bar {
+
             width: 100%;
+
+            height: 4px;
+
+            margin-top: 25px;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+
+            background:
+                #E9EEEC;
+        }
+
+
+        .oph-loader-bar span {
+
+            display: block;
+
+            width: 35%;
+
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--deep-teal),
+                    var(--coral)
+                );
+
+            animation:
+                ophLoadingBar
+                1.2s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes ophSpin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        @keyframes ophLoadingBar {
+
+            0% {
+                transform: translateX(-130%);
+            }
+
+            50% {
+                transform: translateX(160%);
+            }
+
+            100% {
+                transform: translateX(300%);
+            }
+
+        }
+
+
+        body.oph-loading-lock {
+            overflow: hidden;
+        }
+
+
+
+        /* =========================================================
+           MAIN APPLICATION STRUCTURE
+        ========================================================= */
+
+        .app-container {
+
+            display: flex;
+
+            width: 100%;
+
             min-height: 100vh;
         }
 
+
         .main-wrapper {
+
             flex: 1;
+
             display: flex;
+
             flex-direction: column;
+
             min-width: 0;
-            background: var(--cream);
+
+            min-height: 100vh;
+
+            background:
+                var(--cream);
         }
 
-        /* Top Navigation Header - Retained CSS just in case you ever want it back */
+
+
+        /* =========================================================
+           TOP NAVIGATION
+        ========================================================= */
+
         .top-nav {
+
             height: 70px;
-            background: var(--surface-white);
-            border-bottom: 1px solid var(--border-light);
+
+            background:
+                var(--surface-white);
+
+            border-bottom:
+                1px solid
+                var(--border-light);
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
             padding: 0 32px;
+
             position: sticky;
+
             top: 0;
+
             z-index: 90;
         }
 
+
         .global-search {
+
             position: relative;
+
             width: 100%;
+
             max-width: 440px;
         }
 
+
         .global-search input {
+
             width: 100%;
+
             height: 44px;
-            padding: 0 16px 0 42px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-light);
-            background: var(--cream);
-            font-family: 'Manrope', sans-serif;
+
+            padding:
+                0 16px 0 42px;
+
+            border-radius:
+                var(--radius-sm);
+
+            border:
+                1px solid
+                var(--border-light);
+
+            background:
+                var(--cream);
+
+            font-family:
+                'Manrope',
+                sans-serif;
+
             font-size: 0.9rem;
-            color: var(--text-dark);
-            transition: all 150ms ease;
+
+            color:
+                var(--text-dark);
+
+            transition:
+                all 150ms ease;
         }
+
 
         .global-search input:focus {
+
             outline: none;
-            border-color: var(--deep-teal);
-            background: var(--surface-white);
-            box-shadow: 0 0 0 3px rgba(22, 48, 44, 0.1);
+
+            border-color:
+                var(--deep-teal);
+
+            background:
+                var(--surface-white);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(22, 48, 44, 0.1);
         }
 
+
         .search-icon {
+
             position: absolute;
+
             left: 14px;
+
             top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
+
+            transform:
+                translateY(-50%);
+
+            color:
+                var(--text-muted);
+
             pointer-events: none;
         }
 
+
         .nav-meta {
+
             display: flex;
+
             align-items: center;
+
             gap: 20px;
         }
 
-        /* Sync Status Indicator */
+
+
+        /* =========================================================
+           SYNC STATUS
+        ========================================================= */
+
         .sync-status {
+
             display: flex;
+
             align-items: center;
+
             gap: 8px;
+
             font-size: 0.825rem;
+
             font-weight: 500;
-            color: var(--text-muted);
+
+            color:
+                var(--text-muted);
         }
+
 
         .sync-dot {
+
             width: 8px;
+
             height: 8px;
+
             border-radius: 50%;
-            background-color: var(--success-green);
+
+            background-color:
+                var(--success-green);
         }
+
 
         .sync-dot.attention {
-            background-color: var(--coral);
+
+            background-color:
+                var(--coral);
         }
 
-        /* Identifiers Styling */
+
+
+        /* =========================================================
+           OPH IDENTIFIER
+        ========================================================= */
+
         .oph-badge {
-            background: var(--deep-teal);
-            color: var(--surface-white);
-            font-family: monospace, monospace;
+
+            background:
+                var(--deep-teal);
+
+            color:
+                var(--surface-white);
+
+            font-family:
+                monospace,
+                monospace;
+
             font-size: 0.85rem;
+
             font-weight: 600;
-            padding: 4px 10px;
+
+            padding:
+                4px 10px;
+
             border-radius: 20px;
+
             display: inline-block;
-            font-variant-numeric: tabular-nums;
+
+            font-variant-numeric:
+                tabular-nums;
+
             letter-spacing: 0.03em;
         }
 
-        /* Content Area */
+
+
+        /* =========================================================
+           CONTENT AREA
+        ========================================================= */
+
         .content-area {
+
             padding: 32px;
+
             flex: 1;
         }
 
-        /* Shared Button Styles */
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
         .btn-teal {
-            background: var(--deep-teal);
-            color: var(--surface-white);
-            padding: 10px 20px;
+
+            background:
+                var(--deep-teal);
+
+            color:
+                var(--surface-white);
+
+            padding:
+                10px 20px;
+
             min-height: 44px;
-            border-radius: var(--radius-sm);
+
+            border-radius:
+                var(--radius-sm);
+
             text-decoration: none;
+
             font-weight: 600;
+
             font-size: 0.9rem;
+
             display: inline-flex;
+
             align-items: center;
+
             gap: 8px;
+
             border: none;
+
             cursor: pointer;
-            transition: background 150ms ease;
+
+            transition:
+                background 150ms ease;
         }
+
 
         .btn-teal:hover {
-            background: var(--deep-teal-hover);
+
+            background:
+                var(--deep-teal-hover);
+
+            color:
+                var(--surface-white);
+
+            text-decoration: none;
         }
+
+
+
+        /* =========================================================
+           SYSTEM FOOTER
+        ========================================================= */
+
+        .system-footer {
+
+            background:
+                var(--surface-white);
+
+            border-top:
+                1px solid
+                var(--border-light);
+
+            padding:
+                18px 32px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+            position: relative;
+
+            z-index: 20;
+        }
+
+
+        .system-footer-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color:
+                var(--text-muted);
+
+            font-size: 0.8rem;
+        }
+
+
+        .system-footer-brand {
+
+            color:
+                var(--deep-teal);
+
+            font-weight: 700;
+        }
+
+
+        .system-footer-right {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-end;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+
+        /* =========================================================
+           SYSTEM LINKS
+        ========================================================= */
+
+        .system-link {
+
+            display: inline-block;
+
+            color:
+                var(--text-muted);
+
+            text-decoration: none;
+
+            font-family:
+                'Manrope',
+                sans-serif;
+
+            font-size: 0.8rem;
+
+            font-weight: 500;
+
+            cursor: pointer;
+
+            pointer-events: auto;
+
+            position: relative;
+
+            z-index: 30;
+
+            transition:
+                color 150ms ease;
+        }
+
+
+        .system-link:hover {
+
+            color:
+                var(--deep-teal);
+
+            text-decoration: underline;
+        }
+
+
+        .system-link:focus {
+
+            outline:
+                2px solid
+                var(--deep-teal);
+
+            outline-offset: 3px;
+
+            border-radius: 3px;
+        }
+
+
+
+        /* =========================================================
+           FOOTER SEPARATOR
+        ========================================================= */
+
+        .system-link-separator {
+
+            color:
+                var(--border-light);
+
+            user-select: none;
+        }
+
+
+
+        /* =========================================================
+           RESPONSIVE DESIGN
+        ========================================================= */
 
         @media (max-width: 768px) {
-            .content-area { padding: 16px; }
-            .top-nav { padding: 0 16px; }
+
+            .content-area {
+
+                padding: 16px;
+            }
+
+
+            .top-nav {
+
+                padding: 0 16px;
+            }
+
+
+            .system-footer {
+
+                padding:
+                    18px 16px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .system-footer-right {
+
+                justify-content:
+                    flex-start;
+
+                gap: 12px;
+            }
+
         }
+
+
+        @media (max-width: 480px) {
+
+            .system-footer-right {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 8px;
+            }
+
+
+            .system-link-separator {
+
+                display: none;
+            }
+
+        }
+
+
+        /* =========================================================
+           PRINT STYLES (CLINICAL SNAPSHOT)
+        ========================================================= */
+
+        @media print {
+
+            .sidebar, 
+            .top-nav, 
+            .system-footer, 
+            button, 
+            .no-print {
+                display: none !important;
+            }
+
+            body, 
+            .app-container, 
+            .main-wrapper, 
+            .content-area {
+                background: #FFFFFF !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            * {
+                color: #000000 !important;
+                box-shadow: none !important;
+            }
+
+            .card, 
+            .journey-entry {
+                page-break-inside: avoid;
+                border: 1px solid #ccc !important;
+                margin-bottom: 15px !important;
+            }
+
+        }
+
     </style>
+
+
     {% block extra_css %}{% endblock %}
+
 </head>
+
+
 <body>
+
+
+    <!-- =========================================================
+         ONEPATIENT HUB LOADING OVERLAY
+    ========================================================== -->
+
+    <div
+        id="oph-app-loader"
+        class="oph-app-loader"
+        aria-hidden="true"
+    >
+
+        <div
+            class="oph-loader-card"
+            role="status"
+            aria-live="polite"
+            aria-label="Loading OnePatient Hub"
+        >
+
+            <div class="oph-loader-logo">
+                OPH
+            </div>
+
+
+            <div class="oph-loader-spinner"></div>
+
+
+            <h2>
+                OnePatient Hub
+            </h2>
+
+
+            <p>
+                Preparing your secure workspace...
+            </p>
+
+
+            <div class="oph-loader-bar">
+                <span></span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN APPLICATION CONTAINER
+    ====================================================== -->
+
     <div class="app-container">
-        <!-- Persistent Sidebar -->
+
+
+        <!-- =====================================================
+             PERSISTENT SIDEBAR
+        ====================================================== -->
+
         {% include 'sidebar.html' %}
 
+
+
+        <!-- =====================================================
+             MAIN APPLICATION
+        ====================================================== -->
+
         <div class="main-wrapper">
+
+
+            <!-- =================================================
+                 PAGE CONTENT
+            ================================================== -->
+
             <main class="content-area">
-                {% block content %}{% endblock %}
+
+                {% block content %}
+
+                {% endblock %}
+
             </main>
+
+
+
+            <!-- =================================================
+                 SYSTEM FOOTER
+            ================================================== -->
+
+            <footer class="system-footer">
+
+
+                <!-- Footer Brand -->
+
+                <div class="system-footer-left">
+
+                    <span class="system-footer-brand">
+                        OnePatient Hub
+                    </span>
+
+                    <span>
+                        © {% now "Y" %}
+                    </span>
+
+                </div>
+
+
+
+                <!-- Legal / System Links -->
+
+                <div class="system-footer-right">
+
+                    <a
+                        href="{% url 'terms_of_use' %}"
+                        class="system-link"
+                    >
+                        Terms of use
+                    </a>
+
+
+                    <span class="system-link-separator">
+                        |
+                    </span>
+
+
+                    <a
+                        href="{% url 'privacy_statement' %}"
+                        class="system-link"
+                    >
+                        Privacy statement
+                    </a>
+
+
+                    <span class="system-link-separator">
+                        |
+                    </span>
+
+
+                    <a
+                        href="{% url 'software_services_agreement' %}"
+                        class="system-link"
+                    >
+                        Software services agreement
+                    </a>
+
+                </div>
+
+            </footer>
+
         </div>
+
     </div>
-    {% block extra_js %}{% endblock %}
+
+
+
+    <!-- =========================================================
+         ONEPATIENT HUB LOADER JAVASCRIPT
+    ========================================================== -->
+
+    {% block extra_js %}
+
+    <script>
+
+        (function () {
+
+            "use strict";
+
+
+            const loader =
+                document.getElementById(
+                    "oph-app-loader"
+                );
+
+
+            const LOADING_KEY =
+                "oph_login_loading";
+
+
+            /*
+             * Show the loader.
+             */
+
+            function showLoader() {
+
+                if (!loader) {
+                    return;
+                }
+
+
+                loader.classList.add(
+                    "is-visible"
+                );
+
+
+                loader.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+
+                document.body.classList.add(
+                    "oph-loading-lock"
+                );
+
+            }
+
+
+
+            /*
+             * Hide the loader.
+             */
+
+            function hideLoader() {
+
+                if (!loader) {
+                    return;
+                }
+
+
+                loader.classList.remove(
+                    "is-visible"
+                );
+
+
+                loader.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+
+                document.body.classList.remove(
+                    "oph-loading-lock"
+                );
+
+            }
+
+
+
+            /*
+             * Check whether the user has just
+             * submitted the login form.
+             */
+
+            let cameFromLogin = false;
+
+
+            try {
+
+                cameFromLogin =
+                    sessionStorage.getItem(
+                        LOADING_KEY
+                    ) === "1";
+
+            } catch (error) {
+
+                cameFromLogin = false;
+
+            }
+
+
+
+            /*
+             * Only show the dashboard loader
+             * after a login navigation.
+             */
+
+            if (cameFromLogin) {
+
+
+                showLoader();
+
+
+
+                /*
+                 * Remove the flag immediately.
+                 *
+                 * This prevents the loader from
+                 * appearing again when the dashboard
+                 * is refreshed.
+                 */
+
+                try {
+
+                    sessionStorage.removeItem(
+                        LOADING_KEY
+                    );
+
+                } catch (error) {
+
+                    // Ignore storage errors.
+
+                }
+
+
+
+                /*
+                 * Wait until all page resources
+                 * have finished loading.
+                 */
+
+                window.addEventListener(
+                    "load",
+                    function () {
+
+                        setTimeout(
+                            function () {
+
+                                hideLoader();
+
+                            },
+                            650
+                        );
+
+                    }
+                );
+
+
+
+                /*
+                 * Safety fallback.
+                 *
+                 * Even if something prevents the
+                 * load event from completing,
+                 * the loader will disappear.
+                 */
+
+                setTimeout(
+                    function () {
+
+                        hideLoader();
+
+                    },
+                    5000
+                );
+
+
+            } else {
+
+
+                /*
+                 * Normal authenticated pages
+                 * do not show the loader.
+                 */
+
+                hideLoader();
+
+            }
+
+        })();
+
+    </script>
+
+    {% endblock %}
+
+
 </body>
+
 </html>

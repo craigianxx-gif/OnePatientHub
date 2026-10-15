@@ -52,6 +52,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
 }
 
 .btn-modern-primary {
@@ -166,10 +167,11 @@
     font-size: 1.7rem;
     font-weight: 700;
     margin: 0 0 7px;
+    color: #ffffff; /* FORCE WHITE TEXT FOR VISIBILITY */
 }
 
 .patient-subtitle {
-    color: rgba(255,255,255,0.68);
+    color: rgba(255,255,255,0.85); /* BRIGHTENED SUBTITLE FOR VISIBILITY */
     font-size: 0.9rem;
 }
 
@@ -193,6 +195,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 1px;
+    color: #ffffff;
 }
 
 /* ==========================================
@@ -387,21 +390,16 @@
 
 .journey-container::before {
     content: "";
-
     position: absolute;
-
     left: 13px;
     top: 8px;
     bottom: 8px;
-
     width: 3px;
-
     background: linear-gradient(
         to bottom,
         var(--coral),
         #dfe9e6
     );
-
     border-radius: 10px;
 }
 
@@ -416,113 +414,121 @@
 
 .journey-marker {
     position: absolute;
-
     left: -38px;
     top: 0;
-
     width: 30px;
     height: 30px;
-
     border-radius: 50%;
-
     background: var(--deep-teal);
-
     border: 4px solid white;
-
-    box-shadow:
-        0 0 0 2px var(--deep-teal);
-
+    box-shadow: 0 0 0 2px var(--deep-teal);
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: white;
     font-size: 0.75rem;
 }
 
 .journey-event-card {
     background: #fbfcfc;
-
     border: 1px solid #e5ebe9;
-
     border-radius: 14px;
-
     padding: 16px 18px;
-
     transition: all 0.2s ease;
 }
 
 .journey-event-card:hover {
     transform: translateX(3px);
-
-    box-shadow:
-        0 8px 20px
-        rgba(0,0,0,0.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .journey-event-top {
     display: flex;
-
     justify-content: space-between;
-
     align-items: flex-start;
-
     gap: 15px;
 }
 
 .journey-event-title {
     font-size: 0.95rem;
-
     font-weight: 700;
-
     color: var(--deep-teal);
 }
 
 .journey-event-date {
     font-size: 0.75rem;
-
     color: #87918f;
-
     white-space: nowrap;
 }
 
 .journey-event-facility {
     margin-top: 7px;
-
     font-size: 0.82rem;
-
     font-weight: 600;
-
     color: #44504e;
 }
 
 .journey-event-description {
     margin-top: 6px;
-
     font-size: 0.82rem;
-
     line-height: 1.5;
-
     color: #77827f;
 }
 
 .journey-status {
     display: inline-block;
-
     margin-top: 10px;
-
     padding: 4px 9px;
-
     border-radius: 20px;
-
     background: #e8f3ee;
-
     color: #26704d;
-
     font-size: 0.7rem;
-
     font-weight: 700;
 }
+
+/* ==========================================
+   CLINICAL DATA
+========================================== */
+.clinical-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #dce4e2;
+}
+
+.clinical-item {
+    font-size: 0.82rem;
+}
+
+.clinical-label {
+    color: #87918f;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.clinical-val {
+    color: #293633;
+    font-weight: 600;
+}
+
+.clinical-full-width {
+    grid-column: span 2;
+    background: #f0f5f4;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 4px;
+}
+
+.clinical-full-width .clinical-label {
+    color: var(--deep-teal);
+    font-weight: 700;
+}
+
 
 /* ==========================================
    EMPTY STATE
@@ -540,13 +546,10 @@
     border-radius: 14px;
     background: #f0f5f3;
     color: var(--deep-teal);
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     margin: 0 auto 12px;
-
     font-size: 1.3rem;
 }
 
@@ -555,74 +558,65 @@
 ========================================== */
 
 @media (max-width: 1100px) {
-
     .profile-grid {
         grid-template-columns: 1fr;
     }
-
 }
 
 @media (max-width: 800px) {
-
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
     .patient-hero-content {
         flex-direction: column;
         align-items: flex-start;
     }
-
     .oph-id-box {
         width: 100%;
     }
-
 }
 
 @media (max-width: 600px) {
-
     .patient-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
-
     .header-actions {
         width: 100%;
+        flex-wrap: wrap;
     }
-
-    .header-actions a {
+    .header-actions a, .header-actions button {
         flex: 1;
         justify-content: center;
     }
-
     .stats-grid {
         grid-template-columns: 1fr;
     }
-
     .patient-identity {
         align-items: flex-start;
     }
-
     .patient-name {
         font-size: 1.35rem;
     }
-
     .info-grid {
         grid-template-columns: 1fr;
     }
-
     .identifier-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-
     .journey-event-top {
         flex-direction: column;
         gap: 5px;
     }
-
+    .clinical-grid {
+        grid-template-columns: 1fr;
+    }
+    .clinical-full-width {
+        grid-column: span 1;
+    }
 }
 
 </style>
@@ -630,43 +624,33 @@
 
 <div class="patient-page">
 
-
     <!-- ==========================================
          PAGE HEADER
     ========================================== -->
 
     <div class="patient-header">
-
         <div>
-
             <h1>Patient Profile</h1>
-
-            <p>
-                Unified patient identity and healthcare record
-            </p>
-
+            <p>Unified patient identity and healthcare record</p>
         </div>
-
 
         <div class="header-actions">
-
-            <a
-                href="{% url 'patient_directory' %}"
-                class="btn-modern btn-modern-outline"
-            >
+            <button onclick="window.print()" class="btn-modern btn-modern-outline no-print">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                Print Summary
+            </button>
+            <a href="{% url 'patient_directory' %}" class="btn-modern btn-modern-outline">
                 ← Back
             </a>
-
-
-            <a
-                href="{% url 'edit_patient' patient.oph_id %}"
-                class="btn-modern btn-modern-primary"
-            >
+            <a href="{% url 'create_referral' patient.oph_id %}" class="btn-modern btn-modern-primary">
+                Create Referral
+            </a>
+            <a href="{% url 'edit_patient' patient.oph_id %}" class="btn-modern btn-modern-primary">
                 Edit Patient
             </a>
-
         </div>
-
     </div>
 
 
@@ -675,61 +659,30 @@
     ========================================== -->
 
     <div class="patient-hero">
-
         <div class="patient-hero-content">
-
             <div class="patient-identity">
-
                 <div class="patient-avatar">
-
-                    {{ patient.first_name|first|upper }}
-
-                    {{ patient.last_name|first|upper }}
-
+                    {{ patient.first_name|first|upper }}{{ patient.last_name|first|upper }}
                 </div>
-
-
                 <div>
-
                     <h2 class="patient-name">
-
-                        {{ patient.first_name }}
-
-                        {{ patient.last_name }}
-
+                        {{ patient.first_name }} {{ patient.last_name }}
                     </h2>
-
-
                     <div class="patient-subtitle">
-
                         Unified Patient Identity Record
-
                     </div>
-
                 </div>
-
             </div>
-
 
             <div class="oph-id-box">
-
                 <div class="oph-id-label">
-
                     OnePatient Hub ID
-
                 </div>
-
-
                 <div class="oph-id-value">
-
                     {{ patient.oph_id }}
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
 
@@ -738,106 +691,37 @@
     ========================================== -->
 
     <div class="stats-grid">
-
         <div class="stat-card">
-
-            <div class="stat-icon">
-                👤
-            </div>
-
+            <div class="stat-icon">👤</div>
             <div>
-
-                <div class="stat-value">
-
-                    {{ visits|length }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Healthcare Visits
-
-                </div>
-
+                <div class="stat-value">{{ visits|length }}</div>
+                <div class="stat-label">Healthcare Visits</div>
             </div>
-
         </div>
 
-
         <div class="stat-card">
-
-            <div class="stat-icon">
-                🔗
-            </div>
-
+            <div class="stat-icon">🔗</div>
             <div>
-
-                <div class="stat-value">
-
-                    {{ external_identifiers|length }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    External Identifiers
-
-                </div>
-
+                <div class="stat-value">{{ external_identifiers|length }}</div>
+                <div class="stat-label">External Identifiers</div>
             </div>
-
         </div>
 
-
         <div class="stat-card">
-
-            <div class="stat-icon">
-                ↗
-            </div>
-
+            <div class="stat-icon">↗</div>
             <div>
-
-                <div class="stat-value">
-
-                    {{ referrals|length }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Referrals
-
-                </div>
-
+                <div class="stat-value">{{ referrals|length }}</div>
+                <div class="stat-label">Referrals</div>
             </div>
-
         </div>
 
-
         <div class="stat-card">
-
-            <div class="stat-icon">
-                ✓
-            </div>
-
+            <div class="stat-icon">✓</div>
             <div>
-
-                <div class="stat-value">
-
-                    Active
-
-                </div>
-
-                <div class="stat-label">
-
-                    Identity Status
-
-                </div>
-
+                <div class="stat-value">Active</div>
+                <div class="stat-label">Identity Status</div>
             </div>
-
         </div>
-
     </div>
 
 
@@ -847,154 +731,62 @@
 
     <div class="profile-grid">
 
-
         <!-- ======================================
              LEFT COLUMN
         ======================================= -->
-
         <div>
 
-
             <!-- PATIENT INFORMATION -->
-
             <div class="modern-card">
-
                 <div class="card-heading">
-
                     <div>
-
                         <h3>Patient Information</h3>
-
-                        <p>
-                            Core demographic information
-                        </p>
-
+                        <p>Core demographic information</p>
                     </div>
-
                 </div>
-
 
                 <div class="info-grid">
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            First Name
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.first_name }}
-                        </div>
-
+                        <div class="info-label">First Name</div>
+                        <div class="info-value">{{ patient.first_name }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            Last Name
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.last_name }}
-                        </div>
-
+                        <div class="info-label">Last Name</div>
+                        <div class="info-value">{{ patient.last_name }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            National ID
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.national_id }}
-                        </div>
-
+                        <div class="info-label">National ID</div>
+                        <div class="info-value">{{ patient.national_id }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            Gender
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.gender }}
-                        </div>
-
+                        <div class="info-label">Gender</div>
+                        <div class="info-value">{{ patient.gender }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            Date of Birth
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.date_of_birth }}
-                        </div>
-
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value">{{ patient.date_of_birth }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            Phone Number
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.phone_number|default:"Not provided" }}
-                        </div>
-
+                        <div class="info-label">Phone Number</div>
+                        <div class="info-value">{{ patient.phone_number|default:"Not provided" }}</div>
                     </div>
-
-
                     <div class="info-item">
-
-                        <div class="info-label">
-                            Address
-                        </div>
-
-                        <div class="info-value">
-                            {{ patient.address|default:"Not provided" }}
-                        </div>
-
+                        <div class="info-label">Address</div>
+                        <div class="info-value">{{ patient.address|default:"Not provided" }}</div>
                     </div>
-
                 </div>
-
             </div>
 
-
             <!-- DATA SHARING CONSENT STATUS CARD -->
-
             <div class="modern-card">
-
                 <div class="card-heading">
-
                     <div>
-
                         <h3>Data Sharing Consent</h3>
-
-                        <p>
-                            Interoperability access preferences
-                        </p>
-
+                        <p>Interoperability access preferences</p>
                     </div>
-
-
-                    <a
-                        href="{% url 'manage_consent' patient.oph_id %}"
-                        class="btn-modern btn-modern-primary"
-                    >
+                    <a href="{% url 'manage_consent' patient.oph_id %}" class="btn-modern btn-modern-primary no-print">
                         Manage
                     </a>
-
                 </div>
 
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8faf9; border: 1px solid #edf1ef; border-radius: 12px; margin-bottom: 12px;">
@@ -1017,9 +809,8 @@
                     </div>
                 {% endif %}
 
-                <!-- EMERGENCY OVERRIDE TRIGGER (Appears if consent is restricted/missing) -->
                 {% if not consent or consent.status != "GRANTED" %}
-                    <div style="background: #fff8f7; border: 1px dashed #f0c9c5; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px;">
+                    <div class="no-print" style="background: #fff8f7; border: 1px dashed #f0c9c5; border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px;">
                         <div>
                             <div style="font-size: 0.82rem; font-weight: 700; color: #b42318; margin-bottom: 2px;">Clinical Emergency?</div>
                             <div style="font-size: 0.75rem; color: #7a8584;">Bypass data restrictions for urgent care.</div>
@@ -1029,300 +820,159 @@
                         </a>
                     </div>
                 {% endif %}
-
             </div>
-
 
             <!-- EXTERNAL IDENTIFIERS -->
-
             <div class="modern-card">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h3>
-                            External Patient Identifiers
-                        </h3>
-
-                        <p>
-                            Connected identifiers from other health systems
-                        </p>
-
+                        <h3>External Patient Identifiers</h3>
+                        <p>Connected identifiers from other health systems</p>
                     </div>
-
-
-                    <a
-                        href="{% url 'add_external_identifier' patient.oph_id %}"
-                        class="btn-modern btn-modern-primary"
-                    >
+                    <a href="{% url 'add_external_identifier' patient.oph_id %}" class="btn-modern btn-modern-primary no-print">
                         + Add
                     </a>
-
                 </div>
 
-
                 {% if external_identifiers %}
-
                     {% for identifier in external_identifiers %}
-
                         <div class="identifier-item">
-
                             <div class="identifier-system">
-
-                                <div class="system-icon">
-                                    ID
-                                </div>
-
-
+                                <div class="system-icon">ID</div>
                                 <div>
-
-                                    <div class="identifier-name">
-
-                                        {{ identifier.system_name }}
-
-                                    </div>
-
-
-                                    <div class="identifier-facility">
-
-                                        {{ identifier.facility_name }}
-
-                                    </div>
-
+                                    <div class="identifier-name">{{ identifier.system_name }}</div>
+                                    <div class="identifier-facility">{{ identifier.facility_name }}</div>
                                 </div>
-
                             </div>
-
-
-                            <div class="identifier-value">
-
-                                {{ identifier.identifier }}
-
-                            </div>
-
+                            <div class="identifier-value">{{ identifier.identifier }}</div>
                         </div>
-
                     {% endfor %}
-
                 {% else %}
-
                     <div class="empty-state">
-
-                        <div class="empty-icon">
-                            🔗
-                        </div>
-
-                        <p>
-                            No external identifiers have been linked.
-                        </p>
-
-
-                        <a
-                            href="{% url 'add_external_identifier' patient.oph_id %}"
-                            class="btn-modern btn-modern-outline"
-                        >
+                        <div class="empty-icon">🔗</div>
+                        <p>No external identifiers have been linked.</p>
+                        <a href="{% url 'add_external_identifier' patient.oph_id %}" class="btn-modern btn-modern-outline no-print">
                             Add External Identifier
                         </a>
-
                     </div>
-
                 {% endif %}
-
             </div>
 
-
         </div>
-
 
         <!-- ======================================
              RIGHT COLUMN
         ======================================= -->
-
         <div>
-
 
             <!-- ======================================
                  UNIFIED PATIENT JOURNEY
             ======================================= -->
-
             <div class="modern-card">
-
                 <div class="card-heading">
-
                     <div>
-
-                        <h3>
-                            Patient Journey
-                        </h3>
-
-                        <p>
-                            Unified care history across facilities
-                        </p>
-
+                        <h3>Patient Journey & Clinical History</h3>
+                        <p>Unified care history across facilities</p>
                     </div>
-
-                    <a
-                        href="{% url 'patient_journey' patient.oph_id %}"
-                        class="btn-modern btn-modern-primary"
-                    >
+                    <a href="{% url 'patient_journey' patient.oph_id %}" class="btn-modern btn-modern-primary no-print">
                         View Full Journey
                     </a>
-
                 </div>
 
-
                 {% if timeline_events %}
-
                     <div class="journey-container">
-
-
                         {% for event in timeline_events %}
-
                             <div class="journey-event">
 
-
                                 <div class="journey-marker">
-
-                                    {% if event.event_category == "registration" %}
-                                        👤
-
-                                    {% elif event.event_category == "visit" %}
-                                        📅
-
-                                    {% elif event.event_category == "referral" %}
-                                        ↗
-
-                                    {% elif event.event_category == "identity" %}
-                                        🔗
-
-                                    {% else %}
-                                        ●
-                                    {% endif %}
-
+                                    {% if event.event_category == "registration" %}👤
+                                    {% elif event.event_category == "visit" %}🩺
+                                    {% elif event.event_category == "referral" %}↗
+                                    {% elif event.event_category == "identity" %}🔗
+                                    {% else %}●{% endif %}
                                 </div>
-
 
                                 <div class="journey-event-card">
 
-
                                     <div class="journey-event-top">
-
-
-                                        <div class="journey-event-title">
-
-                                            {{ event.event_type }}
-
-                                        </div>
-
-
-                                        <div class="journey-event-date">
-
-                                            {{ event.date|date:"d M Y" }}
-
-                                        </div>
-
+                                        <div class="journey-event-title">{{ event.event_type }}</div>
+                                        <div class="journey-event-date">{{ event.date|date:"d M Y" }}</div>
                                     </div>
 
-
-                                    <div class="journey-event-facility">
-
-                                        📍 {{ event.facility }}
-
-                                    </div>
-
-
-                                    <div class="journey-event-description">
-
-                                        {{ event.description }}
-
-                                    </div>
-
+                                    <div class="journey-event-facility">📍 {{ event.facility }}</div>
+                                    
+                                    <div class="journey-event-description">{{ event.description }}</div>
 
                                     {% if event.status %}
-
-                                        <span class="journey-status">
-
-                                            {{ event.status }}
-
-                                        </span>
-
+                                        <span class="journey-status">{{ event.status }}</span>
                                     {% endif %}
 
+                                    {% if event.event_category == "visit" %}
+                                        {% for visit in visits %}
+                                            {% if visit.visit_date == event.date and visit.reason in event.description %}
+                                                <div class="clinical-grid">
+                                                    
+                                                    <div class="clinical-item">
+                                                        <span class="clinical-label">Vitals</span>
+                                                        {% if visit.blood_pressure or visit.temperature or visit.weight %}
+                                                            <span class="clinical-val">
+                                                                {{ visit.blood_pressure|default:"--/--" }} mmHg | 
+                                                                {{ visit.temperature|default:"--" }} °C | 
+                                                                {{ visit.weight|default:"--" }} kg
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="clinical-val" style="color: #aebaba; font-weight: normal;">Not recorded</span>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="clinical-item">
+                                                        <span class="clinical-label">Diagnosis</span>
+                                                        <span class="clinical-val">
+                                                            {{ visit.diagnosis|default:"<span style='color: #aebaba; font-weight: normal;'>Not recorded</span>"|safe }}
+                                                        </span>
+                                                    </div>
+
+                                                    {% if visit.treatment_plan %}
+                                                        <div class="clinical-item clinical-full-width">
+                                                            <span class="clinical-label">Treatment Plan</span>
+                                                            <span class="clinical-val">{{ visit.treatment_plan }}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
 
                                 </div>
-
                             </div>
-
                         {% endfor %}
-
-
                     </div>
-
                 {% else %}
-
                     <div class="empty-state">
-
-                        <div class="empty-icon">
-                            🧭
-                        </div>
-
-
-                        <p>
-                            No patient journey events have been recorded yet.
-                        </p>
-
+                        <div class="empty-icon">🧭</div>
+                        <p>No patient journey events have been recorded yet.</p>
                     </div>
-
                 {% endif %}
-
             </div>
 
-
         </div>
-
-
     </div>
-
 
     <!-- ==========================================
          DANGER ZONE
     ========================================== -->
-
-    <div class="modern-card">
-
+    <div class="modern-card no-print">
         <div class="card-heading">
-
             <div>
-
-                <h3>
-                    Patient Record Management
-                </h3>
-
-                <p>
-                    Permanently remove this patient record
-                </p>
-
+                <h3>Patient Record Management</h3>
+                <p>Permanently remove this patient record</p>
             </div>
-
-
-            <a
-                href="{% url 'delete_patient' patient.oph_id %}"
-                class="btn-modern"
-                style="
-                    color: #b42318;
-                    border: 1px solid #f0c9c5;
-                    background: #fff8f7;
-                "
-            >
+            <a href="{% url 'delete_patient' patient.oph_id %}" class="btn-modern" style="color: #b42318; border: 1px solid #f0c9c5; background: #fff8f7;">
                 Delete Patient
             </a>
-
         </div>
-
     </div>
 
-
 </div>
-
 {% endblock %}

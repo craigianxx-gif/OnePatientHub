@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+:root {
+    --deep-teal: #0f302b;
+    --deep-teal-hover: #16403a;
+    --accent-teal: #14b8a6;
+    --bg-card: #ffffff;
+    --bg-subtle: #f8fafc;
+    --border-color: #e5ebe9;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --unread-bg: #f0fdfa; /* Very light teal for unread */
+    --admin-alert-bg: #fffbeb; /* Light amber for admin alerts */
+    --admin-alert-border: #f59e0b;
+}
+
+.notifications-page {
+    max-width: 860px;
+    margin: 20px auto 60px;
+    padding: 0 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary);
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--deep-teal);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-group {
+    display: flex;
+    gap: 10px;
+}
+
+.unread-badge {
+    background-color: var(--deep-teal);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.admin-badge {
+    background-color: #e74c3c;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* ==========================================
+   NOTIFICATION CARDS
+========================================== */
+.section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin: 24px 0 12px 0;
+}
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.notification-card:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    border-color: #cbd5e1;
+}
+
+/* Unread Referral State */
+.notification-card.unread {
+    background: var(--unread-bg);
+    border-left: 4px solid var(--accent-teal);
+}
+
+/* Admin Alert State */
+.notification-card.admin-alert {
+    background: var(--admin-alert-bg);
+    border-left: 4px solid var(--admin-alert-border);
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.unread .icon-wrapper {
+    background: var(--accent-teal);
+    color: white;
+}
+
+.admin-alert .icon-wrapper {
+    background: var(--admin-alert-border);
+    color: white;
+}
+
+.notification-content {
+    flex-grow: 1;
+}
+
+.notification-message {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+}
+
+.notification-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
+.notification-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-view {
+    background: var(--deep-teal);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-view:hover {
+    background: var(--deep-teal-hover);
+    color: white;
+}
+
+.btn-admin {
+    background: #b45309;
+}
+
+.btn-admin:hover {
+    background: #92400e;
+}
+
+.new-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    background: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--accent-teal);
+}
+
+.admin-tag {
+    color: #b45309;
+    border-color: #b45309;
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-card);
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    color: var(--text-muted);
+}
+.empty-state svg {
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+.empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+</style>
+
+<div class="notifications-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            Notification Center
+        </h1>
+        <div class="badge-group">
+            {% if unread_count > 0 %}
+                <div class="unread-badge">{{ unread_count }} Referrals</div>
+            {% endif %}
+            {% if request.user.profile.role == "administrator" and pending_requests_count > 0 %}
+                <div class="admin-badge">{{ pending_requests_count }} Pending Accounts</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="notification-list">
+
+        <!-- ==========================================
+             SYSTEM / ADMIN ALERTS
+        ========================================== -->
+        {% if request.user.profile.role == "administrator" and pending_requests_count > 0 %}
+            <div class="section-title">Action Required</div>
+            
+            <div class="notification-card admin-alert">
+                <!-- Icon -->
+                <div class="icon-wrapper">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                </div>
+
+                <!-- Content -->
+                <div class="notification-content">
+                    <p class="notification-message">New Facility Account Requests</p>
+                    <div class="notification-meta">
+                        <span class="meta-item" style="color: #92400e; font-weight: 500;">
+                            You have {{ pending_requests_count }} pending user account request(s) awaiting administrator approval.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="notification-actions">
+                    <span class="new-tag admin-tag">System Alert</span>
+                    <a href="{% url 'account_requests' %}" class="btn-view btn-admin">
+                        Review Requests
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- ==========================================
+             REFERRAL NOTIFICATIONS
+        ========================================== -->
+        <div class="section-title" style="margin-top: {% if request.user.profile.role == 'administrator' and pending_requests_count > 0 %}32px{% else %}0{% endif %};">
+            Clinical Referrals
+        </div>
+
+        {% for notification in notifications %}
+            <div class="notification-card {% if notification.id not in read_ids %}unread{% endif %}">
+                
+                <!-- Icon -->
+                <div class="icon-wrapper">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                </div>
+
+                <!-- Content -->
+                <div class="notification-content">
+                    <p class="notification-message">{{ notification.message }}</p>
+                    
+                    <div class="notification-meta">
+                        <span class="meta-item" title="Patient OPH-ID">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <span style="font-family: monospace; font-weight: 600; color: var(--deep-teal);">
+                                {{ notification.referral.patient.oph_id }}
+                            </span>
+                        </span>
+                        <span style="color: #cbd5e1;">|</span>
+                        <span class="meta-item">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"></path></svg>
+                            {{ notification.created_at|date:"d M Y, H:i" }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="notification-actions">
+                    {% if notification.id not in read_ids %}
+                        <span class="new-tag">New</span>
+                    {% endif %}
+                    <a href="{% url 'open_notification' notification.id %}" class="btn-view">
+                        View Details
+                    </a>
+                </div>
+
+            </div>
+        {% empty %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state">
+                <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3>All Caught Up!</h3>
+                <p>You have no pending referral notifications.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

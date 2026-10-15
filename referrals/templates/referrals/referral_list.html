@@ -99,6 +99,20 @@
         border-bottom: none;
     }
 
+    /* OPH-ID Link Styling */
+    .oph-link {
+        color: var(--deep-teal);
+        font-weight: 700;
+        text-decoration: none;
+        border-bottom: 1px solid var(--deep-teal);
+        padding-bottom: 1px;
+        transition: opacity 150ms ease;
+    }
+    
+    .oph-link:hover {
+        opacity: 0.7;
+    }
+
     /* Status Form Inline styling */
     .status-form {
         display: flex;
@@ -131,6 +145,19 @@
     .btn-update:hover {
         background: var(--deep-teal-hover);
     }
+
+    /* Disabled state styling for locked referrals */
+    .status-select:disabled {
+        background: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .btn-update:disabled {
+        background: #d1d5db;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
 </style>
 {% endblock %}
 
@@ -140,9 +167,7 @@
         <h1>Referral Management</h1>
         <p>Track and manage patient transfers between facilities.</p>
     </div>
-    <a href="{% url 'create_referral' %}" class="btn-teal">
-        + Create Referral
-    </a>
+    <!-- Removed broken global "Create Referral" button. Referrals must now be initiated from a specific patient's profile. -->
 </div>
 
 <div class="controls-wrapper">
@@ -168,24 +193,65 @@
         <tbody>
             {% for referral in referrals %}
             <tr>
-                <td><span class="oph-badge">{{ referral.patient.oph_id }}</span></td>
+                <td>
+                    <a href="{% url 'referral_detail' referral.id %}" class="oph-link">
+                        {{ referral.patient.oph_id }}
+                    </a>
+                </td>
                 <td>{{ referral.patient.first_name }} {{ referral.patient.last_name }}</td>
                 <td>{{ referral.referring_facility }}</td>
                 <td>{{ referral.receiving_facility }}</td>
                 <td>{{ referral.referral_date|date:"M d, Y" }}</td>
-                <td>{{ referral.get_status_display|default:referral.status }}</td>
                 <td>
-                    <form method="POST" action="{% url 'update_referral_status' referral.id %}" class="status-form">
-                        {% csrf_token %}
-                        <select name="status" class="status-select">
-                            {% for value, label in referral.STATUS_CHOICES %}
-                            <option value="{{ value }}" {% if referral.status == value %}selected{% endif %}>
-                                {{ label }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn-update">Update</button>
-                    </form>
+                    {% if referral.status == 'Pending' %}
+                        <span style="color: #b45309; background-color: #fef3c7; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem;">
+                            {{ referral.get_status_display|default:referral.status }}
+                        </span>
+                    {% elif referral.status == 'Accepted' or referral.status == 'Completed' %}
+                        <span style="color: #15803d; background-color: #dcfce3; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem;">
+                            {{ referral.get_status_display|default:referral.status }}
+                        </span>
+                    {% elif referral.status == 'Cancelled' %}
+                        <span style="color: #b91c1c; background-color: #fee2e2; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 0.875rem;">
+                            {{ referral.get_status_display|default:referral.status }}
+                        </span>
+                    {% else %}
+                        <span>{{ referral.get_status_display|default:referral.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if referral.receiving_facility.id == active_facility_id %}
+                        <!-- RECEIVER VIEW: Full control to Accept/Complete/Cancel -->
+                        <form method="POST" action="{% url 'update_referral_status' referral.id %}" class="status-form">
+                            {% csrf_token %}
+                            <select name="status" class="status-select" 
+                                {% if referral.status == 'Completed' or referral.status == 'Cancelled' %}disabled{% endif %}>
+                                {% for value, label in referral.STATUS_CHOICES %}
+                                <option value="{{ value }}" {% if referral.status == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn-update" 
+                                {% if referral.status == 'Completed' or referral.status == 'Cancelled' %}disabled{% endif %}>
+                                Update
+                            </button>
+                        </form>
+                    
+                    {% elif referral.referring_facility.id == active_facility_id %}
+                        <!-- SENDER VIEW: Can only cancel if still pending -->
+                        {% if referral.status == 'Pending' %}
+                            <form method="POST" action="{% url 'update_referral_status' referral.id %}" class="status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="Cancelled">
+                                <button type="submit" class="btn-update" style="background-color: var(--coral);" onclick="return confirm('Are you sure you want to cancel this outgoing referral?');">
+                                    Cancel Referral
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">No actions available</span>
+                        {% endif %}
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}

@@ -1,3 +1,5 @@
+import csv
+import calendar
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
@@ -9,241 +11,290 @@ from django.utils import timezone
 from patients.models import Patient
 from visits.models import Visit
 from referrals.models import Referral
-from hiv_testing.models import HIVTest
-
-# Optional imports for facility and API models
-try:
-    from facilities.models import Facility
-except ImportError:
-    Facility = None
-
-try:
-    from api.models import ConnectedSystem, FhirTransaction
-except ImportError:
-    ConnectedSystem = None
-    FhirTransaction = None
+from facilities.models import Facility
+from api.models import ConnectedSystem, FhirTransaction
 
 
 def get_pct(part, total):
-    """Calculates percentage safely without division by zero."""
     return round((part / total) * 100) if total > 0 else 0
+
+
+def compute_aggregates(period_req, selected_year, selected_month):
+    """
+    SINGLE SOURCE OF TRUTH: All metrics are calculated here.
+    The Dashboard, CSV, and JSON all read from this exact dictionary.
+    """
+    today = date.today()
+    all_patients = Patient.objects.all()
+
+    # Time Filtering
+    if period_req == 'ytd':
+        v_qs = Visit.objects.filter(visit_date__year=selected_year)
+        r_qs = Referral.objects.filter(created_at__year=selected_year)
+        p_qs = Patient.objects.filter(created_at__year=selected_year)
+    else:
+        v_qs = Visit.objects.filter(visit_date__year=selected_year, visit_date__month=selected_month)
+        r_qs = Referral.objects.filter(created_at__year=selected_year, created_at__month=selected_month)
+        p_qs = Patient.objects.filter(created_at__year=selected_year, created_at__month=selected_month)
+
+    total_visits = v_qs.count()
+
+    # Structured Data Element Mapping
+    data = {
+        # Core Stats
+        "total_patients_all_time": all_patients.count(),
+        "total_patients_period": p_qs.count(),
+        "total_facilities": Facility.objects.count(),
+        "total_visits": total_visits,
+        "total_referrals": r_qs.count(),
+
+        # Outpatient & Inpatient
+        "opd_attendance": v_qs.filter(visit_type="OPD").count(),
+        "emergency_visits": v_qs.filter(visit_type="Emergency").count(),
+
+        # Maternal Health
+        "anc_visits": v_qs.filter(visit_type="ANC").count(),
+        "deliveries": v_qs.filter(visit_type="DEL").count(),
+        "pnc_visits": v_qs.filter(visit_type="PNC").count(),
+
+        # Disease Surveillance (Using Structured Choices)
+        "hiv_tested": v_qs.filter(test_type="HIV").count(),
+        "hiv_positive": v_qs.filter(test_type="HIV", test_result="POSITIVE").count(),
+        
+        "tb_tested": v_qs.filter(test_type="TB").count(),
+        "tb_positive": v_qs.filter(test_type="TB", test_result="POSITIVE").count(),
+        
+        "malaria_tested": v_qs.filter(test_type="MALARIA").count(),
+        "malaria_positive": v_qs.filter(test_type="MALARIA", test_result="POSITIVE").count(),
+    }
+
+    # API & Interoperability
+    data["connected_systems"] = ConnectedSystem.objects.filter(status="Connected").count() if ConnectedSystem else 0
+    data["api_requests"] = FhirTransaction.objects.count() if FhirTransaction else 0
+
+    return data, v_qs, r_qs, all_patients
 
 
 @login_required
 def monthly_reports(request):
     today = date.today()
 
-    # Capture Filters (Defaults to Current Year/Month if not provided)
-    selected_year = int(request.GET.get("year", today.year))
-    selected_month = int(request.GET.get("month", today.month))
-    period = f"{selected_year}{selected_month:02d}"
+    recent_months = []
+    curr_year, curr_month = today.year, today.month
+    for _ in range(6):
+        recent_months.append({
+            "value": f"{curr_year}-{curr_month}",
+            "label": f"{calendar.month_name[curr_month]} {curr_year}"
+        })
+        curr_month -= 1
+        if curr_month == 0:
+            curr_month = 12
+            curr_year -= 1
 
-    # ==========================================
-    # 1. NATIONAL SUMMARY & POPULATION STATS
-    # ==========================================
-    # Query ALL patients so national demographics update regardless of selected month
-    all_patients = Patient.objects.all()
-    total_patients_count = all_patients.count()
+    period_req = request.GET.get("period", f"{today.year}-{today.month}")
+    
+    if period_req == 'ytd':
+        selected_year, selected_month = today.year, today.month 
+        period_str = str(selected_year)
+        display_period_name = f"Year to Date ({selected_year})"
+    else:
+        try:
+            selected_year, selected_month = map(int, period_req.split("-"))
+        except ValueError:
+            selected_year, selected_month = today.year, today.month
+        period_str = f"{selected_year}{selected_month:02d}"
+        display_period_name = f"{calendar.month_name[selected_month]} {selected_year}"
 
-    # Gender breakdown (handles 'Male', 'male', 'M', 'Female', 'female', 'F')
-    male_count = all_patients.filter(
-        Q(gender__iexact='Male') | Q(gender__iexact='M')
-    ).count() if hasattr(Patient, 'gender') else 0
+    # --- PULL FROM SINGLE SOURCE OF TRUTH ---
+    agg_data, visits_qs, referrals_qs, all_patients = compute_aggregates(period_req, selected_year, selected_month)
 
-    female_count = all_patients.filter(
-        Q(gender__iexact='Female') | Q(gender__iexact='F')
-    ).count() if hasattr(Patient, 'gender') else 0
-
-    # Age breakdown
+    # Demographics (All-time population for context)
+    male_count = all_patients.filter(Q(gender__iexact='Male') | Q(gender__iexact='M')).count() if hasattr(Patient, 'gender') else 0
+    female_count = all_patients.filter(Q(gender__iexact='Female') | Q(gender__iexact='F')).count() if hasattr(Patient, 'gender') else 0
+    
     fourteen_years_ago = today - timedelta(days=14 * 365.25)
     sixty_five_years_ago = today - timedelta(days=65 * 365.25)
-
-    dob_field = 'date_of_birth' if hasattr(Patient, 'date_of_birth') else ('dob' if hasattr(Patient, 'dob') else None)
+    dob_field = 'date_of_birth' if hasattr(Patient, 'date_of_birth') else None
 
     if dob_field:
         children_count = all_patients.filter(**{f"{dob_field}__gt": fourteen_years_ago}).count()
         seniors_count = all_patients.filter(**{f"{dob_field}__lt": sixty_five_years_ago}).count()
     else:
-        children_count = 0
-        seniors_count = 0
+        children_count, seniors_count = 0, 0
 
-    adults_count = total_patients_count - (children_count + seniors_count) if total_patients_count > 0 else 0
+    adults_count = agg_data["total_patients_all_time"] - (children_count + seniors_count)
 
-    # ==========================================
-    # 2. MONTHLY ACTIVITY & SURVEILLANCE
-    # ==========================================
-    # Filter monthly data based on selected year/month
-    visits_qs = Visit.objects.filter(visit_date__year=selected_year, visit_date__month=selected_month) if Visit else Visit.objects.none()
-    referrals_qs = Referral.objects.filter(created_at__year=selected_year, created_at__month=selected_month) if Referral else Referral.objects.none()
-    hiv_tests_qs = HIVTest.objects.filter(created_at__year=selected_year, created_at__month=selected_month) if HIVTest else HIVTest.objects.none()
-
-    def get_disease_metrics(test_type_str):
-        qs = hiv_tests_qs.filter(test_type=test_type_str)
-        screened = qs.count()
-        positive = qs.filter(Q(result__iexact="Positive") | Q(result__iexact="Pos")).count()
-        pending = qs.filter(Q(result__iexact="Pending") | Q(result__isnull=True)).count()
-        return screened, positive, pending
-
-    hiv_screened, hiv_pos, hiv_pend = get_disease_metrics("HIV")
-    tb_screened, tb_pos, tb_pend = get_disease_metrics("Tuberculosis")
-    malaria_screened, malaria_pos, malaria_pend = get_disease_metrics("Malaria")
-    maternal_screened, maternal_deliveries, maternal_pend = get_disease_metrics("Maternal Care")
-
-    # ==========================================
-    # 3. INTEROPERABILITY SUMMARY
-    # ==========================================
-    total_facilities = Facility.objects.count() if Facility else 0
-    connected_systems = ConnectedSystem.objects.filter(status="Connected").count() if ConnectedSystem else (ConnectedSystem.objects.count() if ConnectedSystem else 0)
-
-    total_tx = 0
-    api_success_rate = 100
-    api_failed_rate = 0
-
-    if FhirTransaction:
-        tx_all = FhirTransaction.objects.all()
-        total_tx = tx_all.count()
-        if total_tx > 0:
-            success_tx = tx_all.filter(status_code__in=[200, 201]).count()
-            failed_tx = tx_all.filter(status_code__gte=400).count()
-            api_success_rate = get_pct(success_tx, total_tx)
-            api_failed_rate = get_pct(failed_tx, total_tx)
-
-    # ==========================================
-    # 4. FACILITY ACTIVITY FEED
-    # ==========================================
+    # Facility Feed Calculation (Uses true reporting rates)
     facility_activity_data = []
-    if Facility:
-        for f in Facility.objects.all()[:10]:
-            f_visits = visits_qs.filter(facility=f).count() if hasattr(Visit, 'facility') else 0
-            f_referrals = referrals_qs.filter(referred_from=f).count() if hasattr(Referral, 'referred_from') else 0
-            f_patients = all_patients.filter(facility=f).count() if hasattr(Patient, 'facility') else 0
-            
-            facility_activity_data.append({
-                'name': getattr(f, 'name', 'Unknown Facility'),
-                'province': getattr(f, 'province', 'N/A'),
-                'visits': f_visits,
-                'referrals_out': f_referrals,
-                'new_patients': f_patients,
-                'status': getattr(f, 'status', 'Online')
-            })
+    for f in Facility.objects.all()[:10]:
+        f_v_count = visits_qs.filter(facility=f).count()
+        facility_activity_data.append({
+            'name': f.facility_name,
+            'province': f.get_province_display(),
+            'visits': f_v_count,
+            'referrals_out': referrals_qs.filter(patient__visits__facility=f).distinct().count(),
+            'status': 'Reported' if f_v_count > 0 else 'No Data'
+        })
 
-    # ==========================================
-    # 5. CONTEXT BUILD
-    # ==========================================
+    # MoHCC Matrix Calculation
+    mohcc_diseases = ['Asthma', 'Anxiety', 'Diabetes', 'Hypertension', 'Cervix']
+    dynamic_matrix = []
+
+    for disease in mohcc_diseases:
+        d_visits = visits_qs.filter(diagnosis__icontains=disease)
+        
+        row = {
+            'name': 'Ca Cervix' if disease == 'Cervix' else (disease + ' Disorders' if disease == 'Anxiety' else (disease + ' Mellitus' if disease == 'Diabetes' else disease)),
+            'age_5_14': {'f_fu': 0, 'm_fu': 0, 'f_new': 0, 'm_new': 0},
+            'age_15_24': {'f_fu': 0, 'm_fu': 0, 'f_new': 0, 'm_new': 0},
+            'age_25_49': {'f_fu': 0, 'm_fu': 0, 'f_new': 0, 'm_new': 0},
+        }
+
+        for v in d_visits:
+            if not v.patient or not hasattr(v.patient, 'date_of_birth') or not v.patient.date_of_birth:
+                continue
+            
+            age = (today - v.patient.date_of_birth).days // 365
+            gender_key = 'm' if str(getattr(v.patient, 'gender', 'u')).lower().startswith('m') else 'f'
+            visit_type = 'new' if v.visit_type == 'OPD' else 'fu'
+
+            if 5 <= age <= 14:
+                row['age_5_14'][f"{gender_key}_{visit_type}"] += 1
+            elif 15 <= age <= 24:
+                row['age_15_24'][f"{gender_key}_{visit_type}"] += 1
+            elif 25 <= age <= 49:
+                row['age_25_49'][f"{gender_key}_{visit_type}"] += 1
+
+        dynamic_matrix.append(row)
+
     context = {
         "report": {
-            "period": period,
-            "total_patients": f"{total_patients_count:,}",
-            "total_facilities": f"{total_facilities:,}",
-            "total_visits": f"{visits_qs.count():,}",
-            "total_referrals": f"{referrals_qs.count():,}",
-            "connected_systems": connected_systems,
-            "api_requests": f"{total_tx:,}",
-            "fhir_resources": f"{total_tx:,}",
+            "period": period_str,
+            "display_name": display_period_name,
+            "total_patients": f"{agg_data['total_patients_all_time']:,}",
+            "total_facilities": f"{agg_data['total_facilities']:,}",
+            "total_visits": f"{agg_data['total_visits']:,}",
+            "total_referrals": f"{agg_data['total_referrals']:,}",
+            "connected_systems": agg_data["connected_systems"],
+            "api_requests": f"{agg_data['api_requests']:,}",
+            "fhir_resources": f"{agg_data['api_requests']:,}",
 
-            # Population Statistics
-            "pct_male": get_pct(male_count, total_patients_count),
-            "pct_female": get_pct(female_count, total_patients_count),
-            "pct_children": get_pct(children_count, total_patients_count),
-            "pct_adults": get_pct(adults_count, total_patients_count),
-            "pct_seniors": get_pct(seniors_count, total_patients_count),
+            "pct_male": get_pct(male_count, agg_data["total_patients_all_time"]),
+            "pct_female": get_pct(female_count, agg_data["total_patients_all_time"]),
+            "pct_children": get_pct(children_count, agg_data["total_patients_all_time"]),
+            "pct_adults": get_pct(adults_count, agg_data["total_patients_all_time"]),
+            "pct_seniors": get_pct(seniors_count, agg_data["total_patients_all_time"]),
             "average_age": 34,
 
-            # Disease Surveillance
-            "hiv_screened": f"{hiv_screened:,}",
-            "hiv_positive": f"{hiv_pos:,}",
-            "hiv_pending": f"{hiv_pend:,}",
-
-            "tb_screened": f"{tb_screened:,}",
-            "tb_positive": f"{tb_pos:,}",
-            "tb_pending": f"{tb_pend:,}",
-
-            "malaria_screened": f"{malaria_screened:,}",
-            "malaria_positive": f"{malaria_pos:,}",
-            "malaria_pending": f"{malaria_pend:,}",
-
-            "maternal_cases": f"{maternal_screened:,}",
-            "maternal_deliveries": f"{maternal_deliveries:,}",
-            "maternal_pending": f"{maternal_pend:,}",
+            # Direct mapping from structured aggregates
+            "hiv_screened": f"{agg_data['hiv_tested']:,}",
+            "hiv_positive": f"{agg_data['hiv_positive']:,}",
+            "tb_screened": f"{agg_data['tb_tested']:,}",
+            "tb_positive": f"{agg_data['tb_positive']:,}",
+            "malaria_screened": f"{agg_data['malaria_tested']:,}",
+            "malaria_positive": f"{agg_data['malaria_positive']:,}",
+            
+            "maternal_cases": f"{agg_data['anc_visits']:,}",
+            "maternal_deliveries": f"{agg_data['deliveries']:,}",
         },
-        "interoperability": {
-            "connected_systems": connected_systems,
-            "fhir_organizations": total_facilities,
-            "external_ids": total_patients_count,
-            "api_success_rate": api_success_rate,
-            "api_failed_rate": api_failed_rate,
-            "dhis2_exports": 145,
-        },
-        "facility_activity": facility_activity_data,
-        "report_history": [
-            {
-                'name': f'Comprehensive Summary ({period})',
-                'generated_by': request.user.get_full_name() or request.user.username,
-                'date': timezone.now(),
-                'format': 'PDF',
-                'download_url': '#'
-            }
-        ],
+        "recent_months": recent_months,
+        "current_period": period_req,
         "selected_year": selected_year,
         "selected_month": selected_month,
+        "facility_activity": facility_activity_data,
+        "mohcc_matrix": dynamic_matrix,
+        "report_history": []
     }
 
     return render(request, "reports/monthly_reports.html", context)
 
 
-# ==========================================
-# EXPORT ENDPOINTS
-# ==========================================
+@login_required
+def export_report_csv(request):
+    today = date.today()
+    period_req = request.GET.get("period", f"{today.year}-{today.month}")
+    
+    if period_req == 'ytd':
+        selected_year, selected_month = today.year, today.month
+        period_display = f"Year to Date ({selected_year})"
+    else:
+        try:
+            selected_year, selected_month = map(int, period_req.split("-"))
+        except ValueError:
+            selected_year, selected_month = today.year, today.month
+        period_display = f"{calendar.month_name[selected_month]} {selected_year}"
+
+    # --- READ FROM THE SAME SOURCE ---
+    agg_data, _, _, _ = compute_aggregates(period_req, selected_year, selected_month)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="OPH_DHIS2_Aggregate_{period_req}.csv"'
+    writer = csv.writer(response)
+    
+    writer.writerow(['DHIS2 AGGREGATE ROUTINE DATA SUBMISSION'])
+    writer.writerow(['Facility/System:', 'OnePatient Hub - National Registry'])
+    writer.writerow(['Period:', period_display])
+    writer.writerow(['Generated By:', request.user.get_full_name() or request.user.username])
+    writer.writerow([]) 
+    
+    writer.writerow(['OUTPATIENT AND INPATIENT'])
+    writer.writerow(['Data Element', 'Count'])
+    writer.writerow(['OPD Attendance (Total)', agg_data["opd_attendance"]])
+    writer.writerow(['Emergency Visits', agg_data["emergency_visits"]])
+    writer.writerow(['Inter-facility Referrals', agg_data["total_referrals"]])
+    writer.writerow([])
+
+    writer.writerow(['MALARIA, TB, AND HIV/AIDS'])
+    writer.writerow(['Data Element', 'Tested', 'Positive'])
+    writer.writerow(['HIV/AIDS', agg_data["hiv_tested"], agg_data["hiv_positive"]])
+    writer.writerow(['Tuberculosis', agg_data["tb_tested"], agg_data["tb_positive"]])
+    writer.writerow(['Malaria', agg_data["malaria_tested"], agg_data["malaria_positive"]])
+    writer.writerow([])
+
+    writer.writerow(['MATERNAL, NEWBORN, AND CHILD HEALTH'])
+    writer.writerow(['Data Element', 'Count'])
+    writer.writerow(['Antenatal Care (ANC) Visits', agg_data["anc_visits"]])
+    writer.writerow(['Facility Deliveries', agg_data["deliveries"]])
+    writer.writerow(['Postnatal Care (PNC) Visits', agg_data["pnc_visits"]])
+    writer.writerow([])
+
+    writer.writerow(['FACILITY AND HUMAN RESOURCES'])
+    writer.writerow(['Data Element', 'Count'])
+    writer.writerow(['Active Facilities', agg_data["total_facilities"]])
+    writer.writerow(['New Patient Registrations (Period)', agg_data["total_patients_period"]])
+    writer.writerow([])
+
+    writer.writerow(['*** END OF DHIS2 AGGREGATE EXTRACT ***'])
+
+    return response
+
 
 @login_required
 def export_dhis2_json(request, year, month):
     period = f"{year}{month:02d}"
+    
+    # --- READ FROM THE SAME SOURCE ---
+    agg_data, _, _, _ = compute_aggregates(f"{year}-{month}", year, month)
 
-    total_patients = Patient.objects.filter(created_at__year=year, created_at__month=month).count()
-    total_visits = Visit.objects.filter(visit_date__year=year, visit_date__month=month).count()
-    total_referrals = Referral.objects.filter(created_at__year=year, created_at__month=month).count()
-    total_hiv_tests = HIVTest.objects.filter(created_at__year=year, created_at__month=month).count()
-
-    try:
-        country_code = request.user.profile.country_code.upper()
-    except AttributeError:
-        country_code = "ZW"
-
+    country_code = getattr(getattr(request.user, 'profile', None), 'country_code', "ZW").upper()
     organisation_unit = f"OPH-{country_code}-FACILITY"
 
     data_values = [
-        {"dataElement": "OPH_TOTAL_PATIENTS", "period": period, "orgUnit": organisation_unit, "value": str(total_patients)},
-        {"dataElement": "OPH_TOTAL_VISITS", "period": period, "orgUnit": organisation_unit, "value": str(total_visits)},
-        {"dataElement": "OPH_TOTAL_REFERRALS", "period": period, "orgUnit": organisation_unit, "value": str(total_referrals)},
-        {"dataElement": "OPH_TOTAL_HIV_TESTS", "period": period, "orgUnit": organisation_unit, "value": str(total_hiv_tests)},
+        {"dataElement": "OPH_PATIENTS_REG", "period": period, "orgUnit": organisation_unit, "value": str(agg_data["total_patients_period"])},
+        {"dataElement": "OPH_VISITS_TOTAL", "period": period, "orgUnit": organisation_unit, "value": str(agg_data["total_visits"])},
+        {"dataElement": "OPH_REFERRALS_OUT", "period": period, "orgUnit": organisation_unit, "value": str(agg_data["total_referrals"])},
+        {"dataElement": "OPH_HIV_TESTED", "period": period, "orgUnit": organisation_unit, "value": str(agg_data["hiv_tested"])},
+        {"dataElement": "OPH_HIV_POSITIVE", "period": period, "orgUnit": organisation_unit, "value": str(agg_data["hiv_positive"])},
     ]
 
     response = JsonResponse({"dataValues": data_values}, json_dumps_params={"indent": 4})
     response["Content-Disposition"] = f'attachment; filename="OPH_DHIS2_{period}.json"'
     return response
 
-
 @login_required
 def export_report_pdf(request):
     return HttpResponse("<h2>PDF Export Engine</h2><p>PDF export generation complete.</p>")
 
-
-@login_required
-def export_report_csv(request):
-    import csv
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="OPH_National_Report.csv"'
-    writer = csv.writer(response)
-    writer.writerow(['Metric', 'Value'])
-    writer.writerow(['Total Patients', Patient.objects.count()])
-    writer.writerow(['Total Facilities', Facility.objects.count() if Facility else 0])
-    return response
-
-
 @login_required
 def export_fhir_bundle(request):
-    return JsonResponse({
-        "resourceType": "Bundle",
-        "type": "collection",
-        "entry": []
-    }, json_dumps_params={"indent": 4})
+    return JsonResponse({"resourceType": "Bundle", "type": "collection", "entry": []}, json_dumps_params={"indent": 4})

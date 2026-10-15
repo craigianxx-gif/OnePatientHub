@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Facility Staff | OnePatient Hub{% endblock %}
+
+{% block content %}
+<style>
+    .page-container { padding: 32px; max-width: 1500px; margin: auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .page-title { font-size: 30px; font-weight: 700; color: #163936; margin: 0; }
+    .page-subtitle { margin-top: 6px; color: #71807e; }
+    
+    .table-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e6eceb;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        margin-bottom: 32px;
+    }
+    .table-header { padding: 22px 26px; border-bottom: 1px solid #edf1f0; }
+    .table-header h2 { margin: 0; font-size: 18px; color: #163936; }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 850px; }
+    th { text-align: left; padding: 16px 24px; background: #f8faf9; color: #71807e; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    td { padding: 18px 24px; border-top: 1px solid #edf1f0; color: #334846; font-size: 14px; vertical-align: middle; }
+    td strong { color: #163936; }
+    
+    .empty-state { text-align: center; padding: 60px; color: #71807e; }
+    
+    /* Dynamic Badges */
+    .status { display: inline-flex; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .status-active { background: #def7ec; color: #147d55; }
+    .status-inactive { background: #f3f4f6; color: #6b7280; }
+
+    /* Action Buttons */
+    .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-action {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-activate { background: #dff6ec; color: #147d55; }
+    .btn-activate:hover { background: #c8efdf; }
+    
+    .btn-deactivate { background: #fff4d6; color: #8a6500; }
+    .btn-deactivate:hover { background: #fde6a8; }
+    
+    .btn-remove { background: #fde4e4; color: #a52c2c; }
+    .btn-remove:hover { background: #f8d0d0; }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Facility Staff</h1>
+            <p class="page-subtitle">View and manage active personnel assigned to your facility.</p>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-header">
+            <h2>Active Staff Members</h2>
+        </div>
+
+        {% if staff_members %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Staff Member</th>
+                        <th>Email</th>
+                        <th>Staff ID</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_members %}
+                    <tr>
+                        <td>
+                            <strong>{{ staff.user.first_name }} {{ staff.user.last_name }}</strong><br>
+                            <span style="font-size: 12px; color: #71807e;">Joined {{ staff.created_at|date:"d M Y" }}</span>
+                        </td>
+                        <td>{{ staff.user.email }}</td>
+                        <td>{{ staff.staff_id }}</td>
+                        <td>{{ staff.get_role_display }}</td>
+                        <td>
+                            {% if staff.user.is_active %}
+                                <span class="status status-active">Active</span>
+                            {% else %}
+                                <span class="status status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.user.id != staff.user.id %}
+                            <div class="action-buttons">
+                                
+                                {% if staff.user.is_active %}
+                                <form method="POST" action="{% url 'deactivate_facility_user' staff.user.id %}" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-deactivate" onclick="return confirm('Suspend login access for {{ staff.user.first_name }}?');">
+                                        Deactivate
+                                    </button>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="{% url 'activate_facility_user' staff.user.id %}" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-activate" onclick="return confirm('Restore login access for {{ staff.user.first_name }}?');">
+                                        Activate
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                <form method="POST" action="{% url 'remove_facility_user' staff.user.id %}" style="display:inline; margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-remove" onclick="return confirm('Are you sure you want to permanently detach {{ staff.user.first_name }} from this facility?');">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <span style="color: #9aa7a5; font-size: 13px; font-weight: 500;">Current Admin</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">No active staff members found for this facility.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

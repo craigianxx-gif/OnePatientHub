@@ -1,9 +1,16 @@
 from django.contrib import admin
-from .models import AccountRequest
+from .models import AccountRequest, UserProfile
 
 @admin.register(AccountRequest)
 class AccountRequestAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'staff_id', 'requested_role', 'status', 'created_at')
     list_filter = ('status', 'requested_role')
     search_fields = ('full_name', 'email', 'staff_id')
+    readonly_fields = ('created_at',)
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role', 'facility', 'staff_id', 'created_at')
+    list_filter = ('role', 'facility')
+    search_fields = ('user__username', 'staff_id', 'phone_number')
     readonly_fields = ('created_at',)

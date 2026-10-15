@@ -1,22 +1,26 @@
 from django.db import models
 
-
 class Facility(models.Model):
-
     FACILITY_TYPE_CHOICES = [
-
         ("Hospital", "Hospital"),
-
         ("Clinic", "Clinic"),
-
         ("Laboratory", "Laboratory"),
-
         ("Pharmacy", "Pharmacy"),
-
         ("Health Centre", "Health Centre"),
-
         ("Other", "Other"),
+    ]
 
+    PROVINCE_CHOICES = [
+        ('BULAWAYO', 'Bulawayo Metropolitan'),
+        ('HARARE', 'Harare Metropolitan'),
+        ('MANICALAND', 'Manicaland'),
+        ('MASH_CENTRAL', 'Mashonaland Central'),
+        ('MASH_EAST', 'Mashonaland East'),
+        ('MASH_WEST', 'Mashonaland West'),
+        ('MASVINGO', 'Masvingo'),
+        ('MAT_NORTH', 'Matabeleland North'),
+        ('MAT_SOUTH', 'Matabeleland South'),
+        ('MIDLANDS', 'Midlands'),
     ]
 
     facility_id = models.CharField(
@@ -39,11 +43,13 @@ class Facility(models.Model):
     )
 
     province = models.CharField(
-        max_length=100
+        max_length=50,
+        choices=PROVINCE_CHOICES
     )
 
     district = models.CharField(
-        max_length=100
+        max_length=100,
+        help_text="e.g., Gwanda, Zvishavane, or Epworth"
     )
 
     physical_address = models.TextField()
@@ -63,6 +69,14 @@ class Facility(models.Model):
         null=True,
         unique=True
     )
+    
+    dhis2_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        unique=True,
+        help_text="DHIS2 OrgUnit Code (e.g., OPH-HRE-001)"
+    )
 
     is_active = models.BooleanField(
         default=True
@@ -76,9 +90,8 @@ class Facility(models.Model):
         auto_now=True
     )
 
-    def __str__(self):
+    class Meta:
+        verbose_name_plural = "Facilities"
 
-        return (
-            f"{self.facility_id} - "
-            f"{self.facility_name}"
-        )
+    def __str__(self):
+        return f"{self.facility_name} ({self.facility_id})"

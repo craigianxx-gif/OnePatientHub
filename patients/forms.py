@@ -19,7 +19,9 @@ class PatientForm(forms.ModelForm):
             "date_of_birth",
             "gender",
             "phone_number",
-            "address"
+            "address",
+            "allergies",
+            "chronic_conditions"
         ]
 
         widgets = {
@@ -70,6 +72,22 @@ class PatientForm(forms.ModelForm):
                     "class": "form-control",
                     "placeholder": "Enter Address",
                     "rows": 3
+                }
+            ),
+
+            "allergies": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "None known",
+                    "rows": 2
+                }
+            ),
+
+            "chronic_conditions": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "None known",
+                    "rows": 2
                 }
             ),
 

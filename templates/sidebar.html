@@ -452,30 +452,78 @@
                         active
                     {% endif %}"
                 >
-
-                    <a
-                        href="/referrals/"
-                    >
-
+                    <a href="{% url 'referral_list' %}">
                         <svg
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                         >
-
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                                 stroke-width="2"
                                 d="M3 12h18M14 5l7 7-7 7"
                             />
-
                         </svg>
-
                         Referrals
-
                     </a>
+                </li>
 
+                <!-- Notifications -->
+                <li
+                    class="nav-item
+                    {% if 'notifications' in request.path %}
+                        active
+                    {% endif %}"
+                >
+                    <a
+                        href="{% url 'notification_list' %}"
+                        style="justify-content: space-between;"
+                    >
+                        <span style="display: flex; align-items: center; gap: 12px;">
+                            <svg
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"
+                                />
+                            </svg>
+                            <span>Notifications</span>
+                        </span>
+
+                        {% if request.user.profile.role == "administrator" %}
+                            {% if unread_referral_count > 0 or pending_requests_count > 0 %}
+                                <span style="
+                                    background-color: #e74c3c;
+                                    color: white;
+                                    font-size: 0.75rem;
+                                    font-weight: bold;
+                                    padding: 2px 8px;
+                                    border-radius: 12px;
+                                ">
+                                    {{ unread_referral_count|default:"0"|add:pending_requests_count|default:"0" }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            {% if unread_referral_count > 0 %}
+                                <span style="
+                                    background-color: #e74c3c;
+                                    color: white;
+                                    font-size: 0.75rem;
+                                    font-weight: bold;
+                                    padding: 2px 8px;
+                                    border-radius: 12px;
+                                ">
+                                    {{ unread_referral_count }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </a>
                 </li>
 
 
@@ -483,7 +531,9 @@
                      FACILITY MANAGEMENT
                 ================================= -->
 
+                {% if request.user.profile.role == "administrator" %}
                 <div class="nav-section-title">Facility Management</div>
+                {% endif %}
 
                 <!-- Register Facility (Administrator Only) -->
                 {% if request.user.profile.role == "administrator" %}
@@ -567,43 +617,30 @@
                      ADMINISTRATION
                 ================================= -->
 
+                {% if request.user.profile.role == "administrator" %}
                 <div class="nav-section-title">Administration</div>
+                {% endif %}
 
                 <!-- Account Requests -->
                 {% if request.user.profile.role == "administrator" %}
 
                 <li class="nav-item {% if 'account-requests' in request.path %}active{% endif %}">
 
-                    <a href="{% url 'account_requests' %}" style="justify-content: space-between;">
+                    <a href="{% url 'account_requests' %}">
                         
-                        <span style="display: flex; align-items: center; gap: 12px;">
-                            <svg
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm7-3v6m3-3h-6"
-                                />
-                            </svg>
-                            Account Requests
-                        </span>
-
-                        <!-- Notification Badge -->
-                        {% if pending_requests_count > 0 %}
-                            <span style="
-                                background-color: #e74c3c; 
-                                color: white; 
-                                font-size: 0.75rem; 
-                                font-weight: bold; 
-                                padding: 2px 8px; 
-                                border-radius: 12px;">
-                                {{ pending_requests_count }}
-                            </span>
-                        {% endif %}
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm7-3v6m3-3h-6"
+                            />
+                        </svg>
+                        Account Requests
 
                     </a>
 
@@ -611,7 +648,8 @@
 
                 {% endif %}
 
-                <!-- Users -->
+               <!-- Users -->
+                {% if request.user.profile.role == "administrator" %}
                 <li
                     class="nav-item
                     {% if 'users' in request.path %}
@@ -619,8 +657,9 @@
                     {% endif %}"
                 >
 
+                    <!-- Pointing to the dedicated facility_users view -->
                     <a
-                        href="#"
+                        href="{% url 'facility_users' %}"
                     >
 
                         <svg
@@ -643,6 +682,7 @@
                     </a>
 
                 </li>
+                {% endif %}
 
 
                 <!-- Audit Logs (Administrator Only) -->
@@ -808,7 +848,9 @@
 
                     </a>
 
-                        <!-- FHIR Transactions -->
+                </li>
+
+                <!-- FHIR Transactions -->
                 <li
                     class="nav-item
                     {% if 'fhir/transactions' in request.path %}
@@ -832,8 +874,6 @@
                         </svg>
                         FHIR Transactions
                     </a>
-                </li>
-
                 </li>
 
                 <!-- Monthly Reports -->
@@ -869,57 +909,52 @@
 
                 </li>
 
+<!-- ================================
+     SETTINGS
+================================= -->
 
-                <!-- ================================
-                     SETTINGS
-                ================================= -->
+<div class="nav-section-title">Settings</div>
 
-                <div class="nav-section-title">Settings</div>
+<li
+    class="nav-item
+    {% if 'settings' in request.path %}
+        active
+    {% endif %}"
+>
+    <a href="{% url 'settings' %}">
 
-                <li
-                    class="nav-item
-                    {% if 'settings' in request.path %}
-                        active
-                    {% endif %}"
-                >
+        <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
 
-                    <a
-                        href="#"
-                    >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31.826-2.37 2.37a1.724 1.724 0 001.065 2.572c-1.756.426-1.756 2.924 0 3.35a1.724 1.724 0 001.066 2.573c-.94 1.543.826 3.31 2.37 2.37.996-.608 2.296-.07 2.572 1.065z"
+            />
 
-                        <svg
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
 
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                            />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
+        </svg>
 
-                        </svg>
+        <span>Settings</span>
 
-                        Settings
+    </a>
+</li>
 
-                    </a>
+</ul>
 
-                </li>
+</nav>
 
-
-            </ul>
-
-        </nav>
-
-    </div>
+</div>
 
 
     <!-- ================================

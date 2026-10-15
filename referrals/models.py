@@ -1,7 +1,7 @@
 from django.db import models
 from patients.models import Patient
 from facilities.models import Facility  # NEW: Import the Facility model
-
+from django.conf import settings
 
 class Referral(models.Model):
 
@@ -18,7 +18,6 @@ class Referral(models.Model):
         related_name="referrals"
     )
 
-    # CHANGED: Replaced text field with ForeignKey to Facility
     referring_facility = models.ForeignKey(
         Facility,
         on_delete=models.CASCADE,
@@ -27,7 +26,6 @@ class Referral(models.Model):
         blank=True
     )
 
-    # CHANGED: Replaced text field with ForeignKey to Facility
     receiving_facility = models.ForeignKey(
         Facility,
         on_delete=models.CASCADE,
@@ -51,6 +49,14 @@ class Referral(models.Model):
         choices=STATUS_CHOICES,
         default="Pending"
     )
+    
+    #  Captures the specific user/nurse who created the referral
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -61,8 +67,5 @@ class Referral(models.Model):
         ref_fac = self.referring_facility.facility_name if self.referring_facility else "Unknown"
         rec_fac = self.receiving_facility.facility_name if self.receiving_facility else "Unknown"
         
-        return (
-            f"{self.patient.oph_id} - "
-            f"{ref_fac} to "
-            f"{rec_fac}"
-        )
+        # Cleaned up the string formatting
+        return f"{self.patient.oph_id} - {ref_fac} to {rec_fac}"

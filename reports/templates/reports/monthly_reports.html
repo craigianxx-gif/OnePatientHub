@@ -14,7 +14,6 @@
         scroll-behavior: smooth;
     }
 
-    /* --- Command Center Header (Matched to Dashboard) --- */
     .dashboard-header {
         background: linear-gradient(135deg, #0D1D1B 0%, #163C35 100%);
         color: white;
@@ -75,7 +74,6 @@
     .btn-coral { background: #e4633f; }
     .btn-coral:hover { background: #cf5635; box-shadow: 0 4px 12px rgba(228, 99, 63, 0.3); }
 
-    /* --- Typography & Sections --- */
     .section-title {
         margin: 40px 0 20px 0;
         font-weight: 700;
@@ -92,7 +90,6 @@
         margin: 0;
     }
 
-    /* Auto sizing for variable columns */
     .row.g-4 > [class*="col-"] {
         padding: 0;
     }
@@ -100,7 +97,6 @@
     .col-grid-6 { flex: 1 1 150px; }
     .col-grid-4 { flex: 1 1 240px; }
 
-    /* --- Metric Cards --- */
     .stat-card {
         background: white;
         border: 1px solid #e2e8f0;
@@ -136,7 +132,6 @@
         color: white;
     }
 
-    /* Color Palette */
     .bg-teal { background: #115e59; }
     .bg-coral { background: #e4633f; }
     .bg-blue { background: #2563eb; }
@@ -166,7 +161,6 @@
         line-height: 1;
     }
 
-    /* --- Chart & Table Cards --- */
     .content-card {
         background: white;
         border: 1px solid #e2e8f0;
@@ -185,19 +179,6 @@
         gap: 8px;
     }
 
-    .audit-table th {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        color: #64748b;
-        font-weight: 600;
-    }
-    
-    .audit-table td {
-        font-size: 0.95rem;
-        color: #334155;
-    }
-
-    /* --- Forms & Filters --- */
     .form-control-custom {
         padding: 12px 16px;
         font-size: 0.95rem;
@@ -223,24 +204,81 @@
         align-items: end;
     }
 
-    /* --- Disease Sub-stats --- */
     .disease-stats { display: flex; justify-content: space-between; gap: 12px; margin-top: auto;}
     .d-stat { flex: 1; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
     .d-stat-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
     .d-stat-val { font-size: 1.15rem; font-weight: 700; color: #0f172a; }
 
-    /* --- Export Cards --- */
     a.export-card { text-decoration: none; align-items: center; text-align: center; justify-content: center; padding: 32px 24px;}
     a.export-card:hover { border-color: #e4633f; }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .audit-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .audit-table th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 600;
+        padding: 16px;
+        text-align: left;
+        border-bottom: 2px solid #e2e8f0;
+        background: #f8fafc;
+        white-space: nowrap;
+    }
+    .audit-table td {
+        font-size: 0.95rem;
+        color: #334155;
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+    .audit-table tr:hover td {
+        background-color: #f8fafc;
+    }
+    
+    .badge {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-block;
+        text-align: center;
+    }
+    .badge.bg-teal {
+        background-color: #ccfbf1;
+        color: #115e59;
+    }
+    .badge.bg-slate {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    @media print {
+        body { background: white; }
+        .dashboard-header, .filter-grid, #export-centre, .export-card, .btn-action {
+            display: none !important;
+        }
+        .stat-card, .content-card {
+            box-shadow: none;
+            border: 1px solid #ccc;
+            page-break-inside: avoid;
+        }
+    }
 </style>
 
 <div class="container-fluid px-4 py-4">
 
-    <!-- Header -->
     <div class="dashboard-header">
         <div>
             <h2><i class="bi bi-clipboard-data"></i> National Reporting Centre</h2>
-            <p>Comprehensive health information reporting, surveillance, and interoperability exports.</p>
+            <p>Viewing metrics for: <strong>{{ report.display_name }}</strong></p>
         </div>
         <div class="header-actions">
             <button type="button" class="btn-action btn-teal" onclick="document.getElementById('report-filter-form').submit();">
@@ -252,16 +290,16 @@
         </div>
     </div>
 
-    <!-- Report Configuration -->
     <div class="content-card mb-4" style="height: auto;">
         <h5><i class="bi bi-sliders"></i> Report Configuration</h5>
         <form method="GET" class="filter-grid" id="report-filter-form">
             <div>
                 <div class="stat-title mb-2">Reporting Period</div>
                 <select class="form-control-custom" name="period" onchange="this.form.submit()">
-                    <option value="current_month" {% if request.GET.period == 'current_month' or not request.GET.period %}selected{% endif %}>August 2026</option>
-                    <option value="last_month" {% if request.GET.period == 'last_month' %}selected{% endif %}>July 2026</option>
-                    <option value="ytd" {% if request.GET.period == 'ytd' %}selected{% endif %}>Year to Date (2026)</option>
+                    {% for m in recent_months %}
+                        <option value="{{ m.value }}" {% if current_period == m.value %}selected{% endif %}>{{ m.label }}</option>
+                    {% endfor %}
+                    <option value="ytd" {% if current_period == 'ytd' %}selected{% endif %}>Year to Date ({{ selected_year }})</option>
                 </select>
             </div>
             <div>
@@ -291,8 +329,7 @@
         </form>
     </div>
 
-    <!-- National Summary -->
-    <h4 class="section-title">National Summary</h4>
+    <h4 class="section-title">National Summary ({{ report.display_name }})</h4>
     <div class="row g-4">
         <div class="col-grid-6">
             <div class="stat-card">
@@ -350,7 +387,6 @@
         </div>
     </div>
 
-    <!-- Population Statistics -->
     <h4 class="section-title">Demographics & Population</h4>
     <div class="row g-4">
         <div class="col-grid-6">
@@ -391,7 +427,6 @@
         </div>
     </div>
 
-    <!-- Disease Surveillance -->
     <h4 class="section-title">Disease Surveillance</h4>
     <div class="row g-4">
         <div class="col-grid-4">
@@ -456,15 +491,13 @@
         </div>
     </div>
 
-    <!-- Facility Activity and Report History -->
     <div class="row g-4 mt-2">
-        <!-- Facility Activity -->
         <div class="col-lg-7" style="flex: 2 1 500px;">
             <h4 class="section-title border-0 pb-0 mt-0">Facility Activity Feed</h4>
             <div class="content-card">
                 <div class="table-responsive">
-                    <table class="table table-hover audit-table align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table audit-table align-middle mb-0">
+                        <thead>
                             <tr>
                                 <th>Facility Name</th>
                                 <th>Province</th>
@@ -499,13 +532,12 @@
             </div>
         </div>
 
-        <!-- Report History -->
         <div class="col-lg-5" style="flex: 1 1 350px;">
             <h4 class="section-title border-0 pb-0 mt-0">Report History</h4>
             <div class="content-card">
                 <div class="table-responsive">
-                    <table class="table table-hover audit-table align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table audit-table align-middle mb-0">
+                        <thead>
                             <tr>
                                 <th>Report</th>
                                 <th>Date</th>
@@ -534,29 +566,74 @@
         </div>
     </div>
 
-    <!-- Export Centre -->
+    <h4 class="section-title mt-5">MoHCC OPD Non-Communicable Diseases Matrix</h4>
+    <div class="content-card mb-4">
+        <div class="table-responsive">
+            <table class="table table-bordered audit-table align-middle text-center mb-0" style="font-size: 0.8rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th rowspan="3" class="text-start" style="vertical-align: bottom;">Diagnosis</th>
+                        <th colspan="4">5-14 years</th>
+                        <th colspan="4">15-24 years</th>
+                        <th colspan="4">25-49 years</th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Follow Up</th>
+                        <th colspan="2">New (1st)</th>
+                        <th colspan="2">Follow Up</th>
+                        <th colspan="2">New (1st)</th>
+                        <th colspan="2">Follow Up</th>
+                        <th colspan="2">New (1st)</th>
+                    </tr>
+                    <tr>
+                        <th>F</th><th>M</th> <th>F</th><th>M</th>
+                        <th>F</th><th>M</th> <th>F</th><th>M</th>
+                        <th>F</th><th>M</th> <th>F</th><th>M</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in mohcc_matrix %}
+                    <tr>
+                        <td class="text-start fw-bold">{{ row.name }}</td>
+                        <td>{{ row.age_5_14.f_fu }}</td><td>{{ row.age_5_14.m_fu }}</td> 
+                        <td>{{ row.age_5_14.f_new }}</td><td>{{ row.age_5_14.m_new }}</td>
+                        <td>{{ row.age_15_24.f_fu }}</td><td>{{ row.age_15_24.m_fu }}</td> 
+                        <td>{{ row.age_15_24.f_new }}</td><td>{{ row.age_15_24.m_new }}</td>
+                        <td>{{ row.age_25_49.f_fu }}</td><td>{{ row.age_25_49.m_fu }}</td> 
+                        <td>{{ row.age_25_49.f_new }}</td><td>{{ row.age_25_49.m_new }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="13" class="text-center text-muted py-4">No diagnostic data recorded for this period.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <h4 class="section-title" id="export-centre">Data Exchange & Export Centre</h4>
     <div class="row g-4">
         <div class="col-grid-4">
-            <a href="{% url 'export_report_pdf' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
-                <i class="bi bi-file-earmark-pdf" style="font-size: 2.5rem; color:#e4633f;"></i>
-                <div class="stat-title mt-3" style="color:#0f172a;">Export PDF Report</div>
+            <a href="#" onclick="window.print(); return false;" class="stat-card export-card">
+                <i class="bi bi-printer" style="font-size: 2.5rem; color:#e4633f;"></i>
+                <div class="stat-title mt-3" style="color:#0f172a;">Print / Save as PDF</div>
             </a>
         </div>
         <div class="col-grid-4">
-            <a href="{% url 'export_report_csv' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
+            <a href="{% url 'export_report_csv' %}?period={{ current_period }}" class="stat-card export-card">
                 <i class="bi bi-filetype-csv" style="font-size: 2.5rem; color:#115e59;"></i>
                 <div class="stat-title mt-3" style="color:#0f172a;">Export CSV Data</div>
             </a>
         </div>
         <div class="col-grid-4">
-            <a href="{% url 'export_fhir_bundle' %}?{{ request.GET.urlencode }}" class="stat-card export-card">
+            <a href="{% url 'export_fhir_bundle' %}?period={{ current_period }}" class="stat-card export-card">
                 <i class="bi bi-braces-asterisk" style="font-size: 2.5rem; color:#7c3aed;"></i>
                 <div class="stat-title mt-3" style="color:#0f172a;">Export FHIR Bundle</div>
             </a>
         </div>
         <div class="col-grid-4">
-            <a href="{% url 'export_dhis2_json' selected_year|default:'2026' selected_month|default:'8' %}" class="stat-card export-card">
+            <a href="{% url 'export_dhis2_json' selected_year selected_month %}" class="stat-card export-card">
                 <i class="bi bi-database-down" style="font-size: 2.5rem; color:#2563eb;"></i>
                 <div class="stat-title mt-3" style="color:#0f172a;">Export DHIS2 JSON</div>
             </a>
@@ -565,7 +642,6 @@
 
 </div>
 
-<!-- Staggered Card Animation Script -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".stat-card, .content-card").forEach((card, index) => {

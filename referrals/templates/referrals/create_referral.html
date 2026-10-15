@@ -33,6 +33,27 @@
         font-size: 0.95rem;
     }
 
+    /* Patient lock card styling */
+    .patient-lock-card {
+        background-color: var(--coral-tint);
+        border-left: 4px solid var(--coral);
+        padding: 16px;
+        margin-bottom: 24px;
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    
+    .patient-lock-card h3 {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+    
+    .patient-lock-card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
     /* Django Form Styling */
     .django-form-wrapper p { margin-bottom: 1.5rem; }
     
@@ -106,6 +127,12 @@
     </div>
 
     <div class="form-card">
+        
+        <div class="patient-lock-card">
+            <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
+            <p><strong>OPH-ID:</strong> {{ patient.oph_id }} | <strong>National ID:</strong> {{ patient.national_id }}</p>
+        </div>
+
         <form method="POST" class="django-form-wrapper">
             {% csrf_token %}
             
@@ -116,7 +143,7 @@
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     Create Referral
                 </button>
-                <a href="{% url 'dashboard' %}" class="btn-secondary">Cancel</a>
+                <a href="{% url 'patient_profile' patient.oph_id %}" class="btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

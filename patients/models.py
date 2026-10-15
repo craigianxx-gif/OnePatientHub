@@ -1,9 +1,22 @@
 from django.db import models
 from datetime import datetime
 import random
+import re
+from django.core.exceptions import ValidationError
 
 # NEW: Import the Facility model
 from facilities.models import Facility
+
+
+def validate_zimbabwean_id(value):
+    """
+    Validates that the national ID strictly matches the format: 58-2015534E-67 (XX-XXXXXXX[A-Z]-XX)
+    """
+    pattern = r'^\d{2}-\d{7}[A-Z]-\d{2}$'
+    if not re.match(pattern, value):
+        raise ValidationError(
+            f"Invalid National ID format: '{value}'. It must strictly follow the format XX-XXXXXXXA-XX (e.g., 58-2015534E-67)."
+        )
 
 
 def generate_luhn_checksum(base_digits):
@@ -49,7 +62,9 @@ class Patient(models.Model):
 
     national_id = models.CharField(
         max_length=20,
-        unique=True
+        unique=True,
+        validators=[validate_zimbabwean_id],
+        help_text="Format: 58-2015534E-67"
     )
 
     first_name = models.CharField(
@@ -73,9 +88,28 @@ class Patient(models.Model):
 
     address = models.TextField()
 
+    # NEW CLINICAL ALERTS
+    allergies = models.TextField(
+        blank=True, 
+        null=True, 
+        help_text="List any known drug or food allergies (e.g., Penicillin, Peanuts)."
+    )
+
+    chronic_conditions = models.TextField(
+        blank=True, 
+        null=True, 
+        help_text="List long-term conditions (e.g., Diabetes, Essential Hypertension, Asthma)."
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
+
+    def clean(self):
+        super().clean()
+        if self.national_id:
+            self.national_id = self.national_id.upper()
+            validate_zimbabwean_id(self.national_id)
 
     def save(self, *args, **kwargs):
         if not self.oph_id:
@@ -86,6 +120,7 @@ class Patient(models.Model):
                     self.oph_id = candidate_id
                     break
 
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):

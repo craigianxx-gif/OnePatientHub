@@ -15,6 +15,7 @@ urlpatterns = [
     path("dashboard/", include("dashboard.urls")),
     path("reports/", include("reports.urls")),
     path("facilities/", include("facilities.urls")),
+    path("notifications/", include("notifications.urls")),
     
     # FHIR Interoperability API Endpoints
     path("api/", include("api.urls")),

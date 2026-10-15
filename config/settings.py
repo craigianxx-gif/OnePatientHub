@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
 
 # ==========================================
 # BASE DIRECTORY
@@ -58,6 +60,7 @@ INSTALLED_APPS = [
     "audit",
     "facilities",
     "consent",
+    "notifications",
 
 ]
 
@@ -126,6 +129,7 @@ TEMPLATES = [
 
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.pending_account_requests",
+                "notifications.context_processors.referral_notification_count",
 
             ],
 
@@ -211,27 +215,24 @@ LOGOUT_REDIRECT_URL = "/"
 
 
 # ==========================================
-# EMAIL CONFIGURATION (Gmail SMTP)
+# EMAIL CONFIGURATION
 # ==========================================
 
+# Development email backend.
+# Emails are displayed in the terminal instead of being sent.
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
     "OnePatient Hub Administration <noreply@onepatienthub.org>"
 )
-
-# Fail loudly if email credentials are missing
-if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
-    raise RuntimeError(
-        "EMAIL_HOST_USER and EMAIL_HOST_PASSWORD must be configured as environment variables."
-    )
 # ==========================================
 # FHIR API SETTINGS
 # ==========================================

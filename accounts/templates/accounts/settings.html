@@ -1,0 +1,1651 @@
+{% extends "base.html" %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* =========================================================
+       ACCOUNT PAGE LAYOUT
+    ========================================================= */
+
+    .account-wrapper {
+
+        max-width: 760px;
+
+        margin: 0 auto;
+
+        color: var(--text-dark);
+    }
+
+
+    /* =========================================================
+       TYPOGRAPHY
+    ========================================================= */
+
+    .heading-serif {
+
+        font-family: 'Fraunces', serif;
+
+        color: var(--deep-teal);
+
+        margin-top: 0;
+    }
+
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .account-header {
+
+        margin-bottom: 24px;
+    }
+
+
+    .account-header h1 {
+
+        margin-bottom: 4px;
+
+        font-size: 2rem;
+    }
+
+
+    .account-subtitle {
+
+        color: var(--text-muted);
+
+        margin: 0;
+
+        font-size: 0.95rem;
+    }
+
+
+    /* =========================================================
+       SETTINGS CARDS
+    ========================================================= */
+
+    .settings-card {
+
+        background-color: var(--surface-white);
+
+        border: 1px solid var(--border-light);
+
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-sm);
+
+        padding: 24px;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* =========================================================
+       IDENTITY SECTION
+    ========================================================= */
+
+    .identity-card {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 16px;
+    }
+
+
+    .avatar-circle {
+
+        width: 64px;
+
+        height: 64px;
+
+        background-color: var(--deep-teal);
+
+        color: var(--surface-white);
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 1.5rem;
+
+        flex-shrink: 0;
+    }
+
+
+    .identity-info h2 {
+
+        font-size: 1.5rem;
+
+        margin-bottom: 4px;
+
+        color: var(--text-dark);
+    }
+
+
+    .identity-email {
+
+        color: var(--text-muted);
+
+        margin: 0 0 8px 0;
+
+        font-size: 0.9rem;
+    }
+
+
+    .role-pill {
+
+        background-color: var(--teal-tint);
+
+        color: var(--deep-teal);
+
+        font-size: 0.75rem;
+
+        font-weight: 600;
+
+        padding: 4px 12px;
+
+        border-radius: 9999px;
+
+        display: inline-block;
+    }
+
+
+    /* =========================================================
+       CARD ROWS
+    ========================================================= */
+
+    .card-row {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 16px;
+
+        flex-wrap: wrap;
+    }
+
+
+    .card-row-top {
+
+        align-items: flex-start;
+    }
+
+
+    .card-icon {
+
+        width: 44px;
+
+        height: 44px;
+
+        background-color: var(--teal-tint);
+
+        color: var(--deep-teal);
+
+        border-radius: var(--radius-sm);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+
+    .card-content {
+
+        flex: 1 1 200px;
+    }
+
+
+    .card-title {
+
+        font-size: 1.1rem;
+
+        margin-bottom: 4px;
+    }
+
+
+    .card-desc {
+
+        font-size: 0.9rem;
+
+        color: var(--text-muted);
+
+        margin: 0;
+    }
+
+
+    .card-desc-spaced {
+
+        margin-bottom: 12px;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+
+    .card-action {
+
+        flex-shrink: 0;
+    }
+
+
+    .btn-outline {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 44px;
+
+        padding: 0 16px;
+
+        border: 1px solid var(--deep-teal);
+
+        color: var(--deep-teal);
+
+        background: transparent;
+
+        border-radius: var(--radius-sm);
+
+        font-family: inherit;
+
+        font-size: 0.9rem;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        transition: all 150ms ease;
+
+        cursor: pointer;
+    }
+
+
+    .btn-outline:hover {
+
+        background-color: var(--teal-tint);
+
+        text-decoration: none;
+
+        color: var(--deep-teal);
+    }
+
+
+    .btn-teal {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 44px;
+
+        padding: 0 16px;
+
+        background-color: var(--deep-teal);
+
+        color: var(--surface-white);
+
+        border: none;
+
+        border-radius: var(--radius-sm);
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        transition: all 150ms ease;
+
+        cursor: pointer;
+    }
+
+
+    .btn-teal:hover {
+
+        background-color: var(--deep-teal-hover);
+
+        color: var(--surface-white);
+
+        text-decoration: none;
+    }
+
+
+    .btn-outline:focus-visible,
+    .btn-teal:focus-visible,
+    .icon-btn:focus-visible,
+    .toggle-switch:focus-visible,
+    a:focus-visible {
+
+        outline: 2px solid var(--deep-teal);
+
+        outline-offset: 2px;
+    }
+
+
+    /* =========================================================
+       ACCOUNT DETAILS
+    ========================================================= */
+
+    .dl-details {
+
+        margin: 0;
+
+        padding: 0;
+    }
+
+
+    .dl-row {
+
+        display: flex;
+
+        flex-direction: column;
+
+        padding: 12px 0;
+
+        border-bottom: 1px solid var(--border-light);
+    }
+
+
+    .dl-row:last-child {
+
+        border-bottom: none;
+
+        padding-bottom: 0;
+    }
+
+
+    .dl-row dt {
+
+        font-size: 0.8rem;
+
+        text-transform: uppercase;
+
+        color: var(--text-muted);
+
+        letter-spacing: 0.04em;
+
+        margin-bottom: 4px;
+
+        font-weight: 600;
+    }
+
+
+    .dl-row dd {
+
+        margin: 0;
+
+        color: var(--text-dark);
+
+        font-size: 0.95rem;
+    }
+
+
+    /* =========================================================
+       ABOUT SECTION
+    ========================================================= */
+
+    .about-footer {
+
+        margin-top: 24px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid var(--border-light);
+
+        font-size: 0.85rem;
+
+        color: var(--text-muted);
+    }
+
+
+    .about-footer p {
+
+        margin: 0 0 12px 0;
+    }
+
+
+    .about-links {
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 8px 16px;
+
+        margin-top: 16px;
+    }
+
+
+    /* =========================================================
+       SYSTEM LINKS
+    ========================================================= */
+
+    .system-link {
+
+        color: var(--deep-teal);
+
+        text-decoration: none;
+
+        font-weight: 500;
+
+        cursor: pointer;
+
+        transition:
+            color 150ms ease,
+            text-decoration 150ms ease;
+    }
+
+
+    .system-link:hover {
+
+        color: var(--coral);
+
+        text-decoration: underline;
+    }
+
+
+    .system-link:focus-visible {
+
+        outline: 2px solid var(--deep-teal);
+
+        outline-offset: 3px;
+
+        border-radius: 3px;
+    }
+
+
+    /* =========================================================
+       PAGE FOOTER
+    ========================================================= */
+
+    .footer-text {
+
+        text-align: center;
+
+        margin-top: 32px;
+
+        padding-bottom: 24px;
+
+        color: var(--text-muted);
+
+        font-size: 0.85rem;
+    }
+
+
+    /* =========================================================
+       SYSTEM INFORMATION DIALOG
+    ========================================================= */
+
+    .system-dialog {
+
+        border: 1px solid var(--border-light);
+
+        border-radius: var(--radius-lg);
+
+        box-shadow: var(--shadow-md);
+
+        background: var(--surface-white);
+
+        color: var(--text-dark);
+
+        padding: 0;
+
+        width: calc(100% - 32px);
+
+        max-width: 520px;
+
+        max-height: calc(100vh - 32px);
+
+        overflow-y: auto;
+
+        margin: auto;
+    }
+
+
+    .system-dialog::backdrop {
+
+        background: rgba(22, 48, 44, 0.45);
+    }
+
+
+    .dialog-inner {
+
+        padding: 24px;
+    }
+
+
+    .dialog-header {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 16px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .dialog-header h2 {
+
+        font-size: 1.35rem;
+
+        margin: 0;
+    }
+
+
+    /* =========================================================
+       CLOSE BUTTON
+    ========================================================= */
+
+    .icon-btn {
+
+        width: 44px;
+
+        height: 44px;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background: transparent;
+
+        border: none;
+
+        border-radius: var(--radius-sm);
+
+        color: var(--text-muted);
+
+        cursor: pointer;
+
+        transition: all 150ms ease;
+
+        flex-shrink: 0;
+    }
+
+
+    .icon-btn:hover {
+
+        background: var(--teal-tint);
+
+        color: var(--deep-teal);
+    }
+
+
+    /* =========================================================
+       STATUS PILL
+    ========================================================= */
+
+    .status-pill {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        background: var(--success-bg);
+
+        color: var(--success-green);
+
+        border-radius: var(--radius-md);
+
+        padding: 12px 16px;
+
+        font-weight: 600;
+
+        font-size: 0.95rem;
+
+        margin-bottom: 20px;
+    }
+
+
+    .status-pill svg {
+
+        flex-shrink: 0;
+    }
+
+
+    /* =========================================================
+       DIALOG DIVIDER
+    ========================================================= */
+
+    .dialog-divider {
+
+        border: none;
+
+        border-top: 1px solid var(--border-light);
+
+        margin: 20px 0;
+    }
+
+
+    /* =========================================================
+       SETTING ROW
+    ========================================================= */
+
+    .setting-row {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+
+    .setting-label {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        font-weight: 600;
+
+        font-size: 0.95rem;
+
+        color: var(--text-dark);
+
+        cursor: pointer;
+    }
+
+
+    .setting-label svg {
+
+        color: var(--text-muted);
+
+        flex-shrink: 0;
+    }
+
+
+    .setting-desc {
+
+        margin: 4px 0 0 0;
+
+        font-size: 0.85rem;
+
+        color: var(--text-muted);
+    }
+
+
+    /* =========================================================
+       TOGGLE SWITCH
+    ========================================================= */
+
+    .toggle-switch {
+
+        appearance: none;
+
+        -webkit-appearance: none;
+
+        position: relative;
+
+        width: 48px;
+
+        height: 28px;
+
+        flex-shrink: 0;
+
+        margin: 0;
+
+        background: var(--border-light);
+
+        border-radius: 9999px;
+
+        cursor: pointer;
+
+        transition: background 150ms ease;
+    }
+
+
+    .toggle-switch::after {
+
+        content: "";
+
+        position: absolute;
+
+        top: 3px;
+
+        left: 3px;
+
+        width: 22px;
+
+        height: 22px;
+
+        background: var(--surface-white);
+
+        border-radius: 50%;
+
+        box-shadow: var(--shadow-sm);
+
+        transition: transform 150ms ease;
+    }
+
+
+    .toggle-switch:checked {
+
+        background: var(--deep-teal);
+    }
+
+
+    .toggle-switch:checked::after {
+
+        transform: translateX(20px);
+    }
+
+
+    /* =========================================================
+       DIALOG ACTIONS
+    ========================================================= */
+
+    .dialog-actions {
+
+        display: flex;
+
+        justify-content: flex-end;
+
+        margin-top: 24px;
+    }
+
+
+    /* =========================================================
+       LOCK PAGE SCROLL WHEN DIALOG IS OPEN
+    ========================================================= */
+
+    body.dialog-open {
+
+        overflow: hidden;
+    }
+
+
+    /* =========================================================
+       MOBILE RESPONSIVENESS
+    ========================================================= */
+
+    @media (max-width: 767px) {
+
+        .settings-card {
+
+            padding: 16px;
+        }
+
+
+        .card-action {
+
+            flex-basis: 100%;
+        }
+
+
+        .card-action .btn-teal,
+        .card-action .btn-outline {
+
+            width: 100%;
+        }
+
+
+        .card-row-top {
+
+            align-items: center;
+        }
+
+
+        .dialog-inner {
+
+            padding: 16px;
+        }
+
+
+        .dialog-actions .btn-outline {
+
+            width: 100%;
+        }
+
+
+        .about-links {
+
+            flex-direction: column;
+
+            align-items: flex-start;
+
+            gap: 10px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="account-wrapper">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="account-header">
+
+        <h1 class="heading-serif">
+            Account
+        </h1>
+
+        <p class="account-subtitle">
+            Manage your OnePatient Hub account information and preferences.
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         IDENTITY CARD
+    ====================================================== -->
+
+    <section class="settings-card identity-card">
+
+        <div
+            class="avatar-circle heading-serif"
+            aria-hidden="true"
+        >
+
+            {{ request.user.first_name|first|default:request.user.username|first|upper }}
+
+        </div>
+
+
+        <div class="identity-info">
+
+            <h2 class="heading-serif">
+
+                {% if request.user.get_full_name %}
+
+                    {{ request.user.get_full_name }}
+
+                {% else %}
+
+                    {{ request.user.username }}
+
+                {% endif %}
+
+            </h2>
+
+
+            <p class="identity-email">
+
+                {{ request.user.email }}
+
+            </p>
+
+
+            <span class="role-pill">
+
+                {% if profile %}
+
+                    {{ profile.get_role_display }}
+
+                {% else %}
+
+                    Administrator
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PROFILE SECTION
+    ====================================================== -->
+
+    <section class="settings-card">
+
+        <div class="card-row">
+
+            <div
+                class="card-icon"
+                aria-hidden="true"
+            >
+
+                <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+
+                </svg>
+
+            </div>
+
+
+            <div class="card-content">
+
+                <h2 class="heading-serif card-title">
+                    My Profile
+                </h2>
+
+                <p class="card-desc">
+                    View and update your personal OnePatient Hub account information.
+                </p>
+
+            </div>
+
+
+            <div class="card-action">
+
+                <a
+                    href="{% url 'profile_settings' %}"
+                    class="btn-teal"
+                >
+                    Manage Profile
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SECURITY SECTION
+    ====================================================== -->
+
+    <section class="settings-card">
+
+        <div class="card-row">
+
+            <div
+                class="card-icon"
+                aria-hidden="true"
+            >
+
+                <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+
+                </svg>
+
+            </div>
+
+
+            <div class="card-content">
+
+                <h2 class="heading-serif card-title">
+                    Security
+                </h2>
+
+                <p class="card-desc">
+                    Update your password to keep your account secure.
+                </p>
+
+            </div>
+
+
+            <div class="card-action">
+
+                <a
+                    href="{% url 'password_settings' %}"
+                    class="btn-outline"
+                >
+                    Change Password
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT SYSTEM SECTION
+    ====================================================== -->
+
+    <section class="settings-card">
+
+        <div class="card-row">
+
+            <div
+                class="card-icon"
+                aria-hidden="true"
+            >
+
+                <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke-width="2"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-width="2"
+                        d="M12 11v5"
+                    />
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-width="2"
+                        d="M12 8h.01"
+                    />
+
+                </svg>
+
+            </div>
+
+
+            <div class="card-content">
+
+                <h2 class="heading-serif card-title">
+                    About OnePatient Hub
+                </h2>
+
+                <p class="card-desc">
+                    View system version, environment, and technology stack information.
+                </p>
+
+            </div>
+
+
+            <div class="card-action">
+
+                <button
+                    type="button"
+                    class="btn-outline"
+                    id="openSystemInfo"
+                    aria-haspopup="dialog"
+                >
+                    View System Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CREDITS AND LEGAL LINKS
+        ================================================== -->
+
+        <div class="about-footer">
+
+            <p>
+
+                This system is made possible by the
+
+                <a
+                    href="https://www.djangoproject.com/"
+                    class="system-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Django
+                </a>
+
+                open source project and other
+
+                <a
+                    href="https://opensource.org/"
+                    class="system-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    open source software
+                </a>.
+
+            </p>
+
+
+            <p>
+
+                OnePatient Hub<br>
+
+                &copy; {% now "Y" %} All rights reserved.
+
+            </p>
+
+
+            <nav
+                class="about-links"
+                aria-label="Legal"
+            >
+
+                <a
+                    href="{% url 'terms_of_use' %}"
+                    class="system-link"
+                >
+                    Terms of use
+                </a>
+
+
+                <a
+                    href="{% url 'privacy_statement' %}"
+                    class="system-link"
+                >
+                    Privacy statement
+                </a>
+
+
+                <a
+                    href="{% url 'software_services_agreement' %}"
+                    class="system-link"
+                >
+                    Software services agreement
+                </a>
+
+            </nav>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ACCOUNT DETAILS
+    ====================================================== -->
+
+    <section class="settings-card">
+
+        <div class="card-row card-row-top">
+
+            <div
+                class="card-icon"
+                aria-hidden="true"
+            >
+
+                <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+
+                </svg>
+
+            </div>
+
+
+            <div class="card-content">
+
+                <h2 class="heading-serif card-title">
+                    Account Details
+                </h2>
+
+                <p class="card-desc card-desc-spaced">
+                    System-level data linked to your identity.
+                </p>
+
+
+                <dl class="dl-details">
+
+                    <div class="dl-row">
+
+                        <dt>
+                            Username
+                        </dt>
+
+                        <dd>
+                            {{ request.user.username }}
+                        </dd>
+
+                    </div>
+
+
+                    <div class="dl-row">
+
+                        <dt>
+                            Registered Email
+                        </dt>
+
+                        <dd>
+                            {{ request.user.email|default:"Not provided" }}
+                        </dd>
+
+                    </div>
+
+
+                    <div class="dl-row">
+
+                        <dt>
+                            Region / Country
+                        </dt>
+
+                        <dd>
+                            {{ profile.country_code|default:"ZW" }}
+                        </dd>
+
+                    </div>
+
+                </dl>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE FOOTER
+    ====================================================== -->
+
+    <footer class="footer-text">
+
+        &copy; {% now "Y" %} OnePatient Hub
+
+    </footer>
+
+</div>
+
+
+<!-- =========================================================
+     SYSTEM INFORMATION DIALOG
+========================================================= -->
+
+<dialog
+    class="system-dialog"
+    id="systemInfoDialog"
+    aria-labelledby="systemInfoTitle"
+>
+
+    <div class="dialog-inner">
+
+
+        <div class="dialog-header">
+
+            <h2
+                class="heading-serif"
+                id="systemInfoTitle"
+            >
+                System Information
+            </h2>
+
+
+            <button
+                type="button"
+                class="icon-btn"
+                id="closeSystemInfoX"
+                aria-label="Close system information"
+            >
+
+                <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 6l12 12M18 6L6 18"
+                    />
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             UPDATE STATUS
+        ================================================== -->
+
+        <div class="status-pill">
+
+            <svg
+                width="20"
+                height="20"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                />
+
+            </svg>
+
+
+            <span>
+                OnePatient Hub is up to date.
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             VERSION DETAILS
+        ================================================== -->
+
+        <dl class="dl-details">
+
+            <div class="dl-row">
+
+                <dt>
+                    Application
+                </dt>
+
+                <dd>
+                    OnePatient Hub
+                </dd>
+
+            </div>
+
+
+            <div class="dl-row">
+
+                <dt>
+                    Version
+                </dt>
+
+                <dd>
+                    1.0.0
+                </dd>
+
+            </div>
+
+
+            <div class="dl-row">
+
+                <dt>
+                    Build
+                </dt>
+
+                <dd>
+                    Prototype build
+                </dd>
+
+            </div>
+
+
+            <div class="dl-row">
+
+                <dt>
+                    Technology stack
+                </dt>
+
+                <dd>
+                    Django / PostgreSQL
+                </dd>
+
+            </div>
+
+        </dl>
+
+
+        <hr class="dialog-divider">
+
+
+        <!-- =================================================
+             BACKGROUND UPDATE SETTING
+        ================================================== -->
+
+        <div class="setting-row">
+
+            <div>
+
+                <label
+                    class="setting-label"
+                    for="meteredUpdates"
+                >
+
+                    Download background dictionary updates
+
+                    <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke-width="2"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m0 4h.01"
+                        />
+
+                    </svg>
+
+                </label>
+
+
+                <p
+                    class="setting-desc"
+                    id="meteredUpdatesDesc"
+                >
+                    Automatically download clinical data dictionary updates over metered networks and apply them in the background.
+                </p>
+
+            </div>
+
+
+            <input
+                class="toggle-switch"
+                type="checkbox"
+                role="switch"
+                id="meteredUpdates"
+                aria-describedby="meteredUpdatesDesc"
+                checked
+            >
+
+        </div>
+
+
+        <!-- =================================================
+             DIALOG ACTIONS
+        ================================================== -->
+
+        <div class="dialog-actions">
+
+            <button
+                type="button"
+                class="btn-outline"
+                id="closeSystemInfo"
+            >
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</dialog>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+    (function () {
+
+        var dialog =
+            document.getElementById('systemInfoDialog');
+
+        var openBtn =
+            document.getElementById('openSystemInfo');
+
+        var closeBtns = [
+
+            document.getElementById('closeSystemInfoX'),
+
+            document.getElementById('closeSystemInfo')
+
+        ];
+
+
+        if (!dialog || !openBtn) {
+            return;
+        }
+
+
+        /* =====================================================
+           OPEN DIALOG
+        ====================================================== */
+
+        openBtn.addEventListener(
+            'click',
+            function () {
+
+                dialog.showModal();
+
+                document.body.classList.add(
+                    'dialog-open'
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           CLOSE DIALOG BUTTONS
+        ====================================================== */
+
+        closeBtns.forEach(
+            function (btn) {
+
+                if (btn) {
+
+                    btn.addEventListener(
+                        'click',
+                        function () {
+
+                            dialog.close();
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           CLOSE WHEN CLICKING BACKDROP
+        ====================================================== */
+
+        dialog.addEventListener(
+            'click',
+            function (event) {
+
+                if (event.target === dialog) {
+
+                    dialog.close();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           HANDLE EVERY CLOSE ROUTE
+        ====================================================== */
+
+        dialog.addEventListener(
+            'close',
+            function () {
+
+                document.body.classList.remove(
+                    'dialog-open'
+                );
+
+                openBtn.focus();
+
+            }
+        );
+
+    })();
+
+</script>
+
+{% endblock %}

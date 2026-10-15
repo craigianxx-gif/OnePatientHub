@@ -1,7 +1,5 @@
 from django.urls import path
-
 from . import views
-
 
 urlpatterns = [
 
@@ -21,12 +19,28 @@ urlpatterns = [
         name="register_patient"
     ),
 
+    # /patients/api/fhir/ingest/
+    # FHIR Bundle POST Endpoint (Must be placed before <str:oph_id> routes)
+    path(
+        "api/fhir/ingest/",
+        views.api_fhir_ingest_patients,
+        name="api_fhir_ingest_patients"
+    ),
+
     # /patients/<oph_id>/journey/
-    # Patient Journey / Horizontal Tracking
+    # Patient Journey / Horizontal Tracking (Web View)
     path(
         "<str:oph_id>/journey/",
         views.patient_journey,
         name="patient_journey"
+    ),
+
+    # /patients/<oph_id>/journey/api/
+    # Patient Journey / Horizontal Tracking (Interoperability API Endpoint)
+    path(
+        "<str:oph_id>/journey/api/",
+        views.api_patient_journey,
+        name="api_patient_journey"
     ),
 
     # /patients/<oph_id>/emergency-override/

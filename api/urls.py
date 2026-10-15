@@ -7,16 +7,16 @@ urlpatterns = [
     path('endpoints/', views.api_endpoints_view, name='api_endpoints_ui'),
     path('resources/', views.fhir_resources_view, name='fhir_resources_ui'),
 
-    # Metadata Endpoint
-    path('fhir/metadata', views.FHIRMetadataView.as_view(), name='fhir_metadata'),
+    # FHIR Metadata
+path('fhir/metadata/', views.FHIRMetadataView.as_view(), name='fhir_metadata'),
 
-    # Patient Endpoints
-    path('fhir/Patient', views.FHIRPatientList.as_view(), name='fhir_patient_list'),
-    path('fhir/Patient/<str:oph_id>', views.FHIRPatientDetail.as_view(), name='fhir_patient_detail'),
+# Patient
+path('fhir/Patient/', views.FHIRPatientList.as_view(), name='fhir_patient_list'),
+path('fhir/Patient/<str:oph_id>/', views.FHIRPatientDetail.as_view(), name='fhir_patient_detail'),
 
-    # Organization (Facility) Endpoints
-    path('fhir/Organization', views.FHIROrganizationList.as_view(), name='fhir_organization_list'),
-    path('fhir/Organization/<str:facility_id>', views.FHIROrganizationDetail.as_view(), name='fhir_organization_detail'),
+# Organization
+path('fhir/Organization/', views.FHIROrganizationList.as_view(), name='fhir_organization_list'),
+path('fhir/Organization/<str:facility_id>/', views.FHIROrganizationDetail.as_view(), name='fhir_organization_detail'),
     
     # Connected Systems Endpoints
     path("connected-systems/", views.connected_systems, name="connected_systems"),

